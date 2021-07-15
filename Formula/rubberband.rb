@@ -1,42 +1,42 @@
 class Rubberband < Formula
   desc "Audio time stretcher tool and library"
   homepage "https://breakfastquay.com/rubberband/"
-  url "https://breakfastquay.com/files/releases/rubberband-1.8.2.tar.bz2"
-  sha256 "86bed06b7115b64441d32ae53634fcc0539a50b9b648ef87443f936782f6c3ca"
-  license "GPL-2.0"
-  revision 1
+  url "https://breakfastquay.com/files/releases/rubberband-1.9.2.tar.bz2"
+  sha256 "b3cff5968517141fcf9e1ef6b5a1fdb06a5511f148000609216cf182ff4ab612"
+  license "GPL-2.0-or-later"
   head "https://hg.sr.ht/~breakfastquay/rubberband", using: :hg
 
   livecheck do
     url :homepage
-    regex(/Rubber Band Library v?(\d+(?:\.\d+)+) released/i)
+    regex(/href=.*?rubberband[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
   bottle do
-    cellar :any
-    rebuild 1
-    sha256 "dcfa2c05cc251d0c5e810040646fb5f9511fda2d1cad20ccadce96544a1ad7e3" => :catalina
-    sha256 "629837bd83bfcef1003bfb29759d15c29bb7c22740a70f6143bd4c16a5bd3362" => :mojave
-    sha256 "f592baa6b5e82c542a92df87789a51b6603e7e8070dfa7f910349a388135b6da" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "effbebb6fa0c2fe0ae0dfb034b7f583691391accf39ead4ae0f9a2933cfa747a"
+    sha256 cellar: :any, big_sur:       "6f8eb3495c3ab95737df9fd81ae7df3ecb122ebc7468df79049ef2b1fd363375"
+    sha256 cellar: :any, catalina:      "29fe97d7bb8bb2b23c2409d2465e56ea84326e9568dbcf6533b4bf4aed52b400"
+    sha256 cellar: :any, mojave:        "af62a07fc9604c1df76d654b662c949d75a4d4cb52171aa72fb911e8af533aed"
   end
 
+  depends_on "meson" => :build
+  depends_on "ninja" => :build
   depends_on "pkg-config" => :build
   depends_on "libsamplerate"
   depends_on "libsndfile"
 
-  def install
-    system "make", "-f", "Makefile.osx"
-    # HACK: Manual install because "make install" is broken
-    # https://github.com/Homebrew/homebrew-core/issues/28660
-    bin.install "bin/rubberband"
-    lib.install "lib/librubberband.dylib" => "librubberband.2.1.1.dylib"
-    lib.install_symlink lib/"librubberband.2.1.1.dylib" => "librubberband.2.dylib"
-    lib.install_symlink lib/"librubberband.2.1.1.dylib" => "librubberband.dylib"
-    include.install "rubberband"
+  on_linux do
+    depends_on "fftw"
+    depends_on "ladspa-sdk"
+    depends_on "openjdk"
+    depends_on "vamp-plugin-sdk"
+  end
 
-    cp "rubberband.pc.in", "rubberband.pc"
-    inreplace "rubberband.pc", "%PREFIX%", opt_prefix
-    (lib/"pkgconfig").install "rubberband.pc"
+  def install
+    mkdir "build" do
+      system "meson", *std_meson_args
+      system "ninja", "-v"
+      system "ninja", "install", "-v"
+    end
   end
 
   test do

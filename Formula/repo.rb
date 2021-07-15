@@ -1,16 +1,24 @@
 class Repo < Formula
+  include Language::Python::Shebang
+
   desc "Repository tool for Android development"
   homepage "https://source.android.com/source/developing.html"
-  url "https://github.com/GerritCodeReview/git-repo.git",
-      tag:      "v2.8",
-      revision: "60fc51bb1dcf8970189a544c2ca75f2cdcfdb6f8"
+  url "https://gerrit.googlesource.com/git-repo.git",
+      tag:      "v2.16.1",
+      revision: "8db30d686a5298a28c6275cc05fb24fb1cfa1ba5"
   license "Apache-2.0"
   version_scheme 1
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "57ec891368aa640d52a893a271564d008b4fc8e6b43bff76bd1ac65355156a31"
+  end
+
+  depends_on "python@3.9"
 
   def install
     bin.install "repo"
+    rewrite_shebang detected_python_shebang, bin/"repo"
+
     doc.install (buildpath/"docs").children
   end
 

@@ -1,14 +1,17 @@
 class Ecl < Formula
   desc "Embeddable Common Lisp"
   homepage "https://common-lisp.net/project/ecl/"
-  url "https://common-lisp.net/project/ecl/static/files/release/ecl-20.4.24.tgz"
-  sha256 "670838edf258a936b522fdb620da336de7e575aa0d27e34841727252726d0f07"
-  head "https://gitlab.com/embeddable-common-lisp/ecl.git"
+  url "https://common-lisp.net/project/ecl/static/files/release/ecl-21.2.1.tgz"
+  sha256 "b15a75dcf84b8f62e68720ccab1393f9611c078fcd3afdd639a1086cad010900"
+  license "LGPL-2.1-or-later"
+  head "https://gitlab.com/embeddable-common-lisp/ecl.git", branch: "develop"
 
   bottle do
-    sha256 "2a33f32a5ae0e6f53cc341e2235525a5c5bdeaf1a696e19f1fdaf2b8c36bb02c" => :catalina
-    sha256 "1cccfc0bb6405dc4c9515936ee14589837794b61738477bd72ba77d5e0fcc9e9" => :mojave
-    sha256 "8b216d4e8eb3491593160a2d291beb13b228bc8442cc0c5d391c196754f8968c" => :high_sierra
+    sha256 arm64_big_sur: "847322265172ae8fe032c0a0ce7aa49a97fc5d7b65b67747b75e328567938d08"
+    sha256 big_sur:       "5df2258cb07a0f70a7e5d664f691d843fd5cae916009dbbc1ee0f6867c3dff48"
+    sha256 catalina:      "5286a86476c459ce1694d50363a885be2869df62bf632c532755eb51fe9fdbc5"
+    sha256 mojave:        "db02128ab8feb220552e2dad2f565283c44b64b688e2e467ecfbe68e4dce6bef"
+    sha256 x86_64_linux:  "b6b04526fb3118e8a87cbebbd0201a8aeefed7c085ce588d87b7a0ea2e88dce8"
   end
 
   depends_on "texinfo" => :build # Apple's is too old
@@ -18,10 +21,14 @@ class Ecl < Formula
 
   def install
     ENV.deparallelize
+
     system "./configure", "--prefix=#{prefix}",
                           "--enable-threads=yes",
                           "--enable-boehm=system",
-                          "--enable-gmp=system"
+                          "--enable-gmp=system",
+                          "--with-gmp-prefix=#{Formula["gmp"].opt_prefix}",
+                          "--with-libffi-prefix=#{Formula["libffi"].opt_prefix}",
+                          "--with-libgc-prefix=#{Formula["bdw-gc"].opt_prefix}"
     system "make"
     system "make", "install"
   end

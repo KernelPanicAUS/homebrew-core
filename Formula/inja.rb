@@ -1,23 +1,26 @@
 class Inja < Formula
   desc "Template engine for modern C++"
   homepage "https://pantor.github.io/inja/"
-  url "https://github.com/pantor/inja/archive/v3.0.0.tar.gz"
-  sha256 "99cdb0d90ab1adff9ec63b40a867ec14e1b217fe2d7ac07a6124de201de4ffd0"
+  url "https://github.com/pantor/inja/archive/v3.2.0.tar.gz"
+  sha256 "825e1f0076504b5aac99cc9ad8c4cbfdc33e57c06c40353f2d7b93a33caae17d"
   license "MIT"
   head "https://github.com/pantor/inja.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "2d2e56f3daecf8306ebb2df948024c6ce7115e26cc160496538ca05900c6d8a5" => :catalina
-    sha256 "22ea5918d1033829ab77202e877ce6f79d0bcb965feee60081004654a3ea60b4" => :mojave
-    sha256 "9a67ee6245a22e809dd4c7fc29227b42bbc443f58bb24fdc7258929a99c7d0f3" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "3f5ebe5bbf698c4830d4c4aa2508053c085c2f531aa4255f3d1aa1040d5b01e3"
+    sha256 cellar: :any_skip_relocation, big_sur:       "fe3c6b65fe9f72935ac560e8c670b1dbe751fec0a02e9108a9898d6315ecd991"
+    sha256 cellar: :any_skip_relocation, catalina:      "99ce29b9041c1723c165118582179d0541f788549d68fa269ec71ab09fdebdb8"
+    sha256 cellar: :any_skip_relocation, mojave:        "0a912572fad4b9ac680aa0df36b4a0a24dd051af1534695f93922975f7e9fbc8"
   end
 
   depends_on "cmake" => :build
   depends_on "nlohmann-json"
 
   def install
-    system "cmake", ".", "-DBUILD_TESTING=OFF", "-DBUILD_BENCHMARK=OFF", *std_cmake_args
+    system "cmake", ".", "-DBUILD_TESTING=OFF",
+                         "-DBUILD_BENCHMARK=OFF",
+                         "-DINJA_USE_EMBEDDED_JSON=OFF",
+                         *std_cmake_args
     system "make", "install"
   end
 

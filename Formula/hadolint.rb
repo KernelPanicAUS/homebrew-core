@@ -1,16 +1,16 @@
 class Hadolint < Formula
   desc "Smarter Dockerfile linter to validate best practices"
   homepage "https://github.com/hadolint/hadolint"
-  url "https://github.com/hadolint/hadolint/archive/v1.18.0.tar.gz"
-  sha256 "0ebe67e543226721c3802dd56db0355575accf50f10c09fe188bbb604aa8c193"
-  license "GPL-3.0"
+  url "https://github.com/hadolint/hadolint/archive/v2.6.0.tar.gz"
+  sha256 "4001fa296cccf8366af773b33edb5d8131d375096c6bf593890164818dbc3e2d"
+  license "GPL-3.0-only"
 
   bottle do
-    cellar :any_skip_relocation
-    rebuild 2
-    sha256 "502616ec44ca052029c4387ee468fb67d1dea019cce66f3e26131cb3a2889ee7" => :catalina
-    sha256 "c2564cec7c18b2a57ea1bb58b8f5b997bc46bc2d0cc42765243ff02084fe311e" => :mojave
-    sha256 "5846307d054fe63c6c142388753356f7bb12ff378d2684c8d1dcec2128be0a82" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "1a147ced2e0c45fb6a67281ccac1e4e6e7f82644fff2d6e53d0cac791ebcd151"
+    sha256 cellar: :any_skip_relocation, big_sur:       "cd0497cca38f6a6ad914f34951bf4178cc689f3599ce000377f3049ead0ffbbd"
+    sha256 cellar: :any_skip_relocation, catalina:      "88978464f63f97957d17ce8a3728a6575815ecb4ee6d2a670ade6c166e23c041"
+    sha256 cellar: :any_skip_relocation, mojave:        "77f170344d5275b6eebbed7699d5f2406a30532b35edce0e60f1ab5cf312ff35"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "1059695a96883652329d6688d085c8600914b7c2e597acbb0c2acb4cdfa4c78d"
   end
 
   depends_on "ghc" => :build
@@ -18,17 +18,19 @@ class Hadolint < Formula
 
   uses_from_macos "xz"
 
-  on_linux do
-    depends_on "gmp"
-  end
-
   def install
     # Let `stack` handle its own parallelization
     jobs = ENV.make_jobs
     ENV.deparallelize
 
-    system "stack", "-j#{jobs}", "build"
-    system "stack", "-j#{jobs}", "--local-bin-path=#{bin}", "install"
+    ghc_args = [
+      "--system-ghc",
+      "--no-install-ghc",
+      "--skip-ghc-check",
+    ]
+
+    system "stack", "-j#{jobs}", "build", *ghc_args
+    system "stack", "-j#{jobs}", "--local-bin-path=#{bin}", "install", *ghc_args
   end
 
   test do

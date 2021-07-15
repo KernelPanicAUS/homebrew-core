@@ -1,35 +1,24 @@
 class Ccache < Formula
   desc "Object-file caching compiler wrapper"
   homepage "https://ccache.dev/"
-  url "https://github.com/ccache/ccache/releases/download/v3.7.11/ccache-3.7.11.tar.xz"
-  sha256 "8d450208099a4d202bd7df87caaec81baee20ce9dd62da91e9ea7b95a9072f68"
+  url "https://github.com/ccache/ccache/releases/download/v4.3/ccache-4.3.tar.xz"
+  sha256 "504a0f2184465c306826f035b4bc00bae7500308d6af4abbfb50e33a694989b4"
   license "GPL-3.0-or-later"
-  revision 1
+  head "https://github.com/ccache/ccache.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "b3c6b44666b44ca28b34cbe65fe40951f1524d91853f99769e97ad8922271a4e" => :catalina
-    sha256 "f0a8adf66838338f8a621c5189bc3faf37f1dc9b04727e0513453c436f78a37b" => :mojave
-    sha256 "583f629fdb4446086fb7ed9529f494922b45c2ae435a8e57a1daa2754b3cb5f9" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "77ef6571b788e52f9f90d95911955ce9cfedf8a971c7634a3d5ae9014ae7777c"
+    sha256 cellar: :any,                 big_sur:       "017d4408111c3f5146c95a18aaa11d9dc623af7d257386f28b80076a98798bcd"
+    sha256 cellar: :any,                 catalina:      "4e905bb6bba1479b2cdf3c93c10f21684f50ac7dbdbada7d292aaaa58e87f7a2"
+    sha256 cellar: :any,                 mojave:        "8001d6a3ff290c51eccc358c465d652758243540a9647606b608d6b6312b34e3"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "dc256b5d4b2d714d918d5d4fad95bfd060b0844b5504fae42bc09b2697a520e4"
   end
 
-  head do
-    url "https://github.com/ccache/ccache.git"
-
-    depends_on "asciidoc" => :build
-    depends_on "autoconf" => :build
-    depends_on "automake" => :build
-    depends_on "libtool" => :build
-  end
-
-  uses_from_macos "zlib"
+  depends_on "cmake" => :build
+  depends_on "zstd"
 
   def install
-    ENV["XML_CATALOG_FILES"] = etc/"xml/catalog" if build.head?
-
-    system "./autogen.sh" if build.head?
-    system "./configure", "--prefix=#{prefix}", "--mandir=#{man}"
-    system "make"
+    system "cmake", ".", *std_cmake_args
     system "make", "install"
 
     libexec.mkpath

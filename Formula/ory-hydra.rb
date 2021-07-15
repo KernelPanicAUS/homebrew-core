@@ -1,15 +1,20 @@
 class OryHydra < Formula
   desc "OpenID Certified OAuth 2.0 Server and OpenID Connect Provider"
   homepage "https://www.ory.sh/hydra/"
-  url "https://github.com/ory/hydra/archive/v1.7.0.tar.gz"
-  sha256 "984cb578bc499b72d3e4cf92315add0650681925aeaa68581515bf10c94f3e1f"
+  url "https://github.com/ory/hydra/archive/v1.10.3.tar.gz"
+  sha256 "5922307e85895c0058d3af366f2b3f279d225bb311b07527364357801e0a2c91"
   license "Apache-2.0"
 
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
+
   bottle do
-    cellar :any_skip_relocation
-    sha256 "2f3a82862e3669005719c9c7b69e0c83b3e2523027bc5f64ff00d498c5649c53" => :catalina
-    sha256 "fcfd384f726c51960f0103467e81f39e69ccb2ce434dd68134deb48e200ce50e" => :mojave
-    sha256 "8e4cda62383e2cf4bff91cdc8a76fd25cc9bfc4880fd729b18c9a18e008b35a1" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "ba879bc22ba2d3782990c6c9d8145c7b37709c9cab99d36c15b8ae2cae08cb0d"
+    sha256 cellar: :any_skip_relocation, big_sur:       "1a1c64b5f91606768b4936dff612e82cec33b61a4ffeeb7ec2482a409d41c19f"
+    sha256 cellar: :any_skip_relocation, catalina:      "d946e68b627af085c42aec6a4466cfcee394e5db905a1c1191732729241319f9"
+    sha256 cellar: :any_skip_relocation, mojave:        "70f7583e99d4cd3f0c0b88c6498351bfab099f8a58b7c6856ec003582bff176e"
   end
 
   depends_on "go" => :build
@@ -32,8 +37,8 @@ class OryHydra < Formula
           port: #{admin_port}
     EOS
 
-    fork { exec bin/"hydra", "serve", "all", "--config", "config.yaml" }
-    sleep 5
+    fork { exec bin/"hydra", "serve", "all", "--config", "#{testpath}/config.yaml" }
+    sleep 20
 
     endpoint = "https://127.0.0.1:#{admin_port}/"
     output = shell_output("#{bin}/hydra clients list --endpoint #{endpoint} --skip-tls-verify")

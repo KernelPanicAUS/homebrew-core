@@ -1,11 +1,10 @@
 class Clamav < Formula
   desc "Anti-virus software"
   homepage "https://www.clamav.net/"
-  url "https://www.clamav.net/downloads/production/clamav-0.102.4.tar.gz"
-  mirror "https://fossies.org/linux/misc/clamav-0.102.4.tar.gz"
-  sha256 "eebd426a68020ecad0d2084b8c763e6898ccfd5febcae833d719640bb3ff391b"
-  license "GPL-2.0"
-  revision 1
+  url "https://www.clamav.net/downloads/production/clamav-0.103.3.tar.gz"
+  mirror "https://fossies.org/linux/misc/clamav-0.103.3.tar.gz"
+  sha256 "9f6e3d18449f3d1a3992771d696685249dfa12736fe2b2929858f2c7d8276ae9"
+  license "GPL-2.0-or-later"
 
   livecheck do
     url "https://www.clamav.net/downloads"
@@ -13,9 +12,10 @@ class Clamav < Formula
   end
 
   bottle do
-    sha256 "13d069ee3878c43b869ab6771037db93442fc6ed6c676640770b4923543bcbea" => :catalina
-    sha256 "a9822db4e330faf6aeec34eba16f55f0253eb411b6eb7efbc0ce02e5c02d8d21" => :mojave
-    sha256 "12f3d120164f7a4e3405b3fd19e31faf9a69f9283f38ba6184d715488c19517f" => :high_sierra
+    sha256 arm64_big_sur: "de0e15a9827c466360b9cd0f2d3f193134834032998448d7981ac4a8f74b85b5"
+    sha256 big_sur:       "0336a74d46b95394919ed3de66e3fe02a1e58993892f3e5221dea29ad56c301b"
+    sha256 catalina:      "5b0e6cc76e434d7ebfb9301f4b6de21b647f7c0cb3a89d7ca7d6d92c37c34600"
+    sha256 mojave:        "a7ebd59427dddd39419a5dceb5f6c85f55d6040d41878e4fca931e384f906fe2"
   end
 
   head do
@@ -55,10 +55,19 @@ class Clamav < Formula
       --with-libjson=#{Formula["json-c"].opt_prefix}
       --with-openssl=#{Formula["openssl@1.1"].opt_prefix}
       --with-pcre=#{Formula["pcre2"].opt_prefix}
-      --with-zlib=#{MacOS.sdk_path_if_needed}/usr
-      --with-libbz2-prefix=#{MacOS.sdk_path_if_needed}/usr
-      --with-xml=#{MacOS.sdk_path_if_needed}/usr
     ]
+
+    on_macos do
+      args << "--with-zlib=#{MacOS.sdk_path_if_needed}/usr"
+      args << "--with-libbz2-prefix=#{MacOS.sdk_path_if_needed}/usr"
+      args << "--with-xml=#{MacOS.sdk_path_if_needed}/usr"
+    end
+    on_linux do
+      args << "--with-zlib=#{Formula["zlib"].opt_prefix}"
+      args << "--with-libbz2-prefix=#{Formula["bzip2"].opt_prefix}"
+      args << "--with-xml=#{Formula["libxml2"].opt_prefix}"
+      args << "--with-libcurl=#{Formula["curl"].opt_prefix}"
+    end
 
     pkgshare.mkpath
     system "autoreconf", "-fvi" if build.head?

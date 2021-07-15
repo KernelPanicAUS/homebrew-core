@@ -3,24 +3,22 @@ class Pwncat < Formula
 
   desc "Netcat with FW/IDS/IPS evasion, self-inject-, bind- and reverse shell"
   homepage "https://pwncat.org"
-  url "https://files.pythonhosted.org/packages/31/8a/efc45ecc5e91afc76de9c56f89de99af01d575529fead6ee24331a3fddf2/pwncat-0.1.0.tar.gz"
-  sha256 "4f711c3d0f22650e20ad1429a7f0c9116b930be04435e7f690746ca0e1c5cd69"
-
-  livecheck do
-    url :stable
-  end
+  url "https://files.pythonhosted.org/packages/e0/cd/f7c7a2d468fdf8355c574ac65f189da87a469c393ec704d8f3fa83613aa5/pwncat-0.1.1.tar.gz"
+  sha256 "62e625e9061f037cfca7b7455a4f7db4213c1d1302e73d4c475c63f924f1805f"
+  license "MIT"
+  head "https://github.com/cytopia/pwncat.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "effc23c8094a031f9bc1964adf5f5ab050500b86726c948f81fe67d35f5e700d" => :catalina
-    sha256 "c140bcf0cca3b1b2176e762dbbafb1c02f831c032741ece1dda4f95fa0ada397" => :mojave
-    sha256 "cc5dcb70ed1762f24f7d0511b74b2f119403f2bf8bc463aec844b8701682e2f2" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "dc906f569c1db49247320a2c5d9e27f26880d3041c6ff2f1b178fa5b1aa6a586"
+    sha256 cellar: :any_skip_relocation, big_sur:       "fe18e3f9569fead9b8d60a719798afa0cda35626e6296d7a8917dd1d08812b92"
+    sha256 cellar: :any_skip_relocation, catalina:      "6aab31b67601d8e6c3bd584d8f4f264843ff8dab112eef4b31ae5896e6ba653a"
+    sha256 cellar: :any_skip_relocation, mojave:        "ea6514ac82a8edcbe9e2fc1cd2077baa1b4312979f39c84359ba7794822c0a91"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   def install
-    ENV.prepend_path "PATH", Formula["python@3.8"].opt_libexec/"bin"
+    ENV.prepend_path "PATH", Formula["python@3.9"].opt_libexec/"bin"
     virtualenv_install_with_resources
   end
 

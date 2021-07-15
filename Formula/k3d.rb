@@ -1,8 +1,8 @@
 class K3d < Formula
   desc "Little helper to run Rancher Lab's k3s in Docker"
-  homepage "https://github.com/rancher/k3d"
-  url "https://github.com/rancher/k3d/archive/v3.0.1.tar.gz"
-  sha256 "bcf9cf273033a81a97698c37cbf29146c17997f4bf3bedcd9fcf55db106b8db2"
+  homepage "https://k3d.io"
+  url "https://github.com/rancher/k3d/archive/v4.4.7.tar.gz"
+  sha256 "036685d39397c89c946057ac2e333f157ac460f5251413f1db8629cb7462b58a"
   license "MIT"
 
   livecheck do
@@ -11,10 +11,11 @@ class K3d < Formula
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "ebb6a835a1ee1a138f1a1bdba89943c3141b661feca5493aa6f594787da5ebcf" => :catalina
-    sha256 "a21ff4cd19dab557a4a8d9b20f62dfe1344e4b74c0fa4b672ba26179c519584c" => :mojave
-    sha256 "18be677ae6d9acf0fdcc31697ed56ecd47dda337f66b1de0204eed8bfcde1440" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "d68babfb2e3258b8d9859d502427a433312a8dd7d2262d707bb225abb76318b8"
+    sha256 cellar: :any_skip_relocation, big_sur:       "ffcaa4fc81f9f667301178f3c649785586af8befa82b39de9deffcbbbb175ea1"
+    sha256 cellar: :any_skip_relocation, catalina:      "c6cdc867a38476d3dd11a3aa863cc08a38889551bcea8e3fdcde1e4e310c32fa"
+    sha256 cellar: :any_skip_relocation, mojave:        "4bcf06a1c690c414ff71b5624c6d505021cd88f2908e07ab4caa1306dd0a3b03"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "5a85f8499530980e40c301dd177d76530b27b88b0769306517e3740c0fcda00b"
   end
 
   depends_on "go" => :build
@@ -22,8 +23,8 @@ class K3d < Formula
   def install
     system "go", "build",
            "-mod", "vendor",
-           "-ldflags", "-s -w -X github.com/rancher/k3d/v3/version.Version=v#{version}"\
-           " -X github.com/rancher/k3d/v3/version.K3sVersion=latest",
+           "-ldflags", "-s -w -X github.com/rancher/k3d/v#{version.major}/version.Version=v#{version}"\
+                       " -X github.com/rancher/k3d/v#{version.major}/version.K3sVersion=latest",
            "-trimpath", "-o", bin/"k3d"
 
     # Install bash completion
@@ -34,7 +35,9 @@ class K3d < Formula
     output = Utils.safe_popen_read("#{bin}/k3d", "completion", "zsh")
     (zsh_completion/"_k3d").write output
 
-    prefix.install_metafiles
+    # Install fish completion
+    output = Utils.safe_popen_read("#{bin}/k3d", "completion", "fish")
+    (fish_completion/"k3d.fish").write output
   end
 
   test do
@@ -43,7 +46,6 @@ class K3d < Formula
     # In any case I wouldn't expect a cluster with name 6d6de430dbd8080d690758a4b5d57c86 to be present
     # (which is the md5sum of 'homebrew-failing-test')
     output = shell_output("#{bin}/k3d cluster get 6d6de430dbd8080d690758a4b5d57c86 2>&1", 1).split("\n").pop
-    assert_match output,
-      "\x1B\[31mFATA\x1B\[0m\[0000\]\ No\ nodes\ found\ for\ cluster\ '6d6de430dbd8080d690758a4b5d57c86'\ "
+    assert_match "No nodes found for given cluster", output
   end
 end

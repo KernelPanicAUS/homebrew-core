@@ -1,15 +1,16 @@
 class Bat < Formula
   desc "Clone of cat(1) with syntax highlighting and Git integration"
   homepage "https://github.com/sharkdp/bat"
-  url "https://github.com/sharkdp/bat/archive/v0.15.4.tar.gz"
-  sha256 "03b7c8ad6221ca87cecd71f9e3e2167f04f750401e2d3dcc574183aabeb76a8b"
+  url "https://github.com/sharkdp/bat/archive/v0.18.2.tar.gz"
+  sha256 "b176787e27da1f920b655bcd71b66c1569d241e2272bb9a4f6a64e6501c0cf2a"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "ae2c26d25a0dac35bd839a091f89201b5d9eee32ef613325426c7e8b8812d1a9" => :catalina
-    sha256 "40dea8577c06a08d3e3bd20a949245ff02ea85153d25f72a65cee03c1b1e1cf9" => :mojave
-    sha256 "59bed16f8a4741a9d92f62cb7c9965d1abe40dc5dd2323bc4f37e71330b1abf2" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "e5b14836bb035d63dfcf8342e648837812272f16c980d22f17f9f2529fa87bba"
+    sha256 cellar: :any_skip_relocation, big_sur:       "566720155c70fee4a23c7ae07f7e785fde72396464c2b8c67dcf6b5c48f36579"
+    sha256 cellar: :any_skip_relocation, catalina:      "add88b324d4caad18443fe084891f5fa131d9119769b2705663ce0ce28d23b3d"
+    sha256 cellar: :any_skip_relocation, mojave:        "6d6f023db57e9f726c06d20e6cade443da3d63df80027dc4a8f7ac47b5f7a0ae"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "f5e85d2128c380d1caedd691acb9772d20e3fc3dd8f41a91e4d26b7aaf6f874f"
   end
 
   depends_on "rust" => :build
@@ -18,12 +19,12 @@ class Bat < Formula
 
   def install
     ENV["SHELL_COMPLETIONS_DIR"] = buildpath
-    ENV.append_to_cflags "-fno-stack-check" if DevelopmentTools.clang_build_version >= 1010
     system "cargo", "install", *std_cargo_args
 
     assets_dir = Dir["target/release/build/bat-*/out/assets"].first
     man1.install "#{assets_dir}/manual/bat.1"
     fish_completion.install "#{assets_dir}/completions/bat.fish"
+    zsh_completion.install "#{assets_dir}/completions/bat.zsh" => "_bat"
   end
 
   test do

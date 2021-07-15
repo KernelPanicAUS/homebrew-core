@@ -5,17 +5,22 @@ class Sslmate < Formula
 
   desc "Buy SSL certs from the command-line"
   homepage "https://sslmate.com"
-  url "https://packages.sslmate.com/other/sslmate-1.7.1.tar.gz"
-  sha256 "454e19338910363189b349cfe3477351a20c34c6fda0f312ad143b1688faa6c4"
+  url "https://packages.sslmate.com/other/sslmate-1.8.0.tar.gz"
+  sha256 "0354e41a2e9bd69b167e5374a20335affa584955dc3a2e9a4046fac6d3ac02c9"
 
-  bottle do
-    cellar :any_skip_relocation
-    sha256 "39df7966fbc2d8ddf054fca99456e3f5837b78c849bacc25fd40a0ae9e48bb60" => :catalina
-    sha256 "39df7966fbc2d8ddf054fca99456e3f5837b78c849bacc25fd40a0ae9e48bb60" => :mojave
-    sha256 "39df7966fbc2d8ddf054fca99456e3f5837b78c849bacc25fd40a0ae9e48bb60" => :high_sierra
+  livecheck do
+    url "https://packages.sslmate.com/other/"
+    regex(/href=.*?sslmate[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
-  depends_on "python@3.8"
+  bottle do
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "663bd104378e805e195f861d33e509b1110ca6f3719b30050cf98121256594bf"
+    sha256 cellar: :any_skip_relocation, big_sur:       "7835b2f312003a5520eaa288d00cb2ca73384f4e38a0bae60adb5800f8a869cb"
+    sha256 cellar: :any_skip_relocation, catalina:      "7835b2f312003a5520eaa288d00cb2ca73384f4e38a0bae60adb5800f8a869cb"
+    sha256 cellar: :any_skip_relocation, mojave:        "7835b2f312003a5520eaa288d00cb2ca73384f4e38a0bae60adb5800f8a869cb"
+  end
+
+  depends_on "python@3.9"
 
   uses_from_macos "perl"
 
@@ -27,7 +32,7 @@ class Sslmate < Formula
   def install
     ENV.prepend_create_path "PERL5LIB", libexec/"vendor/lib/perl5"
 
-    python3 = Formula["python@3.8"].opt_bin/"python3"
+    python3 = Formula["python@3.9"].opt_bin/"python3"
     xy = Language::Python.major_minor_version python3
     ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python#{xy}/site-packages"
 

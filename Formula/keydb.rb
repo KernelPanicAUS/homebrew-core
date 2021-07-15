@@ -1,15 +1,22 @@
 class Keydb < Formula
   desc "Multithreaded fork of Redis"
   homepage "https://keydb.dev"
-  url "https://github.com/JohnSully/KeyDB/archive/v6.0.13.tar.gz"
-  sha256 "e4b09babb9b95e1a2e5c8d7d898d63ea0badcb4b84a195239058484e91f820c8"
+  url "https://github.com/JohnSully/KeyDB/archive/v6.0.16.tar.gz"
+  sha256 "809369321d1a98a57337447cce0fd84197dd3c9b493ec1ea2e29268d8534ee5d"
   license "BSD-3-Clause"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "e718d2be36d52596f2ad33e0d6bcd063173de0e3b2825a89ef0420e141ac2198" => :catalina
-    sha256 "f063c6ea799a16c0f10611483c299b81595f38e5225a4cf393b096f6e41ab0e1" => :mojave
-    sha256 "c528879a051d37d3734f178cf16610e74172bef322c9aac98c77a1fb2b42993d" => :high_sierra
+    sha256 cellar: :any_skip_relocation, big_sur:      "af7c50a7f480f837135ee2a174fbbfddc70049fc185e5cca67978ad295ada657"
+    sha256 cellar: :any_skip_relocation, catalina:     "399a17386d452bac3d05d7997af196954b4dddb4dd3c2dd753e112405c8eefe6"
+    sha256 cellar: :any_skip_relocation, mojave:       "19e86e52f647fb1557683cd6f4b682a5e150095f0f99e13c19b7816c81d3bd17"
+    sha256 cellar: :any_skip_relocation, high_sierra:  "ab28323dbffb9fcc0f11eeb18d9490808592b5caab0f8168e310937abb83b212"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "6893ae34d2b94bfdcb5e6bcfe59a600bde42160f37a8dbcde8b34e91b107e3cc"
+  end
+
+  uses_from_macos "curl"
+
+  on_linux do
+    depends_on "util-linux"
   end
 
   def install

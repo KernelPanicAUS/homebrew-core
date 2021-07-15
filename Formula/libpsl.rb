@@ -4,18 +4,20 @@ class Libpsl < Formula
   url "https://github.com/rockdaboot/libpsl/releases/download/0.21.1/libpsl-0.21.1.tar.gz"
   sha256 "ac6ce1e1fbd4d0254c4ddb9d37f1fa99dec83619c1253328155206b896210d4c"
   license "MIT"
+  revision 3
 
   bottle do
-    cellar :any
-    sha256 "999ac95bde3ffb61596c0fa4c2e93c36ef01d9c056b3c96a27ee39fab2970c57" => :catalina
-    sha256 "58cf56bdac182080b09b3832dc091c99106d88baeb797d4b31c5c4572491557c" => :mojave
-    sha256 "f91cdd5992c4c85083e30692cc509349a15fb43f0725580bc14de1e47ba8e7c4" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "f2330a5e4084401e4c60bec2da48cc2d877e777c51f8106f9c11653612dc7337"
+    sha256 cellar: :any,                 big_sur:       "dfb143c0316dd1319165c09d9cfd8cb3ed47a572e538b88755bae8f90de594b9"
+    sha256 cellar: :any,                 catalina:      "6ebd02eb47c7a10b1b60360c6f2467677feba8d81a3a4e9e4cb09c08180395f5"
+    sha256 cellar: :any,                 mojave:        "7ce4c33579aa8d7263df78f1814166a8a14a26b28866bbd8772c9a0bea9726a5"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "e95d796f1b490d7720f3aa1a9dd6d3799ccf99be87194dd2b4bcd72d00c626a8"
   end
 
   depends_on "meson" => :build
   depends_on "ninja" => :build
   depends_on "pkg-config" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
   depends_on "icu4c"
 
   def install

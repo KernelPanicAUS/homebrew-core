@@ -1,15 +1,21 @@
 class Alluxio < Formula
   desc "Open Source Memory Speed Virtual Distributed Storage"
   homepage "https://www.alluxio.io/"
-  url "https://downloads.alluxio.io/downloads/files/1.8.2/alluxio-1.8.2-bin.tar.gz"
-  sha256 "e927f80aabf80ac0b47d4491a4320058bcd15f554fccec1375e8f6dcf243ebb4"
+  url "https://downloads.alluxio.io/downloads/files/2.5.0-2/alluxio-2.5.0-2-bin.tar.gz"
+  sha256 "3921176e5206ad278d9154b20cb304ed85ffa70cb14a53c4f9f71f1eedbf3871"
+  license "Apache-2.0"
 
   livecheck do
     url "https://downloads.alluxio.io/downloads/files/"
-    regex(%r{href=.*?(\d+(?:\.\d+)+)/?["' >]}i)
+    regex(%r{href=["']?v?(\d+(?:[.-]\d+)+)/?["' >]}i)
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "83bb4aee6c68ca243839d154685f0a37c8e3c8a2eb812d0528d05cc2b32a9e2a"
+  end
+
+  # Alluxio requires Java 8 or Java 11
+  depends_on "openjdk@11"
 
   def default_alluxio_conf
     <<~EOS
@@ -18,9 +24,10 @@ class Alluxio < Formula
   end
 
   def install
-    doc.install Dir["docs/*"]
     libexec.install Dir["*"]
-    bin.write_exec_script Dir["#{libexec}/bin/*"]
+    bin.install Dir["#{libexec}/bin/*"]
+    bin.env_script_all_files libexec/"bin", Language::Java.overridable_java_home_env("11")
+    chmod "+x", Dir["#{libexec}/bin/*"]
 
     rm_rf Dir["#{etc}/alluxio/*"]
 
@@ -37,10 +44,19 @@ class Alluxio < Formula
       To configure alluxio, edit
         #{etc}/alluxio/alluxio-env.sh
         #{etc}/alluxio/alluxio-site.properties
+
+      To use `alluxio-fuse` on macOS:
+        brew install --cask macfuse
     EOS
   end
 
   test do
-    system bin/"alluxio", "version"
+    output = shell_output("#{bin}/alluxio validateConf")
+    assert_match "ValidateConf - Validating configuration.", output
+
+    output = shell_output("#{bin}/alluxio clearCache 2>&1", 1)
+    assert_match "drop_caches: No such file or directory", output
+
+    assert_match version.to_s, shell_output("#{bin}/alluxio version")
   end
 end

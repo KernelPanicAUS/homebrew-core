@@ -1,22 +1,21 @@
 class Gjs < Formula
   desc "JavaScript Bindings for GNOME"
   homepage "https://gitlab.gnome.org/GNOME/gjs/wikis/Home"
-  url "https://download.gnome.org/sources/gjs/1.64/gjs-1.64.4.tar.xz"
-  sha256 "a3cc3a8eda87074b2c363ffe28b29a5202d7f12914b6973f199acf2d1816d44c"
-
-  livecheck do
-    url :stable
-  end
+  url "https://download.gnome.org/sources/gjs/1.68/gjs-1.68.1.tar.xz"
+  sha256 "2ffa3ec2041104fcf9ab5dcc8f7cd9caa062278590318ffef9541956af5b4c70"
+  license all_of: ["LGPL-2.0-or-later", "MIT"]
 
   bottle do
-    sha256 "48ab51876b8cb4b93914f6ec9f97134d19883a3aecdf0fceeb39ba4565820c84" => :catalina
-    sha256 "3605114b6a6168aac10d3544cb44a8c543b94d1938f22edfe3b898e1f967136c" => :mojave
-    sha256 "37212a55eeac304e95953c4681c42a6eddf82eb62eca40bedc459c943ce55580" => :high_sierra
+    sha256 big_sur:  "09de9508a973b368bf81cd451429b27214e8ee97b3c098416aabb06076497bbc"
+    sha256 catalina: "bb5690af272dbed13331beeca7bcd2976b3b106362eead30a62db7cb2f5298a9"
+    sha256 mojave:   "6fce786edaf8c678fd3b56298991a01da89dee0b3bb41281f378fe7178ab067b"
   end
 
+  depends_on "autoconf@2.13" => :build
   depends_on "meson" => :build
   depends_on "ninja" => :build
   depends_on "pkg-config" => :build
+  depends_on "python@3.8" => :build
   depends_on "rust" => :build
   depends_on "gobject-introspection"
   depends_on "gtk+3"
@@ -24,41 +23,36 @@ class Gjs < Formula
   depends_on "nspr"
   depends_on "readline"
 
-  resource "autoconf@213" do
-    url "https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz"
-    mirror "https://ftpmirror.gnu.org/autoconf/autoconf-2.13.tar.gz"
-    sha256 "f0611136bee505811e9ca11ca7ac188ef5323a8e2ef19cffd3edb3cf08fd791e"
+  resource "six" do
+    url "https://files.pythonhosted.org/packages/6b/34/415834bfdafca3c5f451532e8a8d9ba89a21c9743a0c59fbd0205c7f9426/six-1.15.0.tar.gz"
+    sha256 "30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"
   end
 
-  resource "mozjs68" do
-    url "https://archive.mozilla.org/pub/firefox/releases/68.8.0esr/source/firefox-68.8.0esr.source.tar.xz"
-    sha256 "fa5b2266d225878d4b35694678f79fd7e7a6d3c62759a40326129bd90f63e842"
+  resource "mozjs78" do
+    url "https://archive.mozilla.org/pub/firefox/releases/78.10.1esr/source/firefox-78.10.1esr.source.tar.xz"
+    sha256 "c41f45072b0eb84b9c5dcb381298f91d49249db97784c7e173b5f210cd15cf3f"
   end
 
   def install
     ENV.cxx11
 
-    resource("autoconf@213").stage do
-      system "./configure", "--disable-debug",
-                            "--disable-dependency-tracking",
-                            "--program-suffix=213",
-                            "--prefix=#{buildpath}/autoconf",
-                            "--infodir=#{buildpath}/autoconf/share/info",
-                            "--datadir=#{buildpath}/autoconf/share"
-      system "make", "install"
+    resource("six").stage do
+      system Formula["python@3.8"].opt_bin/"python3", *Language::Python.setup_install_args(buildpath/"vendor")
     end
 
-    resource("mozjs68").stage do
+    resource("mozjs78").stage do
+      inreplace "build/moz.configure/toolchain.configure",
+                "sdk_max_version = Version('10.15.4')",
+                "sdk_max_version = Version('11.99')"
       inreplace "config/rules.mk",
                 "-install_name $(_LOADER_PATH)/$(SHARED_LIBRARY) ",
                 "-install_name #{lib}/$(SHARED_LIBRARY) "
       inreplace "old-configure", "-Wl,-executable_path,${DIST}/bin", ""
-      inreplace "build/moz.configure/toolchain.configure",
-                "sdk_max_version = Version('10.14')",
-                "sdk_max_version = Version('10.16')"
 
       mkdir("build") do
-        ENV["PYTHON"] = "python"
+        xy = Language::Python.major_minor_version "python3"
+        ENV.prepend_create_path "PYTHONPATH", buildpath/"vendor/lib/python#{xy}/site-packages"
+        ENV["PYTHON"] = Formula["python@3.8"].opt_bin/"python3"
         ENV["_MACOSX_DEPLOYMENT_TARGET"] = ENV["MACOSX_DEPLOYMENT_TARGET"]
         ENV["CC"] = Formula["llvm"].opt_bin/"clang"
         ENV["CXX"] = Formula["llvm"].opt_bin/"clang++"
@@ -72,8 +66,7 @@ class Gjs < Formula
                               "--enable-optimize",
                               "--enable-release",
                               "--with-intl-api",
-                              "--disable-jemalloc",
-                              "--disable-xcode-checks"
+                              "--disable-jemalloc"
         system "make"
         system "make", "install"
         rm Dir["#{bin}/*"]

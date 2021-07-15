@@ -1,21 +1,22 @@
 class NodeExporter < Formula
   desc "Prometheus exporter for machine metrics"
   homepage "https://prometheus.io/"
-  url "https://github.com/prometheus/node_exporter/archive/v1.0.1.tar.gz"
-  sha256 "a841bf3e236376840be9e1d8e6c4a38196be6f3957b0982d1c7970a5e416b0ad"
+  url "https://github.com/prometheus/node_exporter/archive/v1.1.2.tar.gz"
+  sha256 "edb40c783bd5767f174b916c89a768496ccae0f74811ba1d03c57c32cd250bbd"
   license "Apache-2.0"
   head "https://github.com/prometheus/node_exporter.git"
 
   livecheck do
-    url :head
+    url :stable
     regex(/^v?(\d+(?:\.\d+)+)$/i)
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "7b68d39007278906d3a749370131c4ee7026f410350c48de3f65eeb4bd0c9310" => :catalina
-    sha256 "1ff2d6c27e863565b9b6415ee406d8f2585366c855f7ff9d64577043dec78b7e" => :mojave
-    sha256 "3d902e39d3d2be664928596a6a1af176af4a73194d3714341c6e365be3894d86" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "7726f4bfaf5eba298d186458d82a1f0d12a52b504166dd7c654e2809f25f1c05"
+    sha256 cellar: :any_skip_relocation, big_sur:       "7324925afff81538c8d2b2449f6912d4d3d1f96296351ebe717cc9c1152b1fa0"
+    sha256 cellar: :any_skip_relocation, catalina:      "d4c48a7a7718fd39b7695a81bbe9364c94ec99d2a5d2d341493b71ddcf3e7405"
+    sha256 cellar: :any_skip_relocation, mojave:        "9562cf856db0b8259c81319b2d942f376de96bf7d51e17442b853bad4f11e0d2"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "126d751fb553eed162e993959b7a98b968240ed818f684d2b5c297adfd0866ec"
   end
 
   depends_on "go" => :build
@@ -73,7 +74,7 @@ class NodeExporter < Formula
   end
 
   test do
-    assert_match /node_exporter/, shell_output("#{bin}/node_exporter --version 2>&1")
+    assert_match "node_exporter", shell_output("#{bin}/node_exporter --version 2>&1")
 
     fork { exec bin/"node_exporter" }
     sleep 2

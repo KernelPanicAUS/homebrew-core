@@ -1,17 +1,20 @@
 class Ckan < Formula
-  desc "The Comprehensive Kerbal Archive Network"
+  desc "Comprehensive Kerbal Archive Network"
   homepage "https://github.com/KSP-CKAN/CKAN/"
-  url "https://github.com/KSP-CKAN/CKAN/releases/download/v1.28.0/ckan.exe"
-  sha256 "2486d98e06c247a61a94e583c202b8a4c74a439de3ea271b769d041aa78d21cd"
+  url "https://github.com/KSP-CKAN/CKAN/releases/download/v1.30.4/ckan.exe"
+  sha256 "2203ea5040e9688b86a1a1a81f61821338772b1177a64242dd58d3617c128901"
   license "MIT"
 
   livecheck do
-    url "https://github.com/KSP-CKAN/CKAN/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "ef445fe525dcb9ddece0844663621a439e6cf159889d00005aa86e7ab1c20583"
+  end
 
+  depends_on arch: :x86_64 # Remove this when `mono` is bottled for ARM
   depends_on "mono"
 
   def install

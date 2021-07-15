@@ -1,32 +1,24 @@
 class Riemann < Formula
   desc "Event stream processor"
   homepage "https://riemann.io/"
-  url "https://github.com/riemann/riemann/releases/download/0.3.5/riemann-0.3.5.tar.bz2"
-  sha256 "2c0f7de308417af890d33f2a9ac40649337cf1b7e0e0c930d8e69f151e15fbb4"
+  url "https://github.com/riemann/riemann/releases/download/0.3.6/riemann-0.3.6.tar.bz2"
+  sha256 "fa2e22b712ed53144bf3319a418a3cd502ed00fa8e6bcb50443039a2664ee643"
   license "EPL-1.0"
 
-  bottle :unneeded
-
-  def shim_script
-    <<~EOS
-      #!/bin/bash
-      if [ -z "$1" ]
-      then
-        config="#{etc}/riemann.config"
-      else
-        config=$@
-      fi
-      exec "#{libexec}/bin/riemann" $config
-    EOS
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "0940ddb5aa7f3cc823eb01a454934dfdb513c2631f550bbe4c1be76022200636"
   end
 
+  depends_on "openjdk"
+
   def install
+    inreplace "bin/riemann", "$top/etc", etc
     etc.install "etc/riemann.config" => "riemann.config.guide"
 
     # Install jars in libexec to avoid conflicts
     libexec.install Dir["*"]
 
-    (bin+"riemann").write shim_script
+    (bin/"riemann").write_env_script libexec/"bin/riemann", Language::Java.overridable_java_home_env
   end
 
   def caveats

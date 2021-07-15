@@ -1,21 +1,24 @@
 class Yadm < Formula
   desc "Yet Another Dotfiles Manager"
   homepage "https://yadm.io/"
-  url "https://github.com/TheLocehiliosan/yadm/archive/2.5.0.tar.gz"
-  sha256 "d022d118a1a477e09afa00c80e10bd94b150d99709e57f01ba48ca2eaaeeb2de"
-  license "GPL-3.0"
+  url "https://github.com/TheLocehiliosan/yadm/archive/3.1.0.tar.gz"
+  sha256 "9f848c80deed2725c012d058bd60d1ea13539fd6fbacd5245bf97d442cb89263"
+  license "GPL-3.0-or-later"
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "1cb635f3e3a68bdd9e5e18830ac778527fac78890fa04e1c3ed42d5b84cd9d1d"
+  end
 
   def install
     system "make", "install", "PREFIX=#{prefix}"
-    bash_completion.install "completion/yadm.bash_completion"
-    zsh_completion.install  "completion/yadm.zsh_completion" => "_yadm"
+    bash_completion.install "completion/bash/yadm"
+    fish_completion.install "completion/fish/yadm.fish"
+    zsh_completion.install "completion/zsh/_yadm"
   end
 
   test do
     system bin/"yadm", "init"
-    assert_predicate testpath/".config/yadm/repo.git/config", :exist?, "Failed to init repository."
+    assert_predicate testpath/".local/share/yadm/repo.git/config", :exist?, "Failed to init repository."
     assert_match testpath.to_s, shell_output("#{bin}/yadm gitconfig core.worktree")
 
     # disable auto-alt

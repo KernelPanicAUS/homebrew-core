@@ -1,34 +1,36 @@
 class TraefikAT1 < Formula
   desc "Modern reverse proxy (v1.7)"
   homepage "https://traefik.io/"
-  url "https://github.com/containous/traefik/releases/download/v1.7.26/traefik-v1.7.26.src.tar.gz"
-  sha256 "37334deb0dcd0c393e3ce003334b497d173a5f84cb412a21f19fbbd61211a0ef"
+  url "https://github.com/traefik/traefik/releases/download/v1.7.30/traefik-v1.7.30.src.tar.gz"
+  sha256 "021e00c5ca1138b31330bab83db0b79fa89078b074f0120faba90e5f173104db"
   license "MIT"
 
   livecheck do
-    url "https://github.com/containous/traefik.git"
+    url "https://github.com/traefik/traefik.git"
     regex(/^v?(1(?:\.\d+)+)$/i)
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "dc50cb5af800c8f062e330e3b103bce1a2d0a78c6fdbd73d742c7197252c151b" => :catalina
-    sha256 "3ac187701cefeba894c3440bb9353e4e85cf716ef38cacfe35f3b5e474c52362" => :mojave
-    sha256 "89c846b73437bef8360f1acd1cdd5aceb9f8bc160d6400ac77331ac8452169b7" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "7a1dfc827581dc524c337537f65ab76d632447b2f058701011f2d50ca2d55f26"
+    sha256 cellar: :any_skip_relocation, big_sur:       "6733a3982d2031a5a0e647c50b6fe0e6f1ed18441102cc89d245c943f179c373"
+    sha256 cellar: :any_skip_relocation, catalina:      "9fed988a2abc60ec1022d504707c8b64bd9f73551a8f0698c4663669b153ddb4"
+    sha256 cellar: :any_skip_relocation, mojave:        "fbafd58e2104c0d4faa60784f0827cb891be4464ec9c86837f804937ac66a2c0"
   end
 
   keg_only :versioned_formula
 
   depends_on "go" => :build
   depends_on "go-bindata" => :build
-  depends_on "node" => :build
+  depends_on "node@14" => :build
   depends_on "yarn" => :build
 
   def install
     ENV["GOPATH"] = buildpath
-    (buildpath/"src/github.com/containous/traefik").install buildpath.children
+    ENV["GO111MODULE"] = "auto"
+    (buildpath/"src/github.com/traefik/traefik").install buildpath.children
 
-    cd "src/github.com/containous/traefik" do
+    cd "src/github.com/traefik/traefik" do
       cd "webui" do
         system "yarn", "upgrade"
         system "yarn", "install"
@@ -90,10 +92,10 @@ class TraefikAT1 < Formula
       end
       sleep 5
       cmd = "curl -sIm3 -XGET http://127.0.0.1:#{http_port}/"
-      assert_match /404 Not Found/m, shell_output(cmd)
+      assert_match "404 Not Found", shell_output(cmd)
       sleep 1
       cmd = "curl -sIm3 -XGET http://localhost:#{web_port}/dashboard/"
-      assert_match /200 OK/m, shell_output(cmd)
+      assert_match "200 OK", shell_output(cmd)
     ensure
       Process.kill(9, pid)
       Process.wait(pid)

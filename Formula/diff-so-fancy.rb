@@ -1,12 +1,14 @@
 class DiffSoFancy < Formula
   desc "Good-lookin' diffs with diff-highlight and more"
   homepage "https://github.com/so-fancy/diff-so-fancy"
-  url "https://github.com/so-fancy/diff-so-fancy/archive/v1.3.0.tar.gz"
-  sha256 "d37242282935aea2bdafee9813601f2c42e439ffac0f87c68318db790d136a0c"
+  url "https://github.com/so-fancy/diff-so-fancy/archive/v1.4.2.tar.gz"
+  sha256 "80f54c8096797aee225b2ab16e825caa7e57487149e96a23b431b0b284f68bbb"
   license "MIT"
   head "https://github.com/so-fancy/diff-so-fancy.git", branch: "next"
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "280e368d2d7dc896b628ca501893fd3558a2c9041047ef83daba6719c2452967"
+  end
 
   def install
     libexec.install "diff-so-fancy", "lib"

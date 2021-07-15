@@ -1,14 +1,20 @@
 class Orientdb < Formula
   desc "Graph database"
-  homepage "https://orientdb.com/"
-  url "https://s3.us-east-2.amazonaws.com/orientdb3/releases/3.1.1/orientdb-3.1.1.zip"
-  sha256 "1538bfcc5d1a83e8a686be37950a69a2466d19eb824f754367a7b254c56b748f"
+  homepage "https://orientdb.org/"
+  url "https://s3.us-east-2.amazonaws.com/orientdb3/releases/3.2.0/orientdb-3.2.0.zip"
+  sha256 "c9d669e6f7645b2217fe38be6d74cdef1ff3533b69b4ee1b3c0bd79744880bcd"
+  license "Apache-2.0"
+
+  livecheck do
+    url "https://orientdb.org/download"
+    regex(/href=.*?orientdb[._-]v?(\d+(?:\.\d+)+)\.zip/i)
+  end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "4dd8ac529ac0d88ebe0924e4c67ab6ec12e516286a503997061586e1c4a19164" => :catalina
-    sha256 "4dd8ac529ac0d88ebe0924e4c67ab6ec12e516286a503997061586e1c4a19164" => :mojave
-    sha256 "4dd8ac529ac0d88ebe0924e4c67ab6ec12e516286a503997061586e1c4a19164" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "56880dbc1ae4f6d95dda29d1ea751f5e1075b972aa6240ef94347f010ac1121b"
+    sha256 cellar: :any_skip_relocation, big_sur:       "cd2df740ba5688d9e76470167c731c9e71a3aeacbdbcffb7647868bf7c21be86"
+    sha256 cellar: :any_skip_relocation, catalina:      "cd2df740ba5688d9e76470167c731c9e71a3aeacbdbcffb7647868bf7c21be86"
+    sha256 cellar: :any_skip_relocation, mojave:        "cd2df740ba5688d9e76470167c731c9e71a3aeacbdbcffb7647868bf7c21be86"
   end
 
   depends_on "maven" => :build
@@ -57,7 +63,7 @@ class Orientdb < Formula
   def caveats
     <<~EOS
       The OrientDB root password was set to 'orientdb'. To reset it:
-        https://orientdb.com/docs/last/security/Server-Security.html#restoring-the-servers-user-root
+        https://orientdb.org/docs/3.1.x/security/Server-Security.html#restoring-the-servers-user-root
     EOS
   end
 
@@ -78,7 +84,7 @@ class Orientdb < Formula
           <string>homebrew.mxcl.orientdb</string>
           <key>ProgramArguments</key>
           <array>
-            <string>/usr/local/opt/orientdb/libexec/bin/server.sh</string>
+            <string>#{HOMEBREW_PREFIX}/opt/orientdb/libexec/bin/server.sh</string>
           </array>
           <key>RunAtLoad</key>
           <true/>
@@ -101,8 +107,6 @@ class Orientdb < Formula
     inreplace "#{testpath}/orientdb-server-config.xml", "</properties>",
       "  <entry name=\"server.database.path\" value=\"#{testpath}\" />\n    </properties>"
 
-    begin
-      assert_match "OrientDB console v.#{version}", pipe_output("#{bin}/orientdb-console \"exit;\"")
-    end
+    assert_match "OrientDB console v.#{version}", pipe_output("#{bin}/orientdb-console \"exit;\"")
   end
 end

@@ -2,15 +2,17 @@ class K9s < Formula
   desc "Kubernetes CLI To Manage Your Clusters In Style!"
   homepage "https://k9scli.io/"
   url "https://github.com/derailed/k9s.git",
-      tag:      "v0.21.7",
-      revision: "cc0e8e88d3d03b57d6251b63cfd3351d3e0d7acd"
+      tag:      "v0.24.14",
+      revision: "6e753b5aa63ee34d49fade16940d92714702ec55"
   license "Apache-2.0"
+  head "https://github.com/derailed/k9s.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "c92d4c4d6c9e43edd5d7bf482c1fc50b2c6630058f65d0a77bc098e19239b259" => :catalina
-    sha256 "31670ba359a0b1f801772c55b1571f3ece42a97503131eafc7c9c23ba60fbf24" => :mojave
-    sha256 "721835d94666eb9655824c4f7e8219a6532859c31ea18feecc34de340a40f265" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "4acdfc57577236a0753dcd5b05c3feb28ba15a61c0f19a5e4f77bd69f5004a41"
+    sha256 cellar: :any_skip_relocation, big_sur:       "c777c73421f25a83c2eaa2a5fbe8ab6cfde94c538128267e08b79b3f1fcc6ec8"
+    sha256 cellar: :any_skip_relocation, catalina:      "64a1d28a9a243b0b7e29a671e995a453309467c581dc9a7d0e8631447bc775c5"
+    sha256 cellar: :any_skip_relocation, mojave:        "b057cbe93925f65c69283b677702cedf6ba73e1cda30847da0d27d5de3ac2142"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "eadef26169ff9c0a13ef947db1342f2a8b760254d6921d1ab7de64ebaed23edf"
   end
 
   depends_on "go" => :build
@@ -18,7 +20,7 @@ class K9s < Formula
   def install
     system "go", "build", "-ldflags",
              "-s -w -X github.com/derailed/k9s/cmd.version=#{version}
-             -X github.com/derailed/k9s/cmd.commit=#{stable.specs[:revision]}",
+             -X github.com/derailed/k9s/cmd.commit=#{Utils.git_head}",
              *std_go_args
   end
 

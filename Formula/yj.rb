@@ -7,11 +7,13 @@ class Yj < Formula
   head "https://github.com/sclevine/yj.git"
 
   bottle do
-    cellar :any_skip_relocation
     rebuild 1
-    sha256 "918450aaf162067fe6fa7979518a7fc998853a4ab215c01f2c69e756739fb710" => :catalina
-    sha256 "918450aaf162067fe6fa7979518a7fc998853a4ab215c01f2c69e756739fb710" => :mojave
-    sha256 "918450aaf162067fe6fa7979518a7fc998853a4ab215c01f2c69e756739fb710" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "9093ad6c4366b3d6cd6d37b1300f1e80fbd30b051e3d934a498db64c46bed6d6"
+    sha256 cellar: :any_skip_relocation, big_sur:       "6c1c51234dc8c8590af22184be13472c9939426c98db9c9bcd58fade1cbb1840"
+    sha256 cellar: :any_skip_relocation, catalina:      "918450aaf162067fe6fa7979518a7fc998853a4ab215c01f2c69e756739fb710"
+    sha256 cellar: :any_skip_relocation, mojave:        "918450aaf162067fe6fa7979518a7fc998853a4ab215c01f2c69e756739fb710"
+    sha256 cellar: :any_skip_relocation, high_sierra:   "918450aaf162067fe6fa7979518a7fc998853a4ab215c01f2c69e756739fb710"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "229cf652c16b0285d26f043c5f3197a8fad33b6099bd2d6377916aadc1855886"
   end
 
   depends_on "go" => :build

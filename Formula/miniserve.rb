@@ -1,23 +1,29 @@
 class Miniserve < Formula
   desc "High performance static file server"
   homepage "https://github.com/svenstaro/miniserve"
-  # Bumpable only when it doesn't use features only available in Rust Nightly.
-  # Check for resolution of https://github.com/svenstaro/miniserve/issues/291.
-  url "https://github.com/svenstaro/miniserve/archive/v0.3.0.tar.gz"
-  sha256 "80ee5d661730ddad14671f961b560467f3b3a9f0544b9b11dec65098eb4a1f7e"
+  url "https://github.com/svenstaro/miniserve/archive/v0.14.0.tar.gz"
+  sha256 "68e21c35a4577251f656f3d1ccac2de23abd68432810b11556bcc8976bb19fc5"
   license "MIT"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "e8955f888b8c0828d741d5541a2ae6567704d78db99600d59b3d9a02dc571089" => :mojave
-    sha256 "8711ae0bb727abd3ed3ad8d1335275d26fbc473f19bacfbad76b10b5a0bf4efc" => :high_sierra
-    sha256 "a00b82cfce9fecd067b62ec3135a0e9cc59d3133f97ed3c0e7b815e4921c32d0" => :sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "3e86055d260028670e6a3e84f92aa2ca71b47a306861cac5b7ab4227a5f6f603"
+    sha256 cellar: :any_skip_relocation, big_sur:       "d17632a810e17807e8a1d748258598a04642fa3d204dc4c69b3defdb2b833277"
+    sha256 cellar: :any_skip_relocation, catalina:      "05f5fb030477f8301fdabf12a8a4ef2c4f89018182574d787b66e96c55497404"
+    sha256 cellar: :any_skip_relocation, mojave:        "af886d1517b441638707853464c04d22f273810c2a0902bea56a6b9c8458d38a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "dae31e5673957d37fe7be1f48d9cc7755a65a981e093a2886825c06341c9bec7"
   end
 
-  depends_on "rust"
+  depends_on "rust" => :build
 
   def install
     system "cargo", "install", *std_cargo_args
+
+    bash_output = Utils.safe_popen_read("#{bin}/miniserve", "--print-completions", "bash")
+    (bash_completion/"miniserve").write bash_output
+    zsh_output = Utils.safe_popen_read("#{bin}/miniserve", "--print-completions", "zsh")
+    (zsh_completion/"_miniserve").write zsh_output
+    fish_output = Utils.safe_popen_read("#{bin}/miniserve", "--print-completions", "fish")
+    (fish_completion/"miniserve.fish").write fish_output
   end
 
   test do

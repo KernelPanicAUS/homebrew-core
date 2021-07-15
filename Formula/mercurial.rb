@@ -3,9 +3,9 @@
 class Mercurial < Formula
   desc "Scalable distributed version control system"
   homepage "https://mercurial-scm.org/"
-  url "https://www.mercurial-scm.org/release/mercurial-5.5.tar.gz"
-  sha256 "c1ed28e1534304a7a4981ed59905286d1c56acd5b75755eedd184171a4a782b4"
-  license "GPL-2.0"
+  url "https://www.mercurial-scm.org/release/mercurial-5.8.1.tar.gz"
+  sha256 "81baa3fe2087bdda2dd119d7ea948f6badebaeb7b528a7d18b277e2ceb22b19b"
+  license "GPL-2.0-or-later"
 
   livecheck do
     url "https://www.mercurial-scm.org/release/"
@@ -13,12 +13,14 @@ class Mercurial < Formula
   end
 
   bottle do
-    sha256 "99cd39e3f4bd9bbfc94b191d4c73276da4e174f0bd4043de96737c2b91c1bfe8" => :catalina
-    sha256 "a0e0763833b37b8731e2555c99c7a96825df7ab2c978f912b4bb17b87d0f8bcd" => :mojave
-    sha256 "5477a3357f4e2345d626cb5dfe5f090f3765d24100aec70af9c958c5fd6338c0" => :high_sierra
+    sha256 arm64_big_sur: "d0659402f0c17724e5010a285cf381b8d018e39dd0c28d552274e31f34de302d"
+    sha256 big_sur:       "e051ca9a45ca99ff0871a3e9f0ac27061ab4e8e2cb8326019d5b7e2a6e064f6f"
+    sha256 catalina:      "8f194726598cf4457bf06d3806ebc88175a1bf7e1cc81ff8769661e6f7b64398"
+    sha256 mojave:        "082c55f177e2bd56909d7b34d20bfe73b27182a23a9dda18d2ba63d5561e4ce5"
+    sha256 x86_64_linux:  "309e0c1be449148424271dbf9169577c72b669ab8ab4cee59cb611d9ca55b8fc"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   def install
     ENV["HGPYTHON3"] = "1"

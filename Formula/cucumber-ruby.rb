@@ -1,20 +1,21 @@
 class CucumberRuby < Formula
   desc "Cucumber for Ruby"
   homepage "https://cucumber.io"
-  url "https://github.com/cucumber/cucumber-ruby/archive/v5.1.0.tar.gz"
-  sha256 "4d3a96064450ddcd9f5836c43863667c3f8595adffb560192aa9b9c4b5d464d8"
+  url "https://github.com/cucumber/cucumber-ruby/archive/v6.1.0.tar.gz"
+  sha256 "dfa4e1ef20498255f1c1dcd089add0e2e427f11d6bb53c06184ed4f70385ce1b"
   license "MIT"
 
   bottle do
-    sha256 "2818db64905d2e7c936bee32fa6e5098705d4b9986cd3f1abe5df72e67c50193" => :catalina
-    sha256 "7229b37fdca6d806523bf60e3ac712e56fe4306917fcafa017ec951fa7d194e9" => :mojave
-    sha256 "ee7ec4ee8bb671091422ab866e2d9696762d60a03681e1080138928a536b17e5" => :high_sierra
+    sha256                               big_sur:      "d1053be0ce5fb238c45bd404d5662c518d007d9c46ce72c889d0962fe357d7d6"
+    sha256 cellar: :any,                 catalina:     "730af3e598806b9f40503460b8ea418f27765398036cbcdbf978554c1e21e67e"
+    sha256 cellar: :any,                 mojave:       "5f68b35ebba784234f0ebf9ad2a68794eeb678a47291d077aafabe2dfadf4d46"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "52967a0bd1fee1cf7a1addf7c851741a61d5cc478f48f7bf75ac8a0511d59997"
   end
 
   depends_on "pkg-config" => :build
 
   uses_from_macos "libffi", since: :catalina
-  uses_from_macos "ruby", since: :catalina
+  uses_from_macos "ruby", since: :big_sur
 
   def install
     ENV["GEM_HOME"] = libexec

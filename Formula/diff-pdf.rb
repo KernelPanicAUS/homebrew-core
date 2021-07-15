@@ -1,25 +1,25 @@
 class DiffPdf < Formula
   desc "Visually compare two PDF files"
   homepage "https://vslavik.github.io/diff-pdf/"
-  url "https://github.com/vslavik/diff-pdf/releases/download/v0.4.1/diff-pdf-0.4.1.tar.gz"
-  sha256 "0eb81af6b06593488acdc5924a199f74fe3df6ecf2a0f1be208823c021682686"
-  license "GPL-2.0"
-  revision 4
+  url "https://github.com/vslavik/diff-pdf/releases/download/v0.5/diff-pdf-0.5.tar.gz"
+  sha256 "e7b8414ed68c838ddf6269d11abccdb1085d73aa08299c287a374d93041f172e"
+  license "GPL-2.0-only"
+  revision 1
 
   bottle do
-    cellar :any
-    sha256 "c5290ea7a93ba021192f72a2a5d7356ab64f42b6ebc2a2a63ab8f207f4ee5fc1" => :catalina
-    sha256 "816f36adb97e076dff351390bee4cd977c5c82e6736ff62eb9200dc1df90f1bb" => :mojave
-    sha256 "13d49f79d769f2b905f54002804e18ebd63c7e4800a1dc7050bfaab4887dbc46" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "1a8643c9b3c96ce72d46ba82acb0fa764dc930fced4b3172a42d3578019f775d"
+    sha256 cellar: :any, big_sur:       "392a18bee5ad1cac37e7ab20fa1c012cc29833d9f8809706fde26d398208c5a7"
+    sha256 cellar: :any, catalina:      "a9a6fd8505c8eae372b8ea9bec2a69c97daaa966cd82e7e27fdcbbe27d2f82be"
+    sha256 cellar: :any, mojave:        "bf124415504f5f60524b85f5ae8e1c13095afdad0bd483493c6f2af6f3c9470e"
   end
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
+  depends_on "libtool" => :build
   depends_on "pkg-config" => :build
   depends_on "cairo"
   depends_on "poppler"
   depends_on "wxmac"
-  depends_on :x11
 
   def install
     system "./configure", "--disable-dependency-tracking",
@@ -30,6 +30,8 @@ class DiffPdf < Formula
   end
 
   test do
-    system "#{bin}/diff-pdf", "-h"
+    testpdf = test_fixtures("test.pdf")
+    system "#{bin}/diff-pdf", "--output-diff=no_diff.pdf", testpdf, testpdf
+    assert (testpath/"no_diff.pdf").file?
   end
 end

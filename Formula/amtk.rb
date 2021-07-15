@@ -1,19 +1,17 @@
 class Amtk < Formula
   desc "Actions, Menus and Toolbars Kit for GNOME"
   homepage "https://wiki.gnome.org/Projects/Amtk"
-  url "https://download.gnome.org/sources/amtk/5.0/amtk-5.0.2.tar.xz"
-  sha256 "71cc891fbaaa3d0cb87eeef9a2f7e1a2acab62f738d09ea922fb4b9ea2f84f86"
-  license "LGPL-2.1"
-  revision 1
-
-  livecheck do
-    url :stable
-  end
+  url "https://download.gnome.org/sources/amtk/5.2/amtk-5.2.0.tar.xz"
+  sha256 "820545bb4cf87ecebc2c3638d6b6e58b8dbd60a419a9b43cf020124e5dad7078"
+  license "LGPL-2.1-or-later"
 
   bottle do
-    sha256 "539876f4666d5338b21594ab5e2de55cf8d13813cd5525713cc08e46f2e42a90" => :catalina
-    sha256 "dba9b06ac527c556fca194606ed68ebad20d3fdf7d6b809d547f9edec00c99cd" => :mojave
-    sha256 "5ca2f1ec7a77b82e1e02dcc3e3a603f83247f9235c376ebf955608c27d8a6397" => :high_sierra
+    sha256 arm64_big_sur: "d540852fa3ee1d9af33c5c1effe96547a98c7e03d20064b508662b14c6da202f"
+    sha256 big_sur:       "6ab887f121458fad7c480b897bb296d48daf01e3379b96098ce18ca2ae9da7b7"
+    sha256 catalina:      "89e24e19e0614b13d387b9c0d2ccf89ac15f485edf49c7c39bcaa4f80deba3c1"
+    sha256 mojave:        "004425110c03c91144cfd53df0f6141b05e38d86b64e96303cd6760db9e66a42"
+    sha256 high_sierra:   "67ad617a78c6922647c2af49225a5f4b8fd7eff3635d0e7f8b4320687b896b60"
+    sha256 x86_64_linux:  "816d3b14c924a5024ba23409a3af828a578325c0fe3eaeff9e4f81b553142ca9"
   end
 
   depends_on "gobject-introspection" => :build
@@ -80,7 +78,6 @@ class Amtk < Formula
       -L#{lib}
       -L#{pango.opt_lib}
       -latk-1.0
-      -lamtk-5.0
       -lcairo
       -lcairo-gobject
       -lgdk-3
@@ -89,10 +86,16 @@ class Amtk < Formula
       -lglib-2.0
       -lgobject-2.0
       -lgtk-3
-      -lintl
       -lpango-1.0
       -lpangocairo-1.0
     ]
+    on_macos do
+      flags << "-lintl"
+      flags << "-lamtk-5.0"
+    end
+    on_linux do
+      flags << "-lamtk-5"
+    end
     system ENV.cc, "test.c", "-o", "test", *flags
     system "./test"
   end

@@ -1,27 +1,31 @@
 class GitTown < Formula
   desc "High-level command-line interface for Git"
   homepage "https://www.git-town.com/"
-  url "https://github.com/git-town/git-town/archive/v7.4.0.tar.gz"
-  sha256 "f9ff00839fde70bc9b5024bae9a51d8b00e0bb309c3542ed65be50bb8a13e6a5"
+  url "https://github.com/git-town/git-town/archive/v7.5.0.tar.gz"
+  sha256 "4f35a2b4d01bea909161722ee1d5d893d5c676e6f3cf9305a864a01c55038be3"
   license "MIT"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "e6d6fbabc41bbef0488161ac1ab71d486dd0439eb8ee3072b1a812cc0d573bee" => :catalina
-    sha256 "2d39b261dfa7208c257416d61115c22bf242b16e7d696eb810252c192981a052" => :mojave
-    sha256 "40debf4a33e518102e579e8e8dbdefa2676c4bf057cbcb994bb86f05df17dd16" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "7dff43547bc7bccf0aa299b64bd238b32750c260f6a549ffe794c3ccc24f7967"
+    sha256 cellar: :any_skip_relocation, big_sur:       "87d70a3cdbee842e1395da79b38de127234541c1bdade78a7b20148037af45d5"
+    sha256 cellar: :any_skip_relocation, catalina:      "385eb3fecf752f8685c9ed0707ba0d960fe814cb486f5a6c078fdc8bcee89a07"
+    sha256 cellar: :any_skip_relocation, mojave:        "279e89fd331b94bbe3f97b51d8a2015d03a72b1efef5934676d4220f69610778"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "e92092182bf39195e1660c09891d127bae02041f4a999138725663393c0965d4"
   end
 
   depends_on "go" => :build
-  depends_on macos: :el_capitan
 
   def install
-    system "go", "build", *std_go_args, "-ldflags",
-           "-X github.com/git-town/git-town/src/cmd.version=v7.4.0 "\
-           "-X github.com/git-town/git-town/src/cmd.buildDate=2020/07/05"
+    ldflags = %W[
+      -X github.com/git-town/git-town/src/cmd.version=v#{version}
+      -X github.com/git-town/git-town/src/cmd.buildDate=#{time.strftime("%Y/%m/%d")}
+    ].join(" ")
+    system "go", "build", *std_go_args(ldflags: ldflags)
   end
 
   test do
+    assert_match version.to_s, shell_output("#{bin}/git-town version")
+
     system "git", "init"
     touch "testing.txt"
     system "git", "add", "testing.txt"

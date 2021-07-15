@@ -1,24 +1,30 @@
 class Mercury < Formula
   desc "Logic/functional programming language"
   homepage "https://mercurylang.org/"
-  url "https://dl.mercurylang.org/release/mercury-srcdist-20.06.tar.gz"
-  sha256 "b9c6965d41af49b4218d2444440c4860630d6f50c18dc6f1f4f8374d114f79be"
+  url "https://dl.mercurylang.org/release/mercury-srcdist-20.06.1.tar.gz"
+  sha256 "ef093ae81424c4f3fe696eff9aefb5fb66899e11bb17ae0326adfb70d09c1c1f"
+  license all_of: ["GPL-2.0-only", "LGPL-2.0-only", "MIT"]
+
+  livecheck do
+    url "https://dl.mercurylang.org/"
+    regex(/href=.*?mercury-srcdist[._-]v?(\d+(?:\.\d+)+)\.t/i)
+  end
 
   bottle do
-    cellar :any
-    sha256 "8a643b7f50072e004089659525f9e08b05fdecbc031db32d591dbd4aa1fa110d" => :catalina
-    sha256 "f343d99ebc86c3eecff969e744fbea6e90400884650781bda85984978dfb6848" => :mojave
-    sha256 "6ec1305a6b2c81e8bc0c8c57aaeeace93a600e01913794d83ac3420c69959456" => :high_sierra
+    sha256 cellar: :any, big_sur:  "8b37f68829e59efd2127a32dfbcbf80d617196b6f35c970e1d4727b5076abb39"
+    sha256 cellar: :any, catalina: "2b98c59507d6aa72db55b8864d9818f302fef92b5bbdc6630287276494a3bc62"
+    sha256 cellar: :any, mojave:   "e0011e25fa5732a2a271f30c5589c35f1caeb7cbab44ccba2271ab7bd2632243"
   end
 
   depends_on "openjdk"
 
-  def install
-    args = ["--prefix=#{prefix}",
-            "--mandir=#{man}",
-            "--infodir=#{info}"]
+  uses_from_macos "flex"
 
-    system "./configure", *args
+  def install
+    system "./configure", "--prefix=#{prefix}",
+            "--mandir=#{man}",
+            "--infodir=#{info}",
+            "mercury_cv_is_littleender=yes" # Fix broken endianness detection
 
     system "make", "install", "PARALLEL=-j"
 

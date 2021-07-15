@@ -1,9 +1,10 @@
 class Libosip < Formula
   desc "Implementation of the eXosip2 stack"
   homepage "https://www.gnu.org/software/osip/"
-  url "https://ftp.gnu.org/gnu/osip/libosip2-5.1.2.tar.gz"
-  mirror "https://ftpmirror.gnu.org/osip/libosip2-5.1.2.tar.gz"
-  sha256 "2bc0400f21a64cf4f2cbc9827bf8bdbb05a9b52ecc8e791b4ec0f1f9410c1291"
+  url "https://ftp.gnu.org/gnu/osip/libosip2-5.2.1.tar.gz"
+  mirror "https://ftpmirror.gnu.org/osip/libosip2-5.2.1.tar.gz"
+  sha256 "ee3784bc8e7774f56ecd0e2ca6e3e11d38b373435115baf1f1aa0ca0bfd02bf2"
+  license "LGPL-2.1-or-later"
 
   livecheck do
     url :stable
@@ -11,10 +12,10 @@ class Libosip < Formula
   end
 
   bottle do
-    cellar :any
-    sha256 "b965f0c2b0b623a011a7e3e4e0f9b08f96eb7483355bc7e64f658ababaec3b79" => :catalina
-    sha256 "d73e3fe7539d664ec53c869fcf53f26716258c685174abfad73e17416f2128d4" => :mojave
-    sha256 "7cba1e2b5785ec2702f01cb17cb64ad839e221019724e080825c4c57a14bc08a" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "223cf167c2b2be056352ca25c6c78045f2f319fdee374310286e3e0383aad67e"
+    sha256 cellar: :any, big_sur:       "c3855ed4bae9affb5007127469eda97fb91b395ca17f23639b4f3b08faed24cb"
+    sha256 cellar: :any, catalina:      "51a594ab9b9237fadbf236b6b91e7dff12b1d762a9084a9ceefa38e368236175"
+    sha256 cellar: :any, mojave:        "398471b49b724ac90cba0c87a44220adc0efbeb64b902429856531c263fa4404"
   end
 
   def install

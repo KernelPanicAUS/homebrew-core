@@ -1,15 +1,16 @@
 class Corsixth < Formula
   desc "Open source clone of Theme Hospital"
   homepage "https://github.com/CorsixTH/CorsixTH"
-  url "https://github.com/CorsixTH/CorsixTH/archive/v0.64.tar.gz"
-  sha256 "12389a95de0031baec1a3fc77208d44228177f49564f1c79ae763ab4aeeafa98"
+  url "https://github.com/CorsixTH/CorsixTH/archive/v0.65.tar.gz"
+  sha256 "4994823833d13fecc4553b7ddd1e3102abcd8501baa23f18cb5a2c315e1db2c0"
   license "MIT"
   head "https://github.com/CorsixTH/CorsixTH.git"
 
   bottle do
-    sha256 "55125a4f568f1ba0f85b1eb4d120f5cacaea712edd83ea8f8532e88d951775f7" => :catalina
-    sha256 "a45d65b39202414cba78d393293003d43617b6bd2794fdd14d127ce606bdfee2" => :mojave
-    sha256 "a03e225349a6eb5511202933fb173600db098d8c93a5272daa09bd2c05f92801" => :high_sierra
+    sha256 arm64_big_sur: "9cb15180b7b5b1ce5a5cc8db33bc51e86d99d4f31f85cafc798732e936a8c43b"
+    sha256 big_sur:       "4383665253bff0c2b2bd48ad55c9834f49e4718656ddadfdb70a8cb440d47196"
+    sha256 catalina:      "611611a2db4ba0265ca31748dd5ba61b3b43f3bd996e42bef75bbb8ad99c5e85"
+    sha256 mojave:        "c6b63dfbf4056ddf0fd48ad3538906ec0a2bfbc31ef8fe8301e04e12cf6792f3"
   end
 
   depends_on "cmake" => :build
@@ -28,17 +29,20 @@ class Corsixth < Formula
   end
 
   resource "luafilesystem" do
-    url "https://github.com/keplerproject/luafilesystem/archive/v1_7_0_2.tar.gz"
-    sha256 "23b4883aeb4fb90b2d0f338659f33a631f9df7a7e67c54115775a77d4ac3cc59"
+    url "https://github.com/keplerproject/luafilesystem/archive/v1_8_0.tar.gz"
+    sha256 "16d17c788b8093f2047325343f5e9b74cccb1ea96001e45914a58bbae8932495"
   end
 
   def install
+    # Make sure I point to the right version!
+    lua = Formula["lua"]
+
     ENV["TARGET_BUILD_DIR"] = "."
     ENV["FULL_PRODUCT_NAME"] = "CorsixTH.app"
 
     luapath = libexec/"vendor"
-    ENV["LUA_PATH"] = "#{luapath}/share/lua/5.3/?.lua"
-    ENV["LUA_CPATH"] = "#{luapath}/lib/lua/5.3/?.so"
+    ENV["LUA_PATH"] = luapath/"share/lua"/lua.version.major_minor/"?.lua"
+    ENV["LUA_CPATH"] = luapath/"lib/lua"/lua.version.major_minor/"?.so"
 
     resources.each do |r|
       r.stage do
@@ -46,9 +50,9 @@ class Corsixth < Formula
       end
     end
 
-    system "cmake", ".", "-DLUA_INCLUDE_DIR=#{Formula["lua"].opt_include}/lua",
-                         "-DLUA_LIBRARY=#{Formula["lua"].opt_lib}/liblua.dylib",
-                         "-DLUA_PROGRAM_PATH=#{Formula["lua"].opt_bin}/lua",
+    system "cmake", ".", "-DLUA_INCLUDE_DIR=#{lua.opt_include}/lua",
+                         "-DLUA_LIBRARY=#{lua.opt_lib}/liblua.dylib",
+                         "-DLUA_PROGRAM_PATH=#{lua.opt_bin}/lua",
                          "-DCORSIX_TH_DATADIR=#{prefix}/CorsixTH.app/Contents/Resources/",
                          *std_cmake_args
     system "make"
@@ -56,13 +60,14 @@ class Corsixth < Formula
          "CorsixTH/CorsixTH.app/Contents/Resources/"
     prefix.install "CorsixTH/CorsixTH.app"
 
-    env = { LUA_PATH: ENV["LUA_PATH"], LUA_CPATH: ENV["LUA_CPATH"] }
-    (bin/"CorsixTH").write_env_script(prefix/"CorsixTH.app/Contents/MacOS/CorsixTH", env)
+    lua_env = { LUA_PATH: ENV["LUA_PATH"], LUA_CPATH: ENV["LUA_CPATH"] }
+    (bin/"CorsixTH").write_env_script(prefix/"CorsixTH.app/Contents/MacOS/CorsixTH", lua_env)
   end
 
   test do
+    lua = Formula["lua"]
+
     app = prefix/"CorsixTH.app/Contents/MacOS/CorsixTH"
-    assert_includes MachO::Tools.dylibs(app),
-                    "#{Formula["lua"].opt_lib}/liblua.5.3.dylib"
+    assert_includes MachO::Tools.dylibs(app), "#{lua.opt_lib}/liblua.dylib"
   end
 end

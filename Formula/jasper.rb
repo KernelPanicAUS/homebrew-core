@@ -1,30 +1,48 @@
 class Jasper < Formula
   desc "Library for manipulating JPEG-2000 images"
-  homepage "https://www.ece.uvic.ca/~frodo/jasper/"
-  url "https://github.com/mdadams/jasper/archive/version-2.0.19.tar.gz"
-  sha256 "b9d16162a088617ada36450f2374d72165377cb64b33ed197c200bcfb73ec76c"
+  homepage "https://jasper-software.github.io/jasper/"
+  url "https://github.com/jasper-software/jasper/archive/version-2.0.32.tar.gz"
+  sha256 "a3583a06698a6d6106f2fc413aa42d65d86bedf9a988d60e5cfa38bf72bc64b9"
   license "JasPer-2.0"
 
   bottle do
-    sha256 "6e08d9c308ba24cc512801f4f9ae9b06353ab3d10139c3679410f0e038e217b1" => :catalina
-    sha256 "93402fee0d364ee6538c48af922705a47ac751b9929d58d1f2961a54963c952d" => :mojave
-    sha256 "27d5d3e6ef809625d76755c043ad226f28d85d8dcf65c3449edbdfbfe96d9e62" => :high_sierra
+    sha256                               arm64_big_sur: "b3d001bfed26a9aba810a8b65ef0ccd01500d81afefca702c202f809c7e0fc24"
+    sha256                               big_sur:       "3b56f3d1d584df4483b5d35d5d75235bd621201ae7678f58d624b86f523ab6d2"
+    sha256                               catalina:      "fce68cb17b6de9af96e493e97091bd4679701884da4f2f413ead6985f511497d"
+    sha256                               mojave:        "5e9f20212c7caa5aafd9f12ee56d1e73d179ad62f9a3ac45a8843d09f6e24aea"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "feefb3e6313f8bed579aa786814d2099f6364646d6e9c7b53d97bd9260df06bd"
   end
 
   depends_on "cmake" => :build
   depends_on "jpeg"
 
+  on_linux do
+    depends_on "freeglut"
+  end
+
   def install
     mkdir "build" do
-      # Make sure macOS's GLUT.framework is used, not XQuartz or freeglut
-      # Reported to CMake upstream 4 Apr 2016 https://gitlab.kitware.com/cmake/cmake/issues/16045
-      glut_lib = "#{MacOS.sdk_path}/System/Library/Frameworks/GLUT.framework"
-      system "cmake", "..", "-DGLUT_glut_LIBRARY=#{glut_lib}", *std_cmake_args
+      args = std_cmake_args
+      args << "-DJAS_ENABLE_DOC=OFF"
+
+      on_macos do
+        # Make sure macOS's GLUT.framework is used, not XQuartz or freeglut
+        # Reported to CMake upstream 4 Apr 2016 https://gitlab.kitware.com/cmake/cmake/issues/16045
+        glut_lib = "#{MacOS.sdk_path}/System/Library/Frameworks/GLUT.framework"
+        args << "-DGLUT_glut_LIBRARY=#{glut_lib}"
+      end
+
+      system "cmake", "..",
+        "-DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=false",
+        "-DJAS_ENABLE_SHARED=ON",
+        *args
       system "make"
-      system "make", "test"
       system "make", "install"
       system "make", "clean"
-      system "cmake", "..", "-DGLUT_glut_LIBRARY=#{glut_lib}", "-DJAS_ENABLE_SHARED=OFF", *std_cmake_args
+
+      system "cmake", "..",
+        "-DJAS_ENABLE_SHARED=OFF",
+        *args
       system "make"
       lib.install "src/libjasper/libjasper.a"
     end

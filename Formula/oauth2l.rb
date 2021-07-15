@@ -1,16 +1,16 @@
 class Oauth2l < Formula
   desc "Simple CLI for interacting with Google oauth tokens"
   homepage "https://github.com/google/oauth2l"
-  url "https://github.com/google/oauth2l/archive/v1.1.0.tar.gz"
-  sha256 "4058dc07fb9a4e985472068b80e9504b477102b1a0cd999f9367736a5ddb6be5"
+  url "https://github.com/google/oauth2l/archive/v1.2.1.tar.gz"
+  sha256 "25b1ab24fc68340b80ed701cb9df80f29b6772bf396bb0d41a21b456390a3de8"
   license "Apache-2.0"
   head "https://github.com/google/oauth2l.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "4dedbbebe5996581e6a6c41500abded4f96b0d888e7b68e64584b846d196967e" => :catalina
-    sha256 "3cdb4abb44ae3fa046446c28a54225ab46efa736a6cc5dcab80d7156c8f78348" => :mojave
-    sha256 "d52fe266287cba01a822204ae32770cff65a244011a69f5306d9d38071c6385a" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "3aea8afbb2cd4a8b2846a34c18142e12c891ff64ca571b2776740b15169d4d81"
+    sha256 cellar: :any_skip_relocation, big_sur:       "4dca4d631a0388afbd9131b4b158447cedafc4633a304b1efe70f05e1f61abb4"
+    sha256 cellar: :any_skip_relocation, catalina:      "3b1a5b18dd885380288d7fe05cccb1a4928583e645b0923a32035311ac7ee88e"
+    sha256 cellar: :any_skip_relocation, mojave:        "4bbc795be26dc48c91cf5ed9393d65e66f410e742b99ac532919ed0c547f5e95"
   end
 
   depends_on "go" => :build

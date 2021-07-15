@@ -1,15 +1,15 @@
 class Silicon < Formula
   desc "Create beautiful image of your source code"
   homepage "https://github.com/Aloxaf/silicon/"
-  url "https://github.com/Aloxaf/silicon/archive/v0.3.2.tar.gz"
-  sha256 "510e8d6a5cf856f5060088ea6d5d22a510b6adeea2ea5b71d4d186e417115061"
+  url "https://github.com/Aloxaf/silicon/archive/v0.4.3.tar.gz"
+  sha256 "68d64ade34ac571cf2d092f9a6f124e2c7d0441a91e3ba00ca1c8edcdd008630"
   license "MIT"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "85ae46889515c69afb54d056aabc2b5e0c96a17dac70b360e409f8904b26366f" => :catalina
-    sha256 "75a92b9eb7b41d836aed9adc37edeb45dd5b9d38921155ed60f568cdab97667b" => :mojave
-    sha256 "06dac3633cbe5c721ea96eac98fbc1347d62fd78e39a3ed328093d517f3eeb61" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "eff39c0548c3343ac95f31882e756a71479d9ef083300e95cf128d9aaff36540"
+    sha256 cellar: :any_skip_relocation, big_sur:       "27f31389064da033eae7fa05d2f5d2b3e12bf44349879652ebd971802757d1ac"
+    sha256 cellar: :any_skip_relocation, catalina:      "262b846fb34927ef56ad5e12e39e766875d6f0a5e9e4217bff55fe23b7a6675d"
+    sha256 cellar: :any_skip_relocation, mojave:        "440068b068edee61d6a001c7095935121cfd4575aaf6d9d6379b9685cba97d58"
   end
 
   depends_on "rust" => :build

@@ -1,10 +1,10 @@
 class Terraform < Formula
   desc "Tool to build, change, and version infrastructure"
   homepage "https://www.terraform.io/"
-  url "https://github.com/hashicorp/terraform/archive/v0.13.1.tar.gz"
-  sha256 "1baf3e1f70b187149efc153aa7f7c88cd9cf749464f62afb5115adfc464038ca"
+  url "https://github.com/hashicorp/terraform/archive/v1.0.2.tar.gz"
+  sha256 "036a028cb311c001c48e86bc65e9b7870c81de57e96437325247785cf6c84937"
   license "MPL-2.0"
-  head "https://github.com/hashicorp/terraform.git"
+  head "https://github.com/hashicorp/terraform.git", branch: "main"
 
   livecheck do
     url "https://releases.hashicorp.com/terraform/"
@@ -12,13 +12,14 @@ class Terraform < Formula
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "cfe7702b6b8d0f41367fd3f04156d45b9dcb159318c7dec576f0afe2221fb895" => :catalina
-    sha256 "cebd4365592a856549332e30e3a7fc64580f292126d528bdd97866c352147196" => :mojave
-    sha256 "d5dce7756740ca08e55799f9d694d14847b9ff5f107fc0c7ae64459e34f6422c" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "21124f9183cc412db43f260fe21180b785aea099eef6744d0c95ecb3665beb6e"
+    sha256 cellar: :any_skip_relocation, big_sur:       "fc3c635772ddc322986c1c87c3204145874a0058b365116dcc921d64e4c3cbdb"
+    sha256 cellar: :any_skip_relocation, catalina:      "f9a8260f1d7fa0b32cec11e120d5ae4a466c41b04d05a0ff5a0da02c0f218755"
+    sha256 cellar: :any_skip_relocation, mojave:        "d9cdd42b6bb80ac80f0105b48fdc4556355c30e8c1d3ce51a706fba76e4a1deb"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "88e75bee2d33d7997e629d69cf6aca6292431c1075b1610ea3e876cd966ee34d"
   end
 
-  depends_on "go@1.14" => :build
+  depends_on "go" => :build
 
   conflicts_with "tfenv", because: "tfenv symlinks terraform binaries"
 
@@ -27,8 +28,11 @@ class Terraform < Formula
     ENV.delete "AWS_ACCESS_KEY"
     ENV.delete "AWS_SECRET_KEY"
 
-    ENV["CGO_ENABLED"] = "0"
-    system "go", "build", *std_go_args, "-ldflags", "-s -w", "-mod=vendor"
+    # resolves issues fetching providers while on a VPN that uses /etc/resolv.conf
+    # https://github.com/hashicorp/terraform/issues/26532#issuecomment-720570774
+    ENV["CGO_ENABLED"] = "1"
+
+    system "go", "build", *std_go_args, "-ldflags", "-s -w"
   end
 
   test do

@@ -1,21 +1,32 @@
 class RomTools < Formula
   desc "Tools for Multiple Arcade Machine Emulator"
   homepage "https://mamedev.org/"
-  url "https://github.com/mamedev/mame/archive/mame0224.tar.gz"
-  version "0.224"
-  sha256 "3518e71ec20fbeac8ebe93f8ec856078b8288e19f0d7cb38959d4bde30cd2810"
+  # NOTE: Please keep these values in sync with mame.rb when updating.
+  url "https://github.com/mamedev/mame/archive/mame0233.tar.gz"
+  version "0.233"
+  sha256 "ea7fc31a4b839bb99c94a59810eb6691ce88dbc2b6d78cf6a48ca776a46a83a9"
   license "GPL-2.0-or-later"
   head "https://github.com/mamedev/mame.git"
 
+  # MAME tags (and filenames) are formatted like `mame0226`, so livecheck will
+  # report the version like `0226`. We work around this by matching the link
+  # text for the release title, since it contains the properly formatted version
+  # (e.g., 0.226).
+  livecheck do
+    url :stable
+    strategy :github_latest
+    regex(%r{release-header.*?/releases/tag/mame[._-]?\d+(?:\.\d+)*["' >]>MAME v?(\d+(?:\.\d+)+)}im)
+  end
+
   bottle do
-    cellar :any
-    sha256 "842639d9a190b29c3153c20465913e6de77ddd7f6290e076467f39c75b77ca50" => :catalina
-    sha256 "59d98889b7d64215c3cd06b2b974cb66038234e7375aace6d8285f79c3f1924e" => :mojave
-    sha256 "2e6905541f0364563fec7c36bb3e80202d6dc33f12dff0ace0804027edb61e51" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "17e5154f2db775fc91426f1ac4c69e69fed79fcb3e6fda092025dfb8160ad488"
+    sha256 cellar: :any, big_sur:       "79ff8d18480a57c8b39905029453b8123df172ec03a4c66ce690029636613562"
+    sha256 cellar: :any, catalina:      "0c3ded04a132f0346daa2a7a9d2bd2f4decd8590a244b196bc34054ece7d474f"
+    sha256 cellar: :any, mojave:        "c017e732687f0c7f4fa3b246dcb7db242ac9b5b250207851b993abbc12069f26"
   end
 
   depends_on "pkg-config" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
   depends_on "flac"
   # Need C++ compiler and standard library support C++17.
   depends_on macos: :high_sierra
@@ -31,7 +42,7 @@ class RomTools < Formula
 
     # Use bundled asio instead of latest version.
     # See: <https://github.com/mamedev/mame/issues/5721>
-    system "make", "PYTHON_EXECUTABLE=#{Formula["python@3.8"].opt_bin}/python3",
+    system "make", "PYTHON_EXECUTABLE=#{Formula["python@3.9"].opt_bin}/python3",
                    "TOOLS=1",
                    "USE_LIBSDL=1",
                    "USE_SYSTEM_LIB_EXPAT=1",

@@ -2,17 +2,26 @@ class Minio < Formula
   desc "High Performance, Kubernetes Native Object Storage"
   homepage "https://min.io"
   url "https://github.com/minio/minio.git",
-      tag:      "RELEASE.2020-08-27T05-16-20Z",
-      revision: "a359e36e356796196fc306ef107360938c5520da"
-  version "20200827051620"
-  license "Apache-2.0"
+      tag:      "RELEASE.2021-07-12T02-44-53Z",
+      revision: "55b08403cb27d6a31ba025c4e07d4d18ac5835a5"
+  version "20210712024453"
+  license "AGPL-3.0-or-later"
   head "https://github.com/minio/minio.git"
 
+  livecheck do
+    url :stable
+    regex(%r{href=.*?/tag/(?:RELEASE[._-]?)?([\d\-TZ]+)["' >]}i)
+    strategy :github_latest do |page, regex|
+      page.scan(regex).map { |match| match&.first&.gsub(/\D/, "") }
+    end
+  end
+
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d75b4f742b3ac3b6ca72a08fa1abe3243f97defb0e0fcf30c42d2bd5d8a5d588" => :catalina
-    sha256 "4e7b2981690620d191a97b9f88cdda5b15bcc96ad3b5bf04efd995788dafbf9f" => :mojave
-    sha256 "585de0472c9ae7b63a8037f0ca136f63bde955c9f9dcb13ca3767ba1775d351d" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "f07b53c5c90c5067380303147ff8518f6d6aa90bb613e8654be708f9ebc94bbe"
+    sha256 cellar: :any_skip_relocation, big_sur:       "10cfffbdf5b41e3569f469f7b22d4083764af5225229548072e1eab753f5af3c"
+    sha256 cellar: :any_skip_relocation, catalina:      "13eb4e90c2583f92cb6090ccd07f640f36c1a796bf2b6fe49f27847609cfbc35"
+    sha256 cellar: :any_skip_relocation, mojave:        "894a9a95fb389ec974a9b9eec44c953818b260037981fbc7e857775b136af05f"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "b2fc237483f22d413aff7d4fcb10dc05176fd30e3d97325e31fd9780174a84e6"
   end
 
   depends_on "go" => :build
@@ -23,14 +32,15 @@ class Minio < Formula
     else
       release = `git tag --points-at HEAD`.chomp
       version = release.gsub(/RELEASE\./, "").chomp.gsub(/T(\d+)-(\d+)-(\d+)Z/, 'T\1:\2:\3Z')
-      commit = `git rev-parse HEAD`.chomp
-      proj = "github.com/minio/minio"
 
-      system "go", "build", *std_go_args, "-ldflags", <<~EOS
-        -X #{proj}/cmd.Version=#{version}
-        -X #{proj}/cmd.ReleaseTag=#{release}
-        -X #{proj}/cmd.CommitID=#{commit}
-      EOS
+      ldflags = %W[
+        -s -w
+        -X github.com/minio/minio/cmd.Version=#{version}
+        -X github.com/minio/minio/cmd.ReleaseTag=#{release}
+        -X github.com/minio/minio/cmd.CommitID=#{Utils.git_head}
+      ]
+
+      system "go", "build", *std_go_args(ldflags: ldflags.join(" "))
     end
   end
 

@@ -1,15 +1,17 @@
 class Fontforge < Formula
   desc "Command-line outline and bitmap font editor/converter"
   homepage "https://fontforge.github.io"
-  url "https://github.com/fontforge/fontforge/archive/20200314.tar.gz"
-  sha256 "ad0eb017379c6f7489aa8e2d7c160f19140d1ac6351f20df1d9857d9428efcf2"
-  license "GPL-3.0"
-  revision 1
+  url "https://github.com/fontforge/fontforge/releases/download/20201107/fontforge-20201107.tar.xz"
+  sha256 "68bcba8f602819eddc29cd356ee13fafbad7a80d19b652d354c6791343476c78"
+  license "GPL-3.0-or-later"
 
   bottle do
-    sha256 "6d2000c43d84a3353e7e27923c62ced0e5892338e69c6d341e61194cc70c1b4a" => :catalina
-    sha256 "3c94c039f0524bdf6e4748f65b7677c9d73ecd07718221dbc8eb1c143fe236d1" => :mojave
-    sha256 "1252f93604edae781fd5035ba5c367d820e341c13eec155bb24cf9ad5499dc4a" => :high_sierra
+    rebuild 1
+    sha256 arm64_big_sur: "240744fcd44612d9208c1f47e81d8f01b9d94108b50afe54170be14329a95a5a"
+    sha256 big_sur:       "20f92c9d7e6405ca51bdf9f9a2f0216b527bd78e38c2c3bedecbfab3eeb12747"
+    sha256 catalina:      "de48bd3b27ae91d21b8f7d8724cf2b9100683bf02db99794bcd9d9c4ca3483de"
+    sha256 mojave:        "fc6b9c92f02f1e01d8850bfb595dad4f18faf2c3ba079d7bf8084699ec006d53"
+    sha256 x86_64_linux:  "5377794ced753c4220bfa33f5064b3b041819fe264d09b785e8138703a7e0812"
   end
 
   depends_on "cmake" => :build
@@ -28,17 +30,15 @@ class Fontforge < Formula
   depends_on "libtool"
   depends_on "libuninameslist"
   depends_on "pango"
-  depends_on "python@3.8"
+  depends_on "python@3.9"
   depends_on "readline"
 
   uses_from_macos "libxml2"
 
-  # Remove with next release (cmake: adjust Python linkage)
-  # Original patchset: https://github.com/fontforge/fontforge/pull/4258
-  patch do
-    url "https://raw.githubusercontent.com/Homebrew/formula-patches/99af4b5/fontforge/20200314.patch"
-    sha256 "3deed4d79a1fdf5fb6de2fca7da8ffe14301acbeb015441574a7a28e902561f5"
-  end
+  # Fix for rpath on ARM
+  # https://github.com/fontforge/fontforge/issues/4658
+  patch :DATA
+
   def install
     mkdir "build" do
       system "cmake", "..",
@@ -48,27 +48,38 @@ class Fontforge < Formula
                       *std_cmake_args
       system "ninja"
       system "ninja", "install"
-
-      # The "extras" built above don't get installed by default.
-      bin.install Dir["bin/*"].select { |f| File.executable? f }
     end
   end
 
   def caveats
-    <<~EOS
-      This formula only installs the command line utilities.
+    on_macos do
+      <<~EOS
+        This formula only installs the command line utilities.
 
-      FontForge.app can be downloaded directly from the website:
-        https://fontforge.github.io
+        FontForge.app can be downloaded directly from the website:
+          https://fontforge.github.io
 
-      Alternatively, install with Homebrew Cask:
-        brew cask install fontforge
-    EOS
+        Alternatively, install with Homebrew Cask:
+          brew install --cask fontforge
+      EOS
+    end
   end
 
   test do
     system bin/"fontforge", "-version"
     system bin/"fontforge", "-lang=py", "-c", "import fontforge; fontforge.font()"
-    system Formula["python@3.8"].opt_bin/"python3", "-c", "import fontforge; fontforge.font()"
+    system Formula["python@3.9"].opt_bin/"python3", "-c", "import fontforge; fontforge.font()"
   end
 end
+
+__END__
+diff --git a/contrib/fonttools/CMakeLists.txt b/contrib/fonttools/CMakeLists.txt
+index 0d3f464bc..b9f210cde 100644
+--- a/contrib/fonttools/CMakeLists.txt
++++ b/contrib/fonttools/CMakeLists.txt
+@@ -18,3 +18,5 @@ target_link_libraries(dewoff PRIVATE ZLIB::ZLIB)
+ target_link_libraries(pcl2ttf PRIVATE MathLib::MathLib)
+ target_link_libraries(ttf2eps PRIVATE fontforge)
+ target_link_libraries(woff PRIVATE ZLIB::ZLIB)
++
++install(TARGETS acorn2sfd dewoff findtable pcl2ttf pfadecrypt rmligamarks showttf stripttc ttf2eps woff RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

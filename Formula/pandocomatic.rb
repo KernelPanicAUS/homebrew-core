@@ -1,15 +1,16 @@
 class Pandocomatic < Formula
   desc "Automate the use of pandoc"
   homepage "https://heerdebeer.org/Software/markdown/pandocomatic/"
-  url "https://github.com/htdebeer/pandocomatic/archive/0.2.6.tar.gz"
-  sha256 "902d1c366e85c14b5a3bc0fd5247b22fde985858f8f985e368e3eb7c03324e23"
-  license "GPL-3.0"
+  url "https://github.com/htdebeer/pandocomatic/archive/0.2.7.5.tar.gz"
+  sha256 "42de0b48fb751b5142f4f0fd695f709ce78b62635b9e076e21bc2e3d4a3287a0"
+  license "GPL-3.0-or-later"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "e8844df8b3f91e671a6734004ecb712db288adcf8952d17aa444e7cba8a29115" => :catalina
-    sha256 "c3e059e365bf28455fbb0db2010e09195ff01b78ca02248bb6282f7d03136be2" => :mojave
-    sha256 "5824fc9e4accf029a29ddc6dc31f1027d9e63d2752c316bcf941eddf75884b64" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "a10d18e6e50807a796a89566d5a5cc16ecf976af445b895d242b5278c6d228ad"
+    sha256 cellar: :any_skip_relocation, big_sur:       "1236328c4bec43942120f816ba96fba584e5324df24b14d2f94aad6ad6a4ddcc"
+    sha256 cellar: :any_skip_relocation, catalina:      "fc8ec0244c32608753851a3cded8a10fb569ab39794a96f7a5a665b1bacc7fa9"
+    sha256 cellar: :any_skip_relocation, mojave:        "b5ec22ce7c10ce2f01a9a044eb200b61e00d7c551ca3847b738ad2e632978d83"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "70a6db51be1750d6e075d4cce5e15f33152afbac9d04882b66d571dace54f049"
   end
 
   depends_on "pandoc"

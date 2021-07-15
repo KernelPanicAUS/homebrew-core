@@ -5,7 +5,14 @@ class Umlet < Formula
   sha256 "f4b064ed57ac0640daa31f5d59649a95596fc9290e503734ec4974a9bbecde49"
   revision 1
 
-  bottle :unneeded
+  livecheck do
+    url "https://www.umlet.com/changes.htm"
+    regex(/href=.*?umlet-standalone[._-]v?(\d+(?:\.\d+)+)\.(t|zip)/i)
+  end
+
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "9cd3614267bd39f308b58b4f2b9cd9b6f9c3c7d5bc1baac28e592517d08cf76b"
+  end
 
   depends_on "openjdk"
 

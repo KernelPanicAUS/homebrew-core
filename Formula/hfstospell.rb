@@ -1,29 +1,33 @@
 class Hfstospell < Formula
   desc "Helsinki Finite-State Technology ospell"
   homepage "https://hfst.github.io/"
-  url "https://github.com/hfst/hfst-ospell/releases/download/v0.5.1/hfstospell-0.5.1.tar.gz"
-  sha256 "ccf5f3b06bcdc5636365e753b9f7fad9c11dfe483272061700a905b3d65ac750"
+  url "https://github.com/hfst/hfst-ospell/releases/download/v0.5.2/hfst-ospell-0.5.2.tar.bz2"
+  sha256 "ab9ccf3c2165c0efd8dd514e0bf9116e86a8a079d712c0ed6c2fabf0052e9aa4"
   license "Apache-2.0"
   revision 2
 
   livecheck do
-    url "https://github.com/hfst/hfst-ospell/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
   bottle do
-    cellar :any
-    sha256 "82553e62189a1eeb0a759f5a0dddc57c21c6545ee35f1b59338c3fb0efca765f" => :catalina
-    sha256 "4ed2a4a266fad9dd113fe2221bff23b460c9e50bb956b1eba5b8ba15fb756626" => :mojave
-    sha256 "f5ebd7bb299f5e660c8b559bed232bc6fc6ec4ea98691384d385f3afcf4a6c96" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "1a5437ebb7e8abeae096734d53edbbc8cf154f6635f8e15ac3a1cfa038782e85"
+    sha256 cellar: :any, big_sur:       "6fb2851153c12aa38ed01a7335781df78be3490380e6713b2a9c642f88e737d0"
+    sha256 cellar: :any, catalina:      "0651d2057fcf3c0242bcd277b0ddafb247c0f00fc78d2652e9eae9c82776f923"
+    sha256 cellar: :any, mojave:        "25a4f7bfe15fae7efd0ce6cf1ccedb150571935de5e0266cbf7fa472290bbf6d"
   end
 
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "libtool" => :build
   depends_on "pkg-config" => :build
   depends_on "icu4c"
   depends_on "libarchive"
 
   def install
     ENV.cxx11
+    system "autoreconf", "-fiv"
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--without-libxmlpp",

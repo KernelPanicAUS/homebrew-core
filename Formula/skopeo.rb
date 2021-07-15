@@ -1,14 +1,16 @@
 class Skopeo < Formula
   desc "Work with remote images registries"
   homepage "https://github.com/containers/skopeo"
-  url "https://github.com/containers/skopeo/archive/v1.1.1.tar.gz"
-  sha256 "9e0fdca1f2663f5a07bc1d932fec734578c5fffdb27faa8f847a393a44b072df"
+  url "https://github.com/containers/skopeo/archive/v1.3.1.tar.gz"
+  sha256 "5d699bc0f50a7af6f8eb5222cd7f88f8c3b36d951425de74244eae98568f06ae"
   license "Apache-2.0"
 
   bottle do
-    sha256 "4d31286940caac405ba936c66c5f1e5c97daaa79a761f1bb8ed715eb1da0b046" => :catalina
-    sha256 "87b9ee585ee1fd5d8843726425da1b4880da1d92d55844562db736f439cc3618" => :mojave
-    sha256 "0d716998a47a2ecfc3abca2406a9b3a9ea02137250788fcb3e8c7f0e74337b38" => :high_sierra
+    sha256 arm64_big_sur: "152657e81def61482934df1a44bed2a48c03939712d191254e500d1ba5c30c55"
+    sha256 big_sur:       "f14b8237c61ade99e90109da69dd20955363ea30cfaf3cf7224f5c9607ba8796"
+    sha256 catalina:      "15ba8cdeeb3ca6f413ec374edfcfdf75c0c80ca651318e208255093eacd4aa88"
+    sha256 mojave:        "9ec11685b414235f80a427a3e01cbe4d8c3937474b025abf2bcab4da7a7e9e95"
+    sha256 x86_64_linux:  "ff066f19fadc5c4fbf9ee44a5dc86a6ce4b5267bcdb51edb55515c4f4adcdd91"
   end
 
   depends_on "go" => :build
@@ -16,6 +18,7 @@ class Skopeo < Formula
 
   on_linux do
     depends_on "pkg-config" => :build
+    depends_on "device-mapper"
   end
 
   def install
@@ -36,7 +39,7 @@ class Skopeo < Formula
       "-X github.com/containers/image/v5/internal/tmpdir.unixTempDirForBigFiles=/var/tmp",
       "-X github.com/containers/image/v5/signature.systemDefaultPolicyPath=#{etc/"containers/policy.json"}",
       "-X github.com/containers/image/v5/pkg/sysregistriesv2.systemRegistriesConfPath=" \
-                                            "#{etc/"containers/registries.conf"}",
+      "#{etc/"containers/registries.conf"}",
     ].join(" ")
 
     system "go", "build", "-tags", buildtags, "-ldflags", ldflags, *std_go_args, "./cmd/skopeo"
@@ -54,7 +57,7 @@ class Skopeo < Formula
 
     # https://github.com/Homebrew/homebrew-core/pull/47766
     # https://github.com/Homebrew/homebrew-core/pull/45834
-    assert_match /Invalid destination name test: Invalid image name .+, expected colon-separated transport:reference/,
-                 shell_output("#{bin}/skopeo copy docker://alpine test 2>&1", 1)
+    assert_match(/Invalid destination name test: Invalid image name .+, expected colon-separated transport:reference/,
+                 shell_output("#{bin}/skopeo copy docker://alpine test 2>&1", 1))
   end
 end

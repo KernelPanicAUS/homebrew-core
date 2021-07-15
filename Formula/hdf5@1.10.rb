@@ -1,15 +1,16 @@
 class Hdf5AT110 < Formula
   desc "File format designed to store large amounts of data"
   homepage "https://www.hdfgroup.org/HDF5"
-  url "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.bz2"
-  sha256 "09d6301901685201bb272a73e21c98f2bf7e044765107200b01089104a47c3bd"
+  url "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
+  sha256 "02018fac7e5efc496d9539a303cfb41924a5dadffab05df9812096e273efa55e"
+  license "BSD-3-Clause"
   revision 1
 
   bottle do
-    cellar :any
-    sha256 "883714d800b7d167ffc96ca4bd43e66e6d6ff725ef4ec1bef8c7ca2c4c9ebef2" => :catalina
-    sha256 "98eea2bc9464f516dfd7e4bc2375c5e1b7abf0e50a15972abe4a2c19e58a0028" => :mojave
-    sha256 "7cd8d6f0c183a2aad1ceacbca0ecf5667df81b786fc05d3cfe5640c4c24e46fa" => :high_sierra
+    sha256               arm64_big_sur: "50f558462450a89684bf94338b6a0fe50579457fb73f16aec14b3a14250ea697"
+    sha256 cellar: :any, big_sur:       "aaf4050cbc4a4dea9bf6fae1c54ce4f0a93537eaf3b45f5ed9041f6771e04583"
+    sha256 cellar: :any, catalina:      "d89eb59b029e32ff0689c73245f0dfc3d44a7750a9b84ffbfa05a03ecd24bc2f"
+    sha256 cellar: :any, mojave:        "386f4217757f910b24d2f5b9f931516c0c96d6bf53b7cfbd581f204b7292a524"
   end
 
   keg_only :versioned_formula
@@ -32,6 +33,10 @@ class Hdf5AT110 < Formula
               "settingsdir=#{pkgshare}"
 
     system "autoreconf", "-fiv"
+
+    # necessary to avoid compiler paths that include shims directory being used
+    ENV["CC"] = "/usr/bin/cc"
+    ENV["CXX"] = "/usr/bin/c++"
 
     args = %W[
       --disable-dependency-tracking

@@ -1,15 +1,15 @@
 class Proxytunnel < Formula
   desc "Create TCP tunnels through HTTPS proxies"
   homepage "https://github.com/proxytunnel/proxytunnel"
-  url "https://github.com/proxytunnel/proxytunnel/archive/v1.10.20200507.tar.gz"
-  sha256 "6495430e9c60d3df53824a7a0f3bea9953a89d083a3718c72db04dc4d40755ac"
-  license "GPL-2.0"
+  url "https://github.com/proxytunnel/proxytunnel/archive/v1.10.20210604.tar.gz"
+  sha256 "47b7ef7acd36881744db233837e7e6be3ad38e45dc49d2488934882fa2c591c3"
+  license "GPL-2.0-or-later"
 
   bottle do
-    cellar :any
-    sha256 "f356990b424dc670a68c753c072e1a008d772bf7e27025f34b343c4a63a590d9" => :catalina
-    sha256 "045219106e5c4b06627cf57fd21b27c8a24d11c5375df3c028e9b23d719e4b0f" => :mojave
-    sha256 "98cf5abe9bbb285c92ef1c0e504968707fa5106e2783fed2dbfc64fb2a5dafd4" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "97ccd9b616094e055755979daed8216f418d2aeb4639cf978b5df289d1c7e4ea"
+    sha256 cellar: :any, big_sur:       "88027c4126895fb5c1f25b1045df6bd3e79dd9d4c3e0e7c9623c0538f72d0df7"
+    sha256 cellar: :any, catalina:      "b69ed34113341b0c25778b0b10af2079d17e32e2f7288fa2feed80677124ec15"
+    sha256 cellar: :any, mojave:        "9f941a568397ae9ec164cde36aaafe90237f36b516e1403985e10687601cf15a"
   end
 
   depends_on "asciidoc" => :build

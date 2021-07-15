@@ -8,13 +8,16 @@ class ZshSyntaxHighlighting < Formula
   head "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "6b7d4cdc41b56c842a4b76f9901d922d1f39bd638e94249881078a873de8970b" => :catalina
-    sha256 "6b7d4cdc41b56c842a4b76f9901d922d1f39bd638e94249881078a873de8970b" => :mojave
-    sha256 "6b7d4cdc41b56c842a4b76f9901d922d1f39bd638e94249881078a873de8970b" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "aebae47a0461de83530eb59106818889fc1a1a0e3cec2ddcefe629c3c8c172bd"
+    sha256 cellar: :any_skip_relocation, big_sur:       "0f75f5893a2179a2b1990bfb1a8e28ff3cf312dde3e11504504e9c32aed91725"
+    sha256 cellar: :any_skip_relocation, catalina:      "8b240a93c28b0c190c427afee55b80a0195dc0ed0cdb2ec956871330e0b2f3a5"
+    sha256 cellar: :any_skip_relocation, mojave:        "ab57b09a3770c0497b1704ca86bbd285d9bcab439316c0bd7f72ab72e8597d92"
+    sha256 cellar: :any_skip_relocation, high_sierra:   "f8e941c6208a3b895a174be341a9ef2c114a3d5efeb0e86b421825b2aee0b943"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "069a8cb00d623b12e284e1ee3e68adc1eea62068bf9743798a734806317e3984"
   end
 
-  uses_from_macos "zsh"
+  uses_from_macos "zsh" => [:build, :test]
 
   def install
     system "make", "install", "PREFIX=#{prefix}"

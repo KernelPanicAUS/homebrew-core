@@ -2,31 +2,31 @@ class Ksync < Formula
   desc "Sync files between your local system and a kubernetes cluster"
   homepage "https://ksync.github.io/ksync/"
   url "https://github.com/ksync/ksync.git",
-    tag:      "0.4.5",
-    revision: "9f40bf134329814a57e1a58d73b84761a2b06c73"
+      tag:      "0.4.7-hotfix",
+      revision: "14ec9e24670b90ee45d4571984e58d3bff02c50e"
   license "Apache-2.0"
+  head "https://github.com/ksync/ksync.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "1973e9cc12928e1680bc63c948404a81ae0eb83a083ecfcc593c0f9ba6799f2b" => :catalina
-    sha256 "253963ea2fe87fd45fb16ea131273878368964637140de4b0eeb9b2150e290c7" => :mojave
-    sha256 "b86ba3886a09fa0a5d78d86cf46bdd2dbcf524ef99cd4342e6c176698e0b5d00" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "75b929e1d0d310d0a0b875936e84f62f407be3b275659ce37875d4131b02206b"
+    sha256 cellar: :any_skip_relocation, big_sur:       "abdae6cfb9a6e71f0580c21d576cdba97462c95eeb0d98bf380562991db3e06b"
+    sha256 cellar: :any_skip_relocation, catalina:      "8424ffd61d19d4cb33bb433482b09e9d9980a0ab0a5ac1721091be8e377dcec6"
+    sha256 cellar: :any_skip_relocation, mojave:        "e3548758ab06f87ad12fdb1bc25faa555c0f46f476754e0cc92a306f977cd094"
   end
 
   depends_on "go" => :build
 
   def install
-    time = Utils.safe_popen_read("date", "+%Y%m%dT%H%M%S").chomp
-    goversion = "go#{Formula["go"].version}"
-    commit = Utils.safe_popen_read("git", "rev-parse", "--short", "HEAD").chomp
-    system "go", "build", "-ldflags",
-              "-w -X github.com/ksync/ksync/pkg/ksync.GitCommit=#{commit} \
-              -X github.com/ksync/ksync/pkg/ksync.GitTag=#{version} \
-              -X github.com/ksync/ksync/pkg/ksync.BuildDate=#{time} \
-              -X github.com/ksync/ksync/pkg/ksync.VersionString=Homebrew \
-              -X github.com/ksync/ksync/pkg/ksync.GoVersion=#{goversion}",
-              *std_go_args,
-              "github.com/ksync/ksync/cmd/ksync"
+    project = "github.com/ksync/ksync"
+    ldflags = %W[
+      -w
+      -X #{project}/pkg/ksync.GitCommit=#{Utils.git_short_head}
+      -X #{project}/pkg/ksync.GitTag=#{version}
+      -X #{project}/pkg/ksync.BuildDate=#{time.rfc3339(9)}
+      -X #{project}/pkg/ksync.VersionString=#{tap.user}
+      -X #{project}/pkg/ksync.GoVersion=go#{Formula["go"].version}
+    ].join(" ")
+    system "go", "build", *std_go_args(ldflags: ldflags), "#{project}/cmd/ksync"
   end
 
   test do

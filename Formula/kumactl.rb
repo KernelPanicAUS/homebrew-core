@@ -1,37 +1,51 @@
 class Kumactl < Formula
   desc "Kuma control plane command-line utility"
   homepage "https://kuma.io/"
-  url "https://github.com/kumahq/kuma/archive/0.7.1.tar.gz"
-  sha256 "3daf41ae44547106e9925a79fafa73b04cd36fdae90fe541e561ca568dd09c4f"
+  url "https://github.com/kumahq/kuma/archive/1.2.1.tar.gz"
+  sha256 "9ff8b59f5fccb87862c2f78baa18f599b9a5d7acfbfcfd86d6bbdaa8997eb90c"
   license "Apache-2.0"
 
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
+
   bottle do
-    cellar :any_skip_relocation
-    sha256 "8dcd9c2788ad48ec1f969fc21b61e1a0c09dded3f090691544f86aa6f5fb3786" => :catalina
-    sha256 "e9fda0e335c92d25dec9e8c6853c89e4ad16bad0fe25789b9a75284f62601664" => :mojave
-    sha256 "d25c3f5e963c994f0677b3e68aa38da9ea45944c2d0c04f983ae859af4f171ea" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "6f51f664c4067ca52902beab8570039c54af52b977541c480e010078130f3507"
+    sha256 cellar: :any_skip_relocation, big_sur:       "94628da2fbc2a059404014b0a123571805cdfdc9c15078ca87e8fc58f173a096"
+    sha256 cellar: :any_skip_relocation, catalina:      "531bb550e64a0c45c3310a28222c409bdbbc364dacbff2ebd9eb1d92e845b2ee"
+    sha256 cellar: :any_skip_relocation, mojave:        "3172d5cf04ee572c99c93edae5f10449e21eb2302ac309c497c093ac4af34c99"
   end
 
   depends_on "go" => :build
 
   def install
-    srcpath = buildpath/"src/kuma.io/kuma"
-    outpath = srcpath/"build/artifacts-darwin-amd64/kumactl"
-    srcpath.install buildpath.children
+    ldflags = %W[
+      -s -w
+      -X github.com/kumahq/kuma/pkg/version.version=#{version}
+      -X github.com/kumahq/kuma/pkg/version.gitTag=#{version}
+      -X github.com/kumahq/kuma/pkg/version.buildDate=#{time.strftime("%F")}
+    ].join(" ")
 
-    cd srcpath do
-      system "make", "build/kumactl", "BUILD_INFO_VERSION=#{version}"
-      prefix.install_metafiles
-      bin.install outpath/"kumactl"
-    end
+    system "go", "build", *std_go_args(ldflags: ldflags), "./app/kumactl"
+
+    output = Utils.safe_popen_read("#{bin}/kumactl", "completion", "bash")
+    (bash_completion/"kumactl").write output
+
+    output = Utils.safe_popen_read("#{bin}/kumactl", "completion", "zsh")
+    (zsh_completion/"_kumactl").write output
+
+    output = Utils.safe_popen_read("#{bin}/kumactl", "completion", "fish")
+    (fish_completion/"kumactl.fish").write output
   end
 
   test do
     assert_match "Management tool for Kuma.", shell_output("#{bin}/kumactl")
     assert_match version.to_s, shell_output("#{bin}/kumactl version 2>&1")
 
-    touch testpath/"config"
-    assert_match "Error: YAML contains invalid resource: Name field cannot be empty",
-    shell_output("#{bin}/kumactl apply -f config 2>&1", 1)
+    touch testpath/"config.yml"
+    assert_match "Error: no resource(s) passed to apply",
+    shell_output("#{bin}/kumactl apply -f config.yml 2>&1", 1)
   end
 end

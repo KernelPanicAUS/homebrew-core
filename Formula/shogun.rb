@@ -5,12 +5,13 @@ class Shogun < Formula
       tag:      "shogun_6.1.4",
       revision: "ab274e7ab6bf24dd598c1daf1e626cb686d6e1cc"
   license "BSD-3-Clause"
-  revision 8
+  revision 11
 
   bottle do
-    sha256 "b209c78c4755e2f6531facac0384fa5952454e67d091c92d0031ba98f3193668" => :catalina
-    sha256 "b6e776d5ebe2d938dede0a2b731c8b62feee96ef8b40db634f81c88ce38c6235" => :mojave
-    sha256 "6f5442ccbbb241bf1ffed242bb6eaeaab9110f88369488ae76cd0a595c7d0736" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "4e39c797d38f15383d76c312d84313ce3757b33d6cb42393de432db7a9ee6391"
+    sha256 cellar: :any, big_sur:       "bfefc3fb2694eb343be5fcb54b6b922ee462f6c3f4cbe38bf7392600db03ba5d"
+    sha256 cellar: :any, catalina:      "88ac63fbb529bf14938d9b5032aa58a6718f27a5953a47ec4498404953c982a9"
+    sha256 cellar: :any, mojave:        "589e96815f03a551445e9817da9781e5f4613a80411cb3d42085aaa5fd491be4"
   end
 
   depends_on "cmake" => :build

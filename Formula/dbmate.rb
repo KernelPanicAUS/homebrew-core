@@ -1,16 +1,17 @@
 class Dbmate < Formula
   desc "Lightweight, framework-agnostic database migration tool"
   homepage "https://github.com/amacneil/dbmate"
-  url "https://github.com/amacneil/dbmate/archive/v1.10.0.tar.gz"
-  sha256 "bf00360c9eb12151c157cc227a21f6688d8ea89de571b618a018b081637297a3"
+  url "https://github.com/amacneil/dbmate/archive/v1.12.0.tar.gz"
+  sha256 "fcb70bfe36f7118336ed191cba78991fcbc3b47f47fc69bb058ae8a9b265e2f1"
   license "MIT"
   head "https://github.com/amacneil/dbmate.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "40c2f2d04a9d033478fdff1a272fa0d125a1dbdd746154afe97c5c36612a36af" => :catalina
-    sha256 "11a6e1840fba35c278f3312b36ce1045c79e15cd51148f1cfe2e5172075585e6" => :mojave
-    sha256 "861621c58be22ec75cf0c4c0539facaa526b69aee1ba14d697c7b9a52bcfac6c" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "34669b5f5f37d77540206b0274e97a505c1e26072f5d60f456ddba5bdf17d885"
+    sha256 cellar: :any_skip_relocation, big_sur:       "928e602baa978c891124ab0ab595563976a953a1672b6d6f207bd7bba087f046"
+    sha256 cellar: :any_skip_relocation, catalina:      "bdf5803badd7a93502382027d83ff70488d9270eb89e5ef5f41b73c777c3326b"
+    sha256 cellar: :any_skip_relocation, mojave:        "136e800b7486127c794d7c7b57a3c490f5a5e556ba051ef63729b612b60f7ddf"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "7338e4a883ba4e422cc0fe3ea10179e0d1c46890ce00eca0a9d7c7048b3b8dab"
   end
 
   depends_on "go" => :build
@@ -20,7 +21,7 @@ class Dbmate < Formula
   end
 
   test do
-    (testpath/".env").write("DATABASE_URL=sqlite3:///test.sqlite3")
+    (testpath/".env").write("DATABASE_URL=sqlite3:test.sqlite3")
     system bin/"dbmate", "create"
     assert_predicate testpath/"test.sqlite3", :exist?, "failed to create test.sqlite3"
   end

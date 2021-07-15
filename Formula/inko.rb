@@ -1,32 +1,30 @@
 class Inko < Formula
-  desc "The Inko programming language"
+  desc "Safe and concurrent object-oriented programming language"
   homepage "https://inko-lang.org/"
-  url "https://gitlab.com/inko-lang/inko/-/archive/v0.7.0/inko-v0.7.0.tar.gz"
-  sha256 "81a613b4d6bee524a8fe8e346466b7f277a42875b357ad61ba0ca3871750c1e3"
+  url "https://releases.inko-lang.org/0.9.0.tar.gz"
+  sha256 "311f6e675e6f7ca488a71022b62edbbc16946f907d7e1695f3f96747ece2051f"
   license "MPL-2.0"
   head "https://gitlab.com/inko-lang/inko.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "a31ee4cbff6f48c5384c1966aa6d3821358706ec4716c9ec5a0f3962adc8be60" => :catalina
-    sha256 "bd7f421a086636e9edb9a6946961c717147b174125f45421d6e1db00c09d42dc" => :mojave
-    sha256 "49de93ab54879a2a48bc4e3dce4f2bc52a5912085583de9290895eadae4b119e" => :high_sierra
+    rebuild 2
+    sha256 cellar: :any,                 arm64_big_sur: "43926844caecb8ef58e68dbe731136c148bae98f4895fb1a0f749a2e0393a13a"
+    sha256 cellar: :any,                 big_sur:       "0541ff8865a88d0b293ed4a088245c9da57fb4535be08cdb141404bff07cacae"
+    sha256 cellar: :any,                 catalina:      "fe5852c91f891f3866d009793086ca265155b76874c9623cf233b5927962b667"
+    sha256 cellar: :any,                 mojave:        "6412cea3a6d18324476c2d3b2020f87e86959944048bd423c73fb1f46a959647"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "75166f6f36d45da8e6b63908442b61e1065d623aec7303e36364da0e453b691d"
   end
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
   depends_on "coreutils" => :build
-  depends_on "libtool" => :build
-  depends_on "make" => :build
   depends_on "rust" => :build
+  depends_on "libffi"
 
   uses_from_macos "ruby", since: :sierra
 
   def install
-    make = Formula["make"].opt_bin/"gmake"
-    system make, "install", "PREFIX=#{libexec}"
+    system "make", "build", "PREFIX=#{libexec}", "FEATURES=libinko/libffi-system"
+    system "make", "install", "PREFIX=#{libexec}"
     bin.install Dir[libexec/"bin/*"]
-    bin.env_script_all_files libexec/"bin", INKOC_HOME: libexec/"lib/inko"
   end
 
   test do

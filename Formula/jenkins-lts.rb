@@ -1,16 +1,18 @@
 class JenkinsLts < Formula
   desc "Extendable open-source CI server"
   homepage "https://jenkins.io/index.html#stable"
-  url "http://mirrors.jenkins.io/war-stable/2.235.5/jenkins.war"
-  sha256 "c786f7b18fd3fc1bafce85b3b9bc5d8c5f09e3a313cfd618bae8c1d920b6f70b"
+  url "https://get.jenkins.io/war-stable/2.289.2/jenkins.war"
+  sha256 "6e5d17bb373a4167318082abaef483f280493cb216718e68771180955df52310"
   license "MIT"
 
   livecheck do
-    url "http://mirrors.jenkins-ci.org/war-stable/"
-    regex(%r{href=.*?v?(\d+(?:\.\d+)+)/?["' >]}i)
+    url "https://www.jenkins.io/download/"
+    regex(%r{href=.*?/war-stable/v?(\d+(?:\.\d+)+)/jenkins\.war}i)
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "6f5978996944adfe3c3753363e95f72c5b66240e02c446b39d96873147af2b00"
+  end
 
   depends_on "openjdk@11"
 
@@ -64,6 +66,6 @@ class JenkinsLts < Formula
     sleep 60
 
     output = shell_output("curl localhost:#{port}/")
-    assert_match /Welcome to Jenkins!|Unlock Jenkins|Authentication required/, output
+    assert_match(/Welcome to Jenkins!|Unlock Jenkins|Authentication required/, output)
   end
 end

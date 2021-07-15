@@ -1,24 +1,21 @@
 class Gegl < Formula
   desc "Graph based image processing framework"
-  homepage "http://www.gegl.org/"
-  url "https://download.gimp.org/pub/gegl/0.4/gegl-0.4.26.tar.xz"
-  sha256 "0f371e2ed2b92162fefd3dde743e648ca08a6a1b2b05004867fbddc7e211e424"
-  license "LGPL-3.0"
+  homepage "https://www.gegl.org/"
+  url "https://download.gimp.org/pub/gegl/0.4/gegl-0.4.30.tar.xz"
+  sha256 "c112782cf4096969e23217ccdfabe42284e35d5435ff0c43d40e4c70faeca8dd"
+  license all_of: ["LGPL-3.0-or-later", "GPL-3.0-or-later", "BSD-3-Clause", "MIT"]
+  head "https://gitlab.gnome.org/GNOME/gegl.git"
 
   livecheck do
     url "https://download.gimp.org/pub/gegl/0.4/"
-    regex(/href=.*?gegl[._-]v?(\d+(?:\.\d+)*)\.t/i)
+    regex(/href=.*?gegl[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
   bottle do
-    sha256 "31cbb2a6960a6f2a1d48d30a8facd05c378ec29545eb8ba88b385b95c56f4e60" => :catalina
-    sha256 "e40645711d7f5e2b2c511fb3c05981b99c4191faf2385dde53cbf20eed9f4319" => :mojave
-    sha256 "ed58d1d1d9c5f388c24276436f03497ba59d33b34a14541b21df8887af9d4bcf" => :high_sierra
-  end
-
-  head do
-    # Use the Github mirror because official git unreliable.
-    url "https://github.com/GNOME/gegl.git"
+    sha256 arm64_big_sur: "5368ab13bdacfd48b40469ba260357ab217108018c23425dacc66010d34bdf9c"
+    sha256 big_sur:       "5889e5151f0b0bbc9e4d38cf55f8bf9e4baf4425b909a67dbece558c87761ba1"
+    sha256 catalina:      "ead22977dc586d10fae00ab6d4068bf39726ab8328643c300d7fa9ec18d68d94"
+    sha256 mojave:        "fe3fd1088a249e3e59794d2dc9ea5eb8cef165705d0730b675bd053cae841bd7"
   end
 
   depends_on "glib" => :build
@@ -46,6 +43,7 @@ class Gegl < Formula
       -Dwith-jasper=false
       -Dwith-umfpack=false
       -Dwith-libspiro=false
+      --force-fallback-for=libnsgif,poly2tri-c
     ]
 
     ### Temporary Fix ###
@@ -75,12 +73,14 @@ class Gegl < Formula
         return 0;
       }
     EOS
-    system ENV.cc, "-I#{include}/gegl-0.4", "-L#{lib}", "-lgegl-0.4",
+    system ENV.cc,
            "-I#{Formula["babl"].opt_include}/babl-0.1",
            "-I#{Formula["glib"].opt_include}/glib-2.0",
            "-I#{Formula["glib"].opt_lib}/glib-2.0/include",
            "-L#{Formula["glib"].opt_lib}", "-lgobject-2.0", "-lglib-2.0",
-           testpath/"test.c", "-o", testpath/"test"
+           testpath/"test.c",
+           "-I#{include}/gegl-0.4", "-L#{lib}", "-lgegl-0.4",
+           "-o", testpath/"test"
     system "./test"
   end
 end

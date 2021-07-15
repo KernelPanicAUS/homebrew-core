@@ -4,18 +4,19 @@ class Choose < Formula
   url "https://github.com/geier/choose/archive/v0.1.0.tar.gz"
   sha256 "d09a679920480e66bff36c76dd4d33e8ad739a53eace505d01051c114a829633"
   license "MIT"
-  revision 2
+  revision 3
   head "https://github.com/geier/choose.git"
 
   bottle do
-    cellar :any_skip_relocation
-    rebuild 1
-    sha256 "add76ddd5165ad17bfc784dff7237777eac7ee898379bd55d76228e6f6897d6d" => :catalina
-    sha256 "74170f2582ab4a29bffcc34583017f97f39c5b600a5f5cfebacd6d66ecd5c818" => :mojave
-    sha256 "388b64e8072a54f01006ab9cad297789eda36fe0bec83b45759cfe80dbf8cb2c" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "c8408b41107e7824596b3c28b2f63f98c910a7452ff676805a7ec5e77ba505bc"
+    sha256 cellar: :any_skip_relocation, big_sur:       "108d84aff61c4374011202cab8203770cdee57c0445ad40735c1f41513140606"
+    sha256 cellar: :any_skip_relocation, catalina:      "086ebca8f9bff4d065e788c9076bfe204b958f96b8da0cce142f3c890c38cb75"
+    sha256 cellar: :any_skip_relocation, mojave:        "bef5f7490cf4a45398bfdef4867163957675227e74bab1494ea0da56cda2cda6"
+    sha256 cellar: :any_skip_relocation, high_sierra:   "f860816e00292d161ed6f6617cef47c3297eb91e9231f3c125ce12b16ad7d220"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "3f694deea45cc55594ec470f3246e4181479b1365ade491f14f24aa6d5886f72"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   conflicts_with "choose-gui", because: "both install a `choose` binary"
   conflicts_with "choose-rust", because: "both install a `choose` binary"

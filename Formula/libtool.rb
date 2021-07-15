@@ -4,21 +4,18 @@ class Libtool < Formula
   url "https://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz"
   mirror "https://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.xz"
   sha256 "7c87a8c2c8c0fc9cd5019e402bed4292462d00a718a7cd5f11218153bf28b26f"
-  license "GPL-2.0"
-  revision 2
-
-  livecheck do
-    url :stable
-  end
+  license "GPL-2.0-or-later"
+  revision 3
 
   bottle do
-    cellar :any
-    sha256 "af317b35d0a394b7ef55fba4950735b0392d9f31bececebf9c412261c23a01fc" => :catalina
-    sha256 "77ca68934e7ed9b9b0b8ce17618d7f08fc5d5a95d7b845622bf57345ffb1c0d6" => :mojave
-    sha256 "60c7d86f9364e166846f8d3fb2ba969e6ca157e7ecbbb42a1de259116618c2ba" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "904c534919bf6dc14fb561dc56012b44af838f8c21fa4e948ff7a7a773b11f20"
+    sha256 cellar: :any,                 big_sur:       "a70ed5b9d74ec3b06bfc202ab36491c3ecd3da4ff2b602478675ba0c533aa466"
+    sha256 cellar: :any,                 catalina:      "9e4b12c13734a5f1b72dfd48aa71faa8fd81bbf2d16af90d1922556206caecc3"
+    sha256 cellar: :any,                 mojave:        "0aa094832dfcc51aadc22056ebf72af91144cb69369043fc6ccc6a052df577aa"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "38b1502dbd6ad03c38dd4d4f6111a316c96fd1c58209b3d57b367659c9464919"
   end
 
-  uses_from_macos "m4" => :build
+  depends_on "m4"
 
   # Fixes the build on macOS 11:
   # https://lists.gnu.org/archive/html/libtool-patches/2020-06/msg00001.html
@@ -34,23 +31,39 @@ class Libtool < Formula
       touch file
     end
 
-    ENV["SED"] = "sed" # prevent libtool from hardcoding sed path from superenv
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--program-prefix=g",
-                          "--enable-ltdl-install"
+    args = %W[
+      --disable-dependency-tracking
+      --prefix=#{prefix}
+      --enable-ltdl-install
+    ]
+
+    on_macos do
+      args << "--program-prefix=g"
+    end
+
+    system "./configure", *args
     system "make", "install"
+
+    on_linux do
+      bin.install_symlink "libtool" => "glibtool"
+      bin.install_symlink "libtoolize" => "glibtoolize"
+
+      # Avoid references to the Homebrew shims directory
+      inreplace bin/"libtool", HOMEBREW_SHIMS_PATH/"linux/super/", "/usr/bin/"
+    end
   end
 
   def caveats
-    <<~EOS
-      In order to prevent conflicts with Apple's own libtool we have prepended a "g"
-      so, you have instead: glibtool and glibtoolize.
-    EOS
+    on_macos do
+      <<~EOS
+        In order to prevent conflicts with Apple's own libtool we have prepended a "g"
+        so, you have instead: glibtool and glibtoolize.
+      EOS
+    end
   end
 
   test do
-    system "#{bin}/glibtool", "execute", "/usr/bin/true"
+    system "#{bin}/glibtool", "execute", File.executable?("/usr/bin/true") ? "/usr/bin/true" : "/bin/true"
     (testpath/"hello.c").write <<~EOS
       #include <stdio.h>
       int main() { puts("Hello, world!"); return 0; }

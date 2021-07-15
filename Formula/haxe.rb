@@ -1,21 +1,32 @@
 class Haxe < Formula
   desc "Multi-platform programming language"
   homepage "https://haxe.org/"
-  url "https://github.com/HaxeFoundation/haxe.git",
-      tag:      "4.1.3",
-      revision: "c7d2c7aac5f8d280d694e46fc1c9de52e218b9c6"
+  license all_of: ["GPL-2.0-or-later", "MIT"]
+  revision 1
   head "https://github.com/HaxeFoundation/haxe.git", branch: "development"
 
+  stable do
+    url "https://github.com/HaxeFoundation/haxe.git",
+        tag:      "4.2.3",
+        revision: "1385eda48e60387e349282d26347b28d0b2768ca"
+
+    # Remove when campl5 dependency is bumped to 8.00 in a release
+    patch do
+      url "https://github.com/HaxeFoundation/haxe/commit/db72b31390c51c1627cf5658ca256aace41a81b0.patch?full_index=1"
+      sha256 "95a22f2cc227c4e6d066e60eb88b2a71ad6c278d6f38656fbd87ee905411918a"
+    end
+  end
+
   livecheck do
-    url "https://github.com/HaxeFoundation/haxe/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
   bottle do
-    cellar :any
-    sha256 "53d69a9f8c0c0a757f7626260200a47c25bed78438fd675f7c1bd1c3da5276bc" => :catalina
-    sha256 "35acb01a0d40087fb8194c17ae1b38a422469bf2c1537a6412a24fa38a1f0217" => :mojave
-    sha256 "580bf94faade767c8078fe8c5622a37d7d6cd3e70531ab8eef7dff77c4844d67" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "61d820d3e70a5a80e292c4ed6c237b22548552b75ae7ccb0ee0a3e4295a6ac61"
+    sha256 cellar: :any, big_sur:       "16eb12fc8eb8df93e1f721613e288f1c6bbf7ca5fca12bb02bccdc07ce87a8a3"
+    sha256 cellar: :any, catalina:      "9b74bd6cc7cd8fef321aae3e89ba219dc50e55cacbe2fca04c614c370167c53d"
+    sha256 cellar: :any, mojave:        "43d1f66bc65c272556d0cdb5ac195c1f525214eb6e8cdbf53d117f99027e6f1c"
   end
 
   depends_on "cmake" => :build
@@ -27,11 +38,30 @@ class Haxe < Formula
   depends_on "pcre"
 
   uses_from_macos "m4" => :build
+  uses_from_macos "perl" => :build
   uses_from_macos "unzip" => :build
+
+  resource "String::ShellQuote" do
+    url "https://cpan.metacpan.org/authors/id/R/RO/ROSCH/String-ShellQuote-1.04.tar.gz"
+    sha256 "e606365038ce20d646d255c805effdd32f86475f18d43ca75455b00e4d86dd35"
+  end
+
+  resource "IPC::System::Simple" do
+    url "https://cpan.metacpan.org/authors/id/J/JK/JKEENAN/IPC-System-Simple-1.30.tar.gz"
+    sha256 "22e6f5222b505ee513058fdca35ab7a1eab80539b98e5ca4a923a70a8ae9ba9e"
+  end
 
   def install
     # Build requires targets to be built in specific order
     ENV.deparallelize
+
+    ENV.prepend_create_path "PERL5LIB", libexec/"lib/perl5"
+    resources.each do |r|
+      r.stage do
+        system "perl", "Makefile.PL", "INSTALL_BASE=#{libexec}"
+        system "make", "install"
+      end
+    end
 
     Dir.mktmpdir("opamroot") do |opamroot|
       ENV["OPAMROOT"] = opamroot
@@ -41,7 +71,7 @@ class Haxe < Formula
       system "opam", "config", "exec", "--",
              "opam", "pin", "add", "haxe", buildpath, "--no-action"
       system "opam", "config", "exec", "--",
-             "opam", "install", "haxe", "--deps-only"
+             "opam", "install", "haxe", "--deps-only", "--working-dir"
       system "opam", "config", "exec", "--",
              "make"
     end
@@ -80,6 +110,6 @@ class Haxe < Formula
     EOS
     system "#{bin}/haxe", "-js", "out.js", "-main", "HelloWorld"
     _, stderr, = Open3.capture3("osascript -so -lJavaScript out.js")
-    assert_match /^Hello world!$/, stderr
+    assert_match "Hello world!", stderr.strip
   end
 end

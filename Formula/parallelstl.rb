@@ -1,20 +1,18 @@
 class Parallelstl < Formula
   desc "C++ standard library algorithms with support for execution policies"
   homepage "https://github.com/intel/parallelstl"
-  url "https://github.com/intel/parallelstl/archive/20200330.tar.gz"
-  sha256 "47d78920a7220828cde9b0c0cf808c70774b2db05ab4dd689b8bbd350afb9e6e"
+  url "https://github.com/intel/parallelstl/archive/20201111.tar.gz"
+  sha256 "c5ca7e0a618df8d28087be2e23ae38713ab1bcff0107562b935fbb5ba072fbf6"
   # Apache License Version 2.0 with LLVM exceptions
-  license "Apache-2.0"
+  license "Apache-2.0" => { with: "LLVM-exception" }
+  revision 1
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "5b3837f32d57d6d5398da1127eb4bba489a85821ae32e125fc486edb3abbca11" => :catalina
-    sha256 "5b3837f32d57d6d5398da1127eb4bba489a85821ae32e125fc486edb3abbca11" => :mojave
-    sha256 "5b3837f32d57d6d5398da1127eb4bba489a85821ae32e125fc486edb3abbca11" => :high_sierra
+    sha256 cellar: :any_skip_relocation, all: "3467deb5b4e2b46b8ecdaa4930c6e01ae4f432b01648e04912ff2bd8d9737e4b"
   end
 
   depends_on "cmake" => :build
-  depends_on "tbb"
+  depends_on "tbb@2020"
 
   def install
     mkdir "build" do
@@ -25,6 +23,8 @@ class Parallelstl < Formula
   end
 
   test do
+    tbb = Formula["tbb@2020"]
+
     (testpath/"test.cpp").write <<~EOS
       #include <pstl/execution>
       #include <pstl/algorithm>
@@ -39,7 +39,7 @@ class Parallelstl < Formula
         return 0;
       }
     EOS
-    system ENV.cxx, "-std=c++11", "-L#{Formula["tbb"].opt_lib}", "-ltbb",
+    system ENV.cxx, "-std=c++11", "-L#{tbb.opt_lib}", "-ltbb", "-I#{tbb.opt_include}",
                     "-I#{prefix}/stdlib", "-I#{include}", "test.cpp", "-o", "test"
     system "./test"
   end

@@ -1,15 +1,15 @@
 class Qrcp < Formula
   desc "Transfer files to and from your computer by scanning a QR code"
   homepage "https://claudiodangelis.com/qrcp"
-  url "https://github.com/claudiodangelis/qrcp/archive/0.6.3.tar.gz"
-  sha256 "2d39ba661aad9c60b816bc06f53ef4f3d8747e11d5fc27c104d3687d1e77204c"
+  url "https://github.com/claudiodangelis/qrcp/archive/0.8.4.tar.gz"
+  sha256 "b77673bad880c9ffec1fa20cef6e46ae717702edd95bca3076919225e396db57"
   license "MIT"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "857aa5ad50a7a2124a1c37f7f206b25a65d9f3c76bae0ec9223945238c83d0eb" => :catalina
-    sha256 "5a1bede14f849cd49815b351325d5f375a9d7dc4d7ae8abd4053505f3fc1b6b0" => :mojave
-    sha256 "aba7e5ceb1c788d2eeae3e117e6dcae5c14530e5b759832adac7a6f4296565cd" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "8286ab8384850578862e84cceebb7aa8efc5d2bafd1d372a0e9e1f6930a7a726"
+    sha256 cellar: :any_skip_relocation, big_sur:       "b90c0f156ce21a2ec39f23405fd1213008d96a8e1d62f17cd0d5c83c17b055ea"
+    sha256 cellar: :any_skip_relocation, catalina:      "954c095b0cd034464bd929a3b28855f932d09e0cb59a741939009221f6fdac94"
+    sha256 cellar: :any_skip_relocation, mojave:        "a319771dea04ac593d2928e8e937ce1fd5a7c55c67999e9505b258cbddbe226c"
   end
 
   depends_on "go" => :build

@@ -1,13 +1,17 @@
 class Metabase < Formula
   desc "Business intelligence report server"
   homepage "https://www.metabase.com/"
-  url "https://downloads.metabase.com/v0.36.4/metabase.jar"
-  sha256 "987a0e1b0cbf20e1f6e15dce45c153afeb5a4a0ef4c62e9344eaed14a310cecc"
+  url "https://downloads.metabase.com/v0.40.0/metabase.jar"
+  sha256 "2710b8946d4ddd384221eee114db89efb64d53f57cf17bb23fd9aea0f03c6a8c"
   license "AGPL-3.0-only"
 
   livecheck do
-    url "https://github.com/metabase/metabase/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url "https://www.metabase.com/start/oss/jar.html"
+    regex(%r{href=.*?/v?(\d+(?:\.\d+)+)/metabase\.jar}i)
+  end
+
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "7b7b15605961b9454a31b76bce75ffa4aea57fc6062b3c77b128233c17285d66"
   end
 
   head do
@@ -18,9 +22,9 @@ class Metabase < Formula
     depends_on "yarn" => :build
   end
 
-  bottle :unneeded
-
-  depends_on "openjdk"
+  # metabase uses jdk.nashorn.api.scripting.JSObject
+  # which is removed in Java 15
+  depends_on "openjdk@11"
 
   def install
     if build.head?
@@ -30,7 +34,7 @@ class Metabase < Formula
       libexec.install "metabase.jar"
     end
 
-    bin.write_jar_script libexec/"metabase.jar", "metabase"
+    bin.write_jar_script libexec/"metabase.jar", "metabase", java_version: "11"
   end
 
   plist_options startup: true, manual: "metabase"

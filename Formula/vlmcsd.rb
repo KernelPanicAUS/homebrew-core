@@ -6,14 +6,20 @@ class Vlmcsd < Formula
   sha256 "62f55c48f5de1249c2348ab6b96dabbe7e38899230954b0c8774efb01d9c42cc"
   head "https://github.com/Wind4/vlmcsd.git"
 
-  bottle do
-    cellar :any_skip_relocation
-    sha256 "3f3cc34de780b15b2c5eb32660f79a95bd28674c7cebb78452f9f8888d9d8b38" => :catalina
-    sha256 "512da18ff22fe4dbc539aa31020acad022fdf6b19c6b14d49a361e1615af58fb" => :mojave
-    sha256 "0cb2abe0a85b0ca14602d565b6ef3c69afa1f466123b37503936dfe064581b54" => :high_sierra
+  livecheck do
+    url :stable
+    strategy :github_latest
+    regex(%r{href=.*?/tag/([^"' >]+)["' >]}i)
   end
 
-  depends_on "make" => :build
+  bottle do
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "14b28cda0a196fbb180ad8369632d45c36da857ac7515818209b696aa58bb57f"
+    sha256 cellar: :any_skip_relocation, big_sur:       "db9dac6f35e4d788365c03ba7163b011b1739e3db5f484b22d4351439e878f0f"
+    sha256 cellar: :any_skip_relocation, catalina:      "ec02827a4a07215d0b3b5a4d06a8a0f811ddac4ab78a877a3248edc3021593b5"
+    sha256 cellar: :any_skip_relocation, mojave:        "7ba71a7fb0a00bf5f654f324d00e93f431d25c40455dd0bcda19edc23b8de945"
+  end
+
   uses_from_macos "llvm" => :build
 
   def install
@@ -72,9 +78,9 @@ class Vlmcsd < Formula
 
   test do
     output = shell_output("#{bin}/vlmcsd -V")
-    assert_match /vlmcsd/, output
+    assert_match "vlmcsd", output
     output = shell_output("#{bin}/vlmcs -V")
-    assert_match /vlmcs/, output
+    assert_match "vlmcs", output
     begin
       pid = fork do
         exec "#{bin}/vlmcsd", "-D"
@@ -83,7 +89,7 @@ class Vlmcsd < Formula
       # the running status of vlmcsd
       sleep 2
       output = shell_output("#{bin}/vlmcs")
-      assert_match /successful/, output
+      assert_match "successful", output
       sleep 2
     ensure
       Process.kill 9, pid

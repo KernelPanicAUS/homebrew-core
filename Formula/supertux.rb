@@ -4,18 +4,19 @@ class Supertux < Formula
   url "https://github.com/SuperTux/supertux/releases/download/v0.6.2/SuperTux-v0.6.2-Source.tar.gz"
   sha256 "26a9e56ea2d284148849f3239177d777dda5b675a10ab2d76ee65854c91ff598"
   license "GPL-3.0-or-later"
+  revision 2
   head "https://github.com/SuperTux/supertux.git"
 
   livecheck do
-    url "https://github.com/SuperTux/supertux/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
   bottle do
-    cellar :any
-    sha256 "671a6a888ace25b1cd8adfafea895a7bb259bee92be354e7ed4b4fbd63841f92" => :catalina
-    sha256 "e96d518a12e5cd571345abd4d778a6983062daebe845ab1a0404ee1f4ae11212" => :mojave
-    sha256 "3427130b27e209085a062bec0f853f765a34c6bf5d4fe6bedba4c7c5e408c400" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "a43aa28db1ce468178567d76e8d62ecc90b7059efebf09e7486adeb7fb4fa22e"
+    sha256 cellar: :any, big_sur:       "b2a5292147a6d0f84589d699a2c5f0ffb196602640c5302f82281d021274c506"
+    sha256 cellar: :any, catalina:      "59c8ea513385b6d4785c28cca54864ebdcc415d5ece4fe724d11a4a74f7f95cc"
+    sha256 cellar: :any, mojave:        "2b0b76de7aa2d930df7d8b22eb3389c4dcaea132a45de9eb88907ded500c7cb3"
   end
 
   depends_on "cmake" => :build

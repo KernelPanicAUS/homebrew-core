@@ -1,20 +1,27 @@
 class Mytop < Formula
   desc "Top-like query monitor for MySQL"
-  homepage "http://www.mysqlfanboy.com/mytop-3/"
-  url "http://www.mysqlfanboy.com/mytop-3/mytop-1.9.1.tar.gz"
+  homepage "https://web.archive.org/web/20200221154243/www.mysqlfanboy.com/mytop-3/"
+  url "https://web.archive.org/web/20150602163826/www.mysqlfanboy.com/mytop-3/mytop-1.9.1.tar.gz"
   mirror "https://deb.debian.org/debian/pool/main/m/mytop/mytop_1.9.1.orig.tar.gz"
   sha256 "179d79459d0013ab9cea2040a41c49a79822162d6e64a7a85f84cdc44828145e"
-  revision 8
+  license "GPL-2.0-or-later"
+  revision 9
+
+  livecheck do
+    skip "Upstream is gone and the formula uses archive.org URLs"
+  end
 
   bottle do
-    cellar :any
-    sha256 "69930f7d5c68b0d6ce75c89820732f269d3b3c6651358875b0db58ae1ead38f0" => :catalina
-    sha256 "ac13ecf239ff9d4bb1d39ad584c46ac9a5c95f3b96b3991bf9108280b30c0a19" => :mojave
-    sha256 "2862de7630947648898e1ef348a8357fdd25622310c9af03450c40ea33fc925c" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "0443f8710ab6f1be3e60afc59c15546091982df6f76e31855ff16a1bd86fcb4b"
+    sha256 cellar: :any, big_sur:       "7bbece0e0eeb32f4c8217c232d190990290625e16fa9e542fd6c68dd8aad1727"
+    sha256 cellar: :any, catalina:      "8ec423770dabfb5da68e626af379f73290cd7e04c118db9608d2ce5decf0e489"
+    sha256 cellar: :any, mojave:        "a7512239e490916ef7753a380e638e383b2dd0e0967b6b560c48adf6597b491b"
   end
 
   depends_on "mysql-client"
   depends_on "openssl@1.1"
+
+  uses_from_macos "perl"
 
   conflicts_with "mariadb", because: "both install `mytop` binaries"
 
@@ -69,7 +76,7 @@ class Mytop < Formula
     end
 
     system "perl", "Makefile.PL", "INSTALL_BASE=#{prefix}"
-    system "make", "test", "install"
+    system "make", "install"
     share.install prefix/"man"
     bin.env_script_all_files(libexec/"bin", PERL5LIB: ENV["PERL5LIB"])
   end

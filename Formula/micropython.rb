@@ -2,21 +2,21 @@ class Micropython < Formula
   desc "Python implementation for microcontrollers and constrained systems"
   homepage "https://www.micropython.org/"
   url "https://github.com/micropython/micropython.git",
-      tag:      "v1.12",
-      revision: "1f371947309c5ea6023b6d9065415697cbc75578"
+      tag:      "v1.16",
+      revision: "7c51cb2307eaca1a1ccc071e0bb5eb4a5f734610"
   license "MIT"
-  revision 2
 
   bottle do
-    cellar :any
-    sha256 "af98b434dd38d24a28541b3bdc168a689b914b425aa80a6bf384c18862ed3737" => :catalina
-    sha256 "dff6248820013f3f31408252de971418ac26f6eacd20791c6eaeb9527ea552f2" => :mojave
-    sha256 "19800fe474da81062c005732c1dd6c3e66e6a2a8e04f38a4a69ce8513808895c" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "e9fa695e69a3d93b60289e8e4698cb99cf909f69af7b62565a8a16d32c9e40c5"
+    sha256 cellar: :any,                 big_sur:       "dd7d21cbe5e6eeaf4c898269dcbbddf7f77470bc6cc30cd14a1ab710f0f07d06"
+    sha256 cellar: :any,                 catalina:      "4db83fc025b9bf91be5ee37b4093b66ccf6e796c73e13cfdb4ac03ebedda489f"
+    sha256 cellar: :any,                 mojave:        "3bc0210fa2b0f6de0218db02a596e385d57850cd5b8b84f92b3af0d93711876c"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "c0a2ca49e0b12e56a45fa5f98555a4bb35fb882f392aa1246db91be60de3e792"
   end
 
   depends_on "pkg-config" => :build
   depends_on "libffi" # Requires libffi v3 closure API; macOS version is too old
-  depends_on "python@3.8" # Requires python3 executable
+  depends_on "python@3.9" # Requires python3 executable
 
   def install
     # Build mpy-cross before building the rest of micropython. Build process expects executable at
@@ -34,11 +34,17 @@ class Micropython < Formula
   end
 
   test do
+    lib_version = nil
+
+    on_linux do
+      lib_version = "6"
+    end
+
     # Test the FFI module
     (testpath/"ffi-hello.py").write <<~EOS
       import ffi
 
-      libc = ffi.open("libc.dylib")
+      libc = ffi.open("#{shared_library("libc", lib_version)}")
       printf = libc.func("v", "printf", "s")
       printf("Hello!\\n")
     EOS

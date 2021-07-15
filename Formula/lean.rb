@@ -1,8 +1,8 @@
 class Lean < Formula
   desc "Theorem prover"
   homepage "https://leanprover-community.github.io/"
-  url "https://github.com/leanprover-community/lean/archive/v3.18.4.tar.gz"
-  sha256 "9b7c88e5a6c56ccd9674de96a4806db40e67b96cc13b7382cce497b9b4a738e2"
+  url "https://github.com/leanprover-community/lean/archive/v3.30.0.tar.gz"
+  sha256 "402b89ff4d368fd6597dd87c521fd2fe456c6b2b90c99d85f57523661bdd94be"
   license "Apache-2.0"
   head "https://github.com/leanprover-community/lean.git"
 
@@ -14,15 +14,19 @@ class Lean < Formula
   end
 
   bottle do
-    cellar :any
-    sha256 "60bf9be856f7c4158d18717387bd9a74e1e8036fb4ecdb285b3d410e82fec907" => :catalina
-    sha256 "a1cee5b0d39bc214d16ad925c4f5fb70c4edba84da64d4cc0f288233f4b032c8" => :mojave
-    sha256 "4efbb7149a7a7f8b85a1c1e8e48e561757b0cf3849b55d31795d30d372ac7a08" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "dce6ff86967540c830fa6aecb39e1dcb3dd54beaa0a524ef373e405dbb6f514a"
+    sha256 cellar: :any, big_sur:       "a10756134d6e97923dc0425d02a8b1ee0a49b4758f49f27e03282887071cde6f"
+    sha256 cellar: :any, catalina:      "014297ad90fee979d9e726fc08d13edd2adab94986541cd67172f62f845aaea5"
+    sha256 cellar: :any, mojave:        "386b72209c9b4fdea4f1ee0a5cded5560bd276e4b9e297c4e4586efbb03c4e74"
   end
 
   depends_on "cmake" => :build
+  depends_on "coreutils"
   depends_on "gmp"
   depends_on "jemalloc"
+  depends_on macos: :mojave
+
+  conflicts_with "elan-init", because: "`lean` and `elan-init` install the same binaries"
 
   def install
     mkdir "src/build" do
@@ -44,6 +48,7 @@ class Lean < Formula
           split, repeat { assumption }
       end
     EOS
-    system "#{bin}/lean", testpath/"hello.lean"
+    system bin/"lean", testpath/"hello.lean"
+    system bin/"leanpkg", "help"
   end
 end

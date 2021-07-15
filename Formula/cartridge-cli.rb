@@ -2,29 +2,24 @@ class CartridgeCli < Formula
   desc "Tarantool Cartridge command-line utility"
   homepage "https://tarantool.org/"
   url "https://github.com/tarantool/cartridge-cli.git",
-      tag:      "2.3.0",
-      revision: "06a5dadcf259200cc08bb195e35488bb1e161930"
+      tag:      "2.9.1",
+      revision: "5770f5e62e71271c216e59e81934fda8b58e0039"
   license "BSD-2-Clause"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "3d044f1e0620b309d415c4743f44d44543f26ca472b88c9019f07db8f640830a" => :catalina
-    sha256 "259e9332a58594c3facd9b50132d8e1e2cb5722eba693baf447f296bd6017671" => :mojave
-    sha256 "d1d3f83fad8e8bc815a5494fa177a32c86edfa4f2202b8058b43c53205c191d9" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "c71e2ad16ccad4fd763bf16764a0561544a75002578c489d07d05035a40fade4"
+    sha256 cellar: :any_skip_relocation, big_sur:       "71cae5381ab4d0ab1a09d1d523cab9c39e48f786fbc65bdc1aed1fe641fd4eba"
+    sha256 cellar: :any_skip_relocation, catalina:      "4e3f9ffa29ba823041fe460d116afeb9a37c7453bca4f658c9a88d0baff3fbf9"
+    sha256 cellar: :any_skip_relocation, mojave:        "19eaa3369041b180f581a6b27d2816dde06eae5b214410e882fd9add29061a81"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "aed3b52eb3b2653ba45c1ac5b559474ecd60ee6576c0572520bc3e3bd4c4d948"
   end
 
   depends_on "go" => :build
+  depends_on "mage" => :build
 
   def install
-    commit = Utils.safe_popen_read("git", "rev-parse", "--short", "HEAD").chomp
-
-    ldflags = %W[
-      -s -w
-      -X github.com/tarantool/cartridge-cli/cli/version.gitTag=#{version}
-      -X github.com/tarantool/cartridge-cli/cli/version.gitCommit=#{commit}
-    ]
-
-    system "go", "build", "-o", bin/"cartridge", "-ldflags", ldflags.join(" "), "cli/main.go"
+    system "mage", "build"
+    bin.install "cartridge"
     system bin/"cartridge", "gen", "completion"
 
     bash_completion.install "completion/bash/cartridge"

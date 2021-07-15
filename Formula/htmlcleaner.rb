@@ -6,15 +6,13 @@ class Htmlcleaner < Formula
   license "BSD-3-Clause"
   revision 1
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d32d3ccb0c576385b2fcbd5111f0e896097e2053be0a3abf4b76a2b5abbec890" => :catalina
-    sha256 "7162a51e9f957229cc7a8bb0e2248167dedb252047c11e5790183738b4d1e694" => :mojave
-    sha256 "a7274303c16fa42855699269a96e6fc3466371b68a8198c218d689a0ca39c1b8" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "f589e5b99a7d2443607e863555978b07e7c6fe30d9e7c8b536583dfcf87713e4"
+    sha256 cellar: :any_skip_relocation, big_sur:       "e2d3b97f42d5d1442dc129bc32f56db6319caf5a58c54946f498862cf03b474f"
+    sha256 cellar: :any_skip_relocation, catalina:      "1676af315722a63de9c45daf78e747fd2653e72682bf6c8cb3a22c5262f762d4"
+    sha256 cellar: :any_skip_relocation, mojave:        "112f63a58175f8ab10dc077490a4704a18cefe190fb617f511a441f391cdbeac"
+    sha256 cellar: :any_skip_relocation, high_sierra:   "af704dd8dba231d424e0145132f4dab9c93c94d8699267eb3eace5fe90e57623"
   end
 
   depends_on "maven" => :build
@@ -23,10 +21,12 @@ class Htmlcleaner < Formula
   def install
     ENV["JAVA_HOME"] = Formula["openjdk"].opt_prefix
 
-    # Homebrew's OpenJDK no longer accepts Java 5 source
     inreplace "pom.xml" do |s|
+      # Homebrew's OpenJDK no longer accepts Java 5 source
       s.gsub! "<source>1.5</source>", "<source>1.7</source>"
       s.gsub! "<target>1.5</target>", "<target>1.7</target>"
+      # OpenJDK >14 doesn't support older maven-javadoc-plugin versions
+      s.gsub! "<version>2.9</version>", "<version>3.2.0</version>"
     end
 
     system "mvn", "clean", "package", "-DskipTests=true", "-Dmaven.javadoc.skip=true"

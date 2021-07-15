@@ -2,23 +2,37 @@ class GatewayGo < Formula
   desc "GateWay Client for OpenIoTHub"
   homepage "https://github.com/OpenIoTHub"
   url "https://github.com/OpenIoTHub/gateway-go.git",
-      tag:      "v0.1.86",
-      revision: "41021108b389f47646a74379439853ee4447797c"
+      tag:      "v0.1.98",
+      revision: "ea71266326832f4f17a9d1219e5e19781a5bfe8a"
   license "MIT"
+  head "https://github.com/OpenIoTHub/gateway-go.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "4b352aca114d535e64227a6b860e228a44c811e3d5fc9cc91d684d9d2e46680f" => :catalina
-    sha256 "1586ce54282f3cd2861ca1509b8313cb3b927a30dedecead6963f2653f1f6e1a" => :mojave
-    sha256 "7aed612144587fa557e1918529cbf152dd6710c505fa00be596cc53458833477" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "189fff1a4f91152cd8721e1540fe96c117fec4742f78c3b68b840d3325175420"
+    sha256 cellar: :any_skip_relocation, big_sur:       "ed575679894706f1dfe223c5988cadaf862cfce82137b90e0149536023bfe166"
+    sha256 cellar: :any_skip_relocation, catalina:      "87321853027fad8ce4dd0b8bce1900ec4815fc9f3792e9795089acc1a5a68b07"
+    sha256 cellar: :any_skip_relocation, mojave:        "26bc78e653b3069a9a84aa95e589d28f41e827a01366e753170eaf09de9f4481"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "8ea26f646a07fd4ad35346d70c0a34e37100d1bd95f24b46105b6f0466a6d3f1"
   end
 
   depends_on "go" => :build
 
   def install
-    system "go", "build", "-mod=vendor", "-ldflags",
-             "-s -w -X main.version=#{version} -X main.commit=#{stable.specs[:revision]} -X main.builtBy=homebrew",
-             *std_go_args
+    ldflags = %W[
+      -s -w
+      -X main.version=#{version}
+      -X main.commit=#{Utils.git_head}
+      -X main.builtBy=homebrew
+    ]
+    system "go", "build", "-mod=vendor", "-ldflags", ldflags.join(" "), *std_go_args
+    (etc/"gateway-go").install "gateway-go.yaml"
+  end
+
+  service do
+    run [opt_bin/"gateway-go", "-c", etc/"gateway-go.yaml"]
+    keep_alive true
+    error_log_path var/"log/gateway-go.log"
+    log_path var/"log/gateway-go.log"
   end
 
   test do

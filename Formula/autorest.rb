@@ -3,24 +3,18 @@ require "language/node"
 class Autorest < Formula
   desc "Swagger (OpenAPI) Specification code generator"
   homepage "https://github.com/Azure/autorest"
-  url "https://registry.npmjs.org/autorest/-/autorest-3.0.6187.tgz"
-  sha256 "57b243a0dc543d55085503d33679f662a3cc3ea050ec502f155381d9cf61163f"
+  url "https://registry.npmjs.org/autorest/-/autorest-3.2.3.tgz"
+  sha256 "d7a5b92cef2f86b617cef36c327934c7f264fe59c76b6d6e41d1e43129c5cab3"
   license "MIT"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "57c6f4f501c99c24ca7b35a09ef21663ab437470386c1c90033f0ef9e0612500" => :catalina
-    sha256 "c94c2dca6cb5bf911f854b3f0f104096cdebb85f7ae481c480354d7f2ca01308" => :mojave
-    sha256 "e875bf8bee3b62577f260233d0a5c841c2f83f9ca770f2070e4ace0e07a0062f" => :high_sierra
+    sha256 cellar: :any_skip_relocation, all: "e0f77a4335caaaf6de01afa580bd0bd709c9c18c5042e1e5b2ae1c1093c48d78"
   end
 
+  depends_on arch: :x86_64
   depends_on "node"
 
-  resource "petstore" do
+  resource "homebrew-petstore" do
     url "https://raw.githubusercontent.com/Azure/autorest/5c170a02c009d032e10aa9f5ab7841e637b3d53b/Samples/1b-code-generation-multilang/petstore.yaml"
     sha256 "e981f21115bc9deba47c74e5c533d92a94cf5dbe880c4304357650083283ce13"
   end
@@ -31,7 +25,7 @@ class Autorest < Formula
   end
 
   test do
-    resource("petstore").stage do
+    resource("homebrew-petstore").stage do
       system (bin/"autorest"), "--input-file=petstore.yaml",
                                "--nodejs",
                                "--output-folder=petstore"

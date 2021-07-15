@@ -1,17 +1,18 @@
 class Bnfc < Formula
   desc "BNF Converter"
   homepage "https://bnfc.digitalgrammars.com/"
-  url "https://github.com/BNFC/bnfc/archive/v2.8.3.tar.gz"
-  sha256 "ba0b6ab36954a0891b4ad3125cefdd6d441d2c73d174cd8eff344e68ae2fd203"
-  license "GPL-2.0"
-  revision 1
+  url "https://github.com/BNFC/bnfc/archive/v2.9.1.tar.gz"
+  sha256 "d79125168636fdcf0acd64a9b83ea620c311b16dcada0848d8a577aa8aeddec4"
+  license "BSD-3-Clause"
   head "https://github.com/BNFC/bnfc.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "a56684b9fecdf25ef5c77f9124c8c8c3cdbf5f21405a6135eaf47680c387d231" => :catalina
-    sha256 "47cbd943179d46b54c4ff614d613662a4db766ed6f80ec980060acdf6a1c0812" => :mojave
-    sha256 "a92f1907cedabddf2a10a994de224cb15221786742beeb1cde87ac47dc17ff76" => :high_sierra
+    rebuild 2
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "582a5d263f6ac1420e1f4a749fdefad35aad9bbf960f97f57a1c16dfd1c29e4e"
+    sha256 cellar: :any_skip_relocation, big_sur:       "0f3c56a6f814bc0625000b7341ffdb6e6b9fbc60f9e9bef4819214e836b9abd8"
+    sha256 cellar: :any_skip_relocation, catalina:      "33421a59619bb8911362221d25dc6b4b857be514a63795df2ea0bd297eb5bc8a"
+    sha256 cellar: :any_skip_relocation, mojave:        "dced427e3ffcc7bdffe354025d2e19d45f31c87e8e687d243cd1505108dadc24"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "3716b9a49f6a62197755414097a0af56ffe4bfda0a2fbbf898ea4d921af1b534"
   end
 
   depends_on "cabal-install" => [:build, :test]
@@ -23,16 +24,12 @@ class Bnfc < Formula
   uses_from_macos "bison" => :test
   uses_from_macos "flex" => :test
 
-  on_linux do
-    depends_on "make" => [:build, :test]
-  end
-
   def install
     cd "source" do
       system "cabal", "v2-update"
       system "cabal", "v2-install", *std_cabal_v2_args
-      doc.install "changelog"
-      doc.install "src/BNF.cf" => "BNF.cf"
+      doc.install "CHANGELOG.md"
+      doc.install "src/BNFC.cf" => "BNFC.cf"
     end
     cd "docs" do
       system "make", "text", "man", "SPHINXBUILD=#{Formula["sphinx-doc"].bin/"sphinx-build"}"
@@ -71,7 +68,7 @@ class Bnfc < Formula
       (EMul (EInt 14) (ESub (EAdd (EInt 3) (EDiv (EInt 2) (EInt 5))) (EInt 8)))
 
       [Linearized Tree]
-      14 * (3 + 2 / 5 - 8)#{treespace}
+      14 * (3 + 2 / 5 - 8) #{treespace}
 
     EOS
 

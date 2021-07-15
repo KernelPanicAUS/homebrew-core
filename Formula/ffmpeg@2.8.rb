@@ -5,7 +5,8 @@ class FfmpegAT28 < Formula
   sha256 "d0734fec613fe12bee0b5a84f917779b854c1ede7882793f618490e6bbf0c148"
   # None of these parts are used by default, you have to explicitly pass `--enable-gpl`
   # to configure to activate them. In this case, FFmpeg's license changes to GPL v2+.
-  license "GPL-2.0"
+  license "GPL-2.0-or-later"
+  revision 6
 
   livecheck do
     url "https://ffmpeg.org/download.html"
@@ -13,9 +14,10 @@ class FfmpegAT28 < Formula
   end
 
   bottle do
-    sha256 "f0d50cafeb730343feabdbe5226875104e1d11d31bb33d3e03ad5d05dcd8be2c" => :catalina
-    sha256 "65555478eb8b748324a2a37a079693d449bc15022c88a8ee4360c5de558d0a8c" => :mojave
-    sha256 "5323c85c6cab5c3e549ea62b42dabea2e54e39d00e7a0d497f0d181862742f02" => :high_sierra
+    sha256 arm64_big_sur: "be1cf249c7f61941ef9b6c7c904d297df097f87d1abbd83e230204f2bf3285b3"
+    sha256 big_sur:       "0a534f1dfa9883773089558f654f2c90a7f128d5f5787c12df27bb1199faa0d7"
+    sha256 catalina:      "15d64cda816e5112320e847ed0d5379fd241d7a15cb69e3ed5fc8e0f7303f5c4"
+    sha256 mojave:        "55c1fffb7b5dff17aecbd10eec6d509290edae37dd5898ef46bd3bf3abcaa782"
   end
 
   keg_only :versioned_formula
@@ -44,12 +46,6 @@ class FfmpegAT28 < Formula
   depends_on "xvid"
 
   def install
-    # Fixes "dyld: lazy symbol binding failed: Symbol not found: _clock_gettime"
-    if MacOS.version == "10.11" && MacOS::Xcode.version >= "8.0"
-      inreplace %w[libavdevice/v4l2.c libavutil/time.c], "HAVE_CLOCK_GETTIME",
-                                                         "UNDEFINED_GIBBERISH"
-    end
-
     args = %W[
       --prefix=#{prefix}
       --enable-shared
@@ -82,6 +78,8 @@ class FfmpegAT28 < Formula
       --enable-libspeex
       --enable-opencl
       --disable-indev=jack
+      --disable-libxcb
+      --disable-xlib
     ]
 
     # A bug in a dispatch header on 10.10, included via CoreFoundation,

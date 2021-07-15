@@ -1,16 +1,27 @@
 class SolrAT77 < Formula
   desc "Enterprise search platform from the Apache Lucene project"
-  homepage "https://lucene.apache.org/solr/"
+  homepage "https://solr.apache.org"
   url "https://www.apache.org/dyn/closer.lua?path=lucene/solr/7.7.3/solr-7.7.3.tgz"
   mirror "https://archive.apache.org/dist/lucene/solr/7.7.3/solr-7.7.3.tgz"
   sha256 "3ec67fa430afa5b5eb43bb1cd4a659e56ee9f8541e0116d6080c0d783870baee"
   license "Apache-2.0"
+  revision 1
 
-  bottle :unneeded
+  # Remove the `livecheck` block (so the check is automatically skipped) once
+  # the 7.7.x series is reported as EOL on the first-party downloads page:
+  # https://lucene.apache.org/solr/downloads.html#about-versions-and-support
+  livecheck do
+    url "https://lucene.apache.org/solr/downloads.html"
+    regex(/href=.*?solr[._-]v?(7(?:\.\d+)+)\.t/i)
+  end
+
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "44a7fe1bbc1463445524b02f34752f20536b943012c4f0bb10ce1cde9680f792"
+  end
 
   keg_only :versioned_formula
 
-  depends_on "openjdk"
+  depends_on "openjdk@11"
 
   def install
     pkgshare.install "bin/solr.in.sh"
@@ -18,12 +29,15 @@ class SolrAT77 < Formula
     prefix.install %w[contrib dist server]
     libexec.install "bin"
     bin.install [libexec/"bin/solr", libexec/"bin/post", libexec/"bin/oom_solr.sh"]
-    bin.env_script_all_files libexec,
-      JAVA_HOME:     Formula["openjdk"].opt_prefix,
-      SOLR_HOME:     var/"lib/solr",
-      SOLR_LOGS_DIR: var/"log/solr",
-      SOLR_PID_DIR:  var/"run/solr"
+
+    env = Language::Java.overridable_java_home_env("11")
+    env["SOLR_HOME"] = "${SOLR_HOME:-#{var/"lib/solr"}}"
+    env["SOLR_LOGS_DIR"] = "${SOLR_LOGS_DIR:-#{var/"log/solr"}}"
+    env["SOLR_PID_DIR"] = "${SOLR_PID_DIR:-#{var/"run/solr"}}"
+    bin.env_script_all_files libexec, env
     (libexec/"bin").rmtree
+
+    inreplace libexec/"solr", "/usr/local/share/solr", pkgshare
   end
 
   def post_install
@@ -59,6 +73,7 @@ class SolrAT77 < Formula
   end
 
   test do
+    ENV["SOLR_PID_DIR"] = testpath
     port = free_port
 
     # Info detects no Solr node => exit code 3

@@ -1,25 +1,30 @@
 class Libvoikko < Formula
   desc "Linguistic software and Finnish dictionary"
   homepage "https://voikko.puimula.org/"
-  url "https://www.puimula.org/voikko-sources/libvoikko/libvoikko-4.3.tar.gz"
-  sha256 "e843df002fcea2a90609d87e4d6c28f8a0e23332d3b42979ab1793e18f839307"
-  revision 2
+  url "https://www.puimula.org/voikko-sources/libvoikko/libvoikko-4.3.1.tar.gz"
+  sha256 "368240d4cfa472c2e2c43dc04b63e6464a3e6d282045848f420d0f7a6eb09a13"
+  license "GPL-2.0-only"
+
+  livecheck do
+    url "https://www.puimula.org/voikko-sources/libvoikko/"
+    regex(/href=.*?libvoikko[._-]v?(\d+(?:\.\d+)+)\.t/i)
+  end
 
   bottle do
-    cellar :any
-    sha256 "77b2e04b116979ed93b2b6371fa434433e770b944410a55b15b2174a45ff7b8d" => :catalina
-    sha256 "f9ab71db12a2457de1705ea205506efd2bacf3433a85cfecc00af01dc7430a5c" => :mojave
-    sha256 "e809b2d5759f6c04c20228d91598d767462354bc4a97bcb30daa017132cd01e7" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "b0a624c9b02009d2eac3b6adbf6db56c05d6cde859ea5cef7b6a06973afd8619"
+    sha256 cellar: :any, big_sur:       "02041f6b02bbdf49d1399b6c8b0f99e00a003a9f03bf13b57fe449759f98e27e"
+    sha256 cellar: :any, catalina:      "ffc0a9565f9806e59b80b69523230d550a9c3cdfacf6d892a13a7c3b11ac428e"
+    sha256 cellar: :any, mojave:        "79b5cb80a3e95beb1d57485d549724334d687dfdbc60520d3b437f5646ae756d"
   end
 
   depends_on "foma" => :build
   depends_on "pkg-config" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
   depends_on "hfstospell"
 
   resource "voikko-fi" do
-    url "https://www.puimula.org/voikko-sources/voikko-fi/voikko-fi-2.3.tar.gz"
-    sha256 "37b7886a23cfbde472715ba1266e1a81e2a87c3f5ccce8ae23bd7b38bacdcec2"
+    url "https://www.puimula.org/voikko-sources/voikko-fi/voikko-fi-2.4.tar.gz"
+    sha256 "320b2d4e428f6beba9d0ab0d775f8fbe150284fbbafaf3e5afaf02524cee28cc"
   end
 
   def install
@@ -39,6 +44,6 @@ class Libvoikko < Formula
   end
 
   test do
-    pipe_output("#{bin}/voikkospell -m", "onkohan\n")
+    assert_match "C: onkohan", pipe_output("#{bin}/voikkospell -m", "onkohan\n")
   end
 end

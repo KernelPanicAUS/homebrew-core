@@ -1,15 +1,17 @@
 class KubernetesServiceCatalogClient < Formula
   desc "Consume Services in k8s using the OSB API"
   homepage "https://svc-cat.io/"
-  url "https://github.com/kubernetes-sigs/service-catalog/archive/v0.3.0.tar.gz"
-  sha256 "3f79365cbe9c63513ddf3ad836177f0bd9ecee5b36cad015a3e9353e47cc874e"
+  url "https://github.com/kubernetes-sigs/service-catalog/archive/v0.3.1.tar.gz"
+  sha256 "5b463be2102b32bd5a5fed5d433ef53da4d1f70bf007b5a4b78eee7024ca52e3"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d17afa1cc5c192ba9ff73777a71d288744b52f08d49c3ca3eb0b57d46f529873" => :catalina
-    sha256 "0fc4e96709b5f3a71afe4a526e70842b28b5aad677af9c6de7f3dcc62b94d891" => :mojave
-    sha256 "4dda09b950c138a452a3a66d6742ef912761ac0365cc725ca9fad39189496690" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "4bb5425a81eed75134653e42192c83c14bd2758b5a2a9df631691984490e7c9f"
+    sha256 cellar: :any_skip_relocation, big_sur:       "64f2328460df6ccbfd00e299b61e3770a9419de66f70ada056674259036203b4"
+    sha256 cellar: :any_skip_relocation, catalina:      "a6f26e163ee15f601fef1b974e3c55f22a4c7333aea3ddf6ce009f386b58db18"
+    sha256 cellar: :any_skip_relocation, mojave:        "9d29ae7fed57216e663459a4964c9946475329bdd4a6aa0666d69019840c6abf"
+    sha256 cellar: :any_skip_relocation, high_sierra:   "a6b37292f716de1ba860d6e38905aa80063120ca8018d58b0bd05bca7475a253"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "c41818d0040c8d3943167a585393487deef56e651c0308ef50cde5cf0692e3ae"
   end
 
   depends_on "go" => :build

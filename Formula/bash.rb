@@ -5,52 +5,71 @@ class Bash < Formula
   head "https://git.savannah.gnu.org/git/bash.git"
 
   stable do
-    url "https://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz"
-    mirror "https://ftpmirror.gnu.org/bash/bash-5.0.tar.gz"
-    mirror "https://mirrors.kernel.org/gnu/bash/bash-5.0.tar.gz"
-    mirror "https://mirrors.ocf.berkeley.edu/gnu/bash/bash-5.0.tar.gz"
-    sha256 "b4a80f2ac66170b2913efbfb9f2594f1f76c7b1afd11f799e22035d63077fb4d"
-    version "5.0.18"
+    url "https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz"
+    mirror "https://ftpmirror.gnu.org/bash/bash-5.1.tar.gz"
+    mirror "https://mirrors.kernel.org/gnu/bash/bash-5.1.tar.gz"
+    mirror "https://mirrors.ocf.berkeley.edu/gnu/bash/bash-5.1.tar.gz"
+    sha256 "cc012bc860406dcf42f64431bcd3d2fa7560c02915a601aba9cd597a39329baa"
+    version "5.1.8"
 
     %w[
-      001 f2fe9e1f0faddf14ab9bfa88d450a75e5d028fedafad23b88716bd657c737289
-      002 87e87d3542e598799adb3e7e01c8165bc743e136a400ed0de015845f7ff68707
-      003 4eebcdc37b13793a232c5f2f498a5fcbf7da0ecb3da2059391c096db620ec85b
-      004 14447ad832add8ecfafdce5384badd933697b559c4688d6b9e3d36ff36c62f08
-      005 5bf54dd9bd2c211d2bfb34a49e2c741f2ed5e338767e9ce9f4d41254bf9f8276
-      006 d68529a6ff201b6ff5915318ab12fc16b8a0ebb77fda3308303fcc1e13398420
-      007 17b41e7ee3673d8887dd25992417a398677533ab8827938aa41fad70df19af9b
-      008 eec64588622a82a5029b2776e218a75a3640bef4953f09d6ee1f4199670ad7e3
-      009 ed3ca21767303fc3de93934aa524c2e920787c506b601cc40a4897d4b094d903
-      010 d6fbc325f0b5dc54ddbe8ee43020bced8bd589ddffea59d128db14b2e52a8a11
-      011 2c4de332b91eaf797abbbd6c79709690b5cbd48b12e8dfe748096dbd7bf474ea
-      012 2943ee19688018296f2a04dbfe30b7138b889700efa8ff1c0524af271e0ee233
-      013 f5d7178d8da30799e01b83a0802018d913d6aa972dd2ddad3b927f3f3eb7099a
-      014 5d6eee6514ee6e22a87bba8d22be0a8621a0ae119246f1c5a9a35db1f72af589
-      015 a517df2dda93b26d5cbf00effefea93e3a4ccd6652f152f4109170544ebfa05e
-      016 ffd1d7a54a99fa7f5b1825e4f7e95d8c8876bc2ca151f150e751d429c650b06d
-      017 4cf3b9fafb8a66d411dd5fc9120032533a4012df1dc6ee024c7833373e2ddc31
-      018 7c314e375a105a6642e8ed44f3808b9def89d15f7492fe2029a21ba9c0de81d3
+      001 ebb07b3dbadd98598f078125d0ae0d699295978a5cdaef6282fe19adef45b5fa
+      002 15ea6121a801e48e658ceee712ea9b88d4ded022046a6147550790caf04f5dbe
+      003 22f2cc262f056b22966281babf4b0a2f84cb7dd2223422e5dcd013c3dcbab6b1
+      004 9aaeb65664ef0d28c0067e47ba5652b518298b3b92d33327d84b98b28d873c86
+      005 cccbb5e9e6763915d232d29c713007a62b06e65126e3dd2d1128a0dc5ef46da5
+      006 75e17d937de862615c6375def40a7574462210dce88cf741f660e2cc29473d14
+      007 acfcb8c7e9f73457c0fb12324afb613785e0c9cef3315c9bbab4be702f40393a
+      008 f22cf3c51a28f084a25aef28950e8777489072628f972b12643b4534a17ed2d1
     ].each_slice(2) do |p, checksum|
       patch :p0 do
-        url "https://ftp.gnu.org/gnu/bash/bash-5.0-patches/bash50-#{p}"
-        mirror "https://ftpmirror.gnu.org/bash/bash-5.0-patches/bash50-#{p}"
-        mirror "https://mirrors.ocf.berkeley.edu/gnu/bash/bash-5.0-patches/bash50-#{p}"
-        mirror "https://mirrors.kernel.org/gnu/bash/bash-5.0-patches/bash50-#{p}"
+        url "https://ftp.gnu.org/gnu/bash/bash-5.1-patches/bash51-#{p}"
+        mirror "https://ftpmirror.gnu.org/bash/bash-5.1-patches/bash51-#{p}"
+        mirror "https://mirrors.ocf.berkeley.edu/gnu/bash/bash-5.1-patches/bash51-#{p}"
+        mirror "https://mirrors.kernel.org/gnu/bash/bash-5.1-patches/bash51-#{p}"
         sha256 checksum
       end
     end
   end
 
+  # We're not using `url :stable` here because we need `url` to be a string
+  # when we use it in the `strategy` block.
   livecheck do
-    url "http://www.ravenports.com/catalog/bucket_C8/bash/standard/"
-    regex(%r{<td id="pkgversion">v?(\d+(?:\.\d+)+)(?:_\d+)?</td>}i)
+    url "https://ftp.gnu.org/gnu/bash/?C=M&O=D"
+    regex(/href=.*?bash[._-]v?(\d+(?:\.\d+)+)\.t/i)
+    strategy :gnu do |page, regex|
+      # Match versions from files
+      versions = page.scan(regex).flatten.uniq.sort
+      next versions if versions.blank?
+
+      # Assume the last-sorted version is newest
+      newest_version = Version.new(versions.last)
+
+      # Simply return the found versions if there isn't a patches directory
+      # for the "newest" version
+      patches_directory = page.match(%r{href=.*?(bash[._-]v?#{newest_version.major_minor}[._-]patches/?)["' >]}i)
+      next versions if patches_directory.blank?
+
+      # Fetch the page for the patches directory
+      patches_page = Homebrew::Livecheck::Strategy.page_content(URI.join(@url, patches_directory[1]).to_s)
+      next versions if patches_page[:content].blank?
+
+      # Generate additional major.minor.patch versions from the patch files in
+      # the directory and add those to the versions array
+      patches_page[:content].scan(/href=.*?bash[._-]?v?\d+(?:\.\d+)*[._-]0*(\d+)["' >]/i).each do |match|
+        versions << "#{newest_version.major_minor}.#{match[0]}"
+      end
+
+      versions
+    end
   end
 
   bottle do
-    sha256 "c6e7b7a521a1cfb21f2872bde253bfd40150bd4ba36ada62c05fcdb73ae094c6" => :catalina
-    sha256 "ba0617f6d3f4e691f9863e2f73596da94671f4c0ca21a95b99f19eced315f2d4" => :mojave
-    sha256 "46023d0bafe68b838ada45ff6a66e63f7eac814eeb84e15a09d4b84a790ef49d" => :high_sierra
+    sha256 arm64_big_sur: "fdf2411fa554caf64814dbe8b166d30a94b7ee80a836d9dff32c86edf4938213"
+    sha256 big_sur:       "62569d2e8452dd3cb61168ffc2581193989503f0e419c3cf1c32984d165ce139"
+    sha256 catalina:      "751ffc4d6980a91d4a73dd8758465f519770519d0a4b39ab798062d228b6f8e4"
+    sha256 mojave:        "ecb50a94d925314cc09f4e5f016538143edeba3b3fb7235397286b97cc016e14"
+    sha256 x86_64_linux:  "b81e0a2f8cd9aa8f742926742a462fa57ee8aceafc5492fa5fefc96394d44041"
   end
 
   def install

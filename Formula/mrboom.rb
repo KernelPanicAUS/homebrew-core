@@ -1,15 +1,16 @@
 class Mrboom < Formula
   desc "Eight player Bomberman clone"
   homepage "http://mrboom.mumblecore.org/"
-  url "https://github.com/Javanaise/mrboom-libretro/archive/4.9.tar.gz"
-  sha256 "062cf1f91364d2d6ea717e92304ca163cfba5d14b30bb440ee118d1b8e10328d"
+  url "https://github.com/Javanaise/mrboom-libretro/releases/download/5.2/MrBoom-src-5.2.454d614.tar.gz"
+  version "5.2"
+  sha256 "50e4fe4bc74b23ac441499c756c4575dfe9faab9e787a3ab942a856ac63cf10d"
   license "MIT"
 
   bottle do
-    cellar :any
-    sha256 "d85ec4ab953ce62ec26b3f632943f4155c7b4b06a6c7bfeec4af334bd3453c5d" => :catalina
-    sha256 "8a4663dd80ed90899b51c5a568b1a8330b06441eba93cfa70e773514dbba4b2d" => :mojave
-    sha256 "a3c07658f4050be94c37c341f262b7c82a808dd696f349841aa0e83b07eaf8e7" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "90484ee7a62a29aa82242664b917340def45c3b999a7d21197ac10e020617194"
+    sha256 cellar: :any, big_sur:       "904cd506e99c6269809fe4c593263de7cc1f0746fe0c5b5180aa63ef522ca212"
+    sha256 cellar: :any, catalina:      "7fc60e5a37d093f2311b797c5822dbeb098cdf47c038c808496973d29f563f2c"
+    sha256 cellar: :any, mojave:        "262fab23ed3b5a3b80948ae4fb4eca1c0c0cad04220a031a731905d812aebaae"
   end
 
   depends_on "cmake" => :build
@@ -17,12 +18,6 @@ class Mrboom < Formula
   depends_on "minizip"
   depends_on "sdl2"
   depends_on "sdl2_mixer"
-
-  # fix Makefile issue, remove in next release
-  patch do
-    url "https://github.com/Javanaise/mrboom-libretro/commit/c777f1059c9a4b3fcefe6e2a19cfe9f81a13740b.diff?full_index=1"
-    sha256 "19f469ccde5f1a9bc45fa440fd4cbfd294947f17b191f299822db17de66a5a23"
-  end
 
   def install
     system "make", "mrboom", "LIBSDL2=1"
@@ -34,12 +29,12 @@ class Mrboom < Formula
     require "expect"
     require "timeout"
     PTY.spawn(bin/"mrboom", "-m", "-f 0", "-z") do |r, _w, pid|
-      sleep 1
+      sleep 15
       Process.kill "SIGINT", pid
       assert_match "monster", r.expect(/monster/, 10)[0]
     ensure
       begin
-        Timeout.timeout(10) do
+        Timeout.timeout(30) do
           Process.wait pid
         end
       rescue Timeout::Error

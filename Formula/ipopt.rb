@@ -1,32 +1,38 @@
 class Ipopt < Formula
   desc "Interior point optimizer"
-  homepage "https://projects.coin-or.org/Ipopt/"
-  url "https://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.13.tgz"
-  sha256 "aac9bb4d8a257fdfacc54ff3f1cbfdf6e2d61fb0cf395749e3b0c0664d3e7e96"
+  homepage "https://coin-or.github.io/Ipopt/"
+  url "https://github.com/coin-or/Ipopt/archive/releases/3.14.1.tar.gz"
+  sha256 "afa37bbb0d91003c58284113717dc304718a1f236c97fe097dfab1672cb879c6"
   license "EPL-1.0"
-  revision 9
   head "https://github.com/coin-or/Ipopt.git"
 
   bottle do
-    cellar :any
-    sha256 "d7a39ffbd4228581ca59ffb091b997aebd40a41038c60809baea596ebcd2e871" => :catalina
-    sha256 "1147231684595f18ffe44e3a2852ece5456fc4dbfe7455f6a853dd4ef4e055c0" => :mojave
-    sha256 "4d9b8a8cc3091182b49fd4a38bf55f4ca7e953d326af64e247db419c42f8859c" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "dd6168dd885e5c86595dc4d44418672770d31d63f59dd2dc99d503bf89b94b08"
+    sha256 cellar: :any, big_sur:       "3effb180e71de5b365670b7f80b4e7a8af7d126f236744c2a09c4954368a05a9"
+    sha256 cellar: :any, catalina:      "60d8be3bd1f46bfc365a9824c73317719d969193106fd2111dea3c31ff1acfd5"
+    sha256 cellar: :any, mojave:        "9ad773e484d983e1c9f092f07d5e90491779336edf4a940520ad5c0645410b33"
   end
 
+  depends_on "openjdk" => :build
   depends_on "pkg-config" => [:build, :test]
+  depends_on "ampl-mp"
   depends_on "gcc"
   depends_on "openblas"
 
   resource "mumps" do
-    url "http://mumps.enseeiht.fr/MUMPS_5.2.1.tar.gz"
-    sha256 "d988fc34dfc8f5eee0533e361052a972aa69cc39ab193e7f987178d24981744a"
+    url "http://mumps.enseeiht.fr/MUMPS_5.4.0.tar.gz"
+    sha256 "c613414683e462da7c152c131cebf34f937e79b30571424060dd673368bbf627"
 
     # MUMPS does not provide a Makefile.inc customized for macOS.
     patch do
       url "https://raw.githubusercontent.com/Homebrew/formula-patches/ab96a8b8e510a8a022808a9be77174179ac79e85/ipopt/mumps-makefile-inc-generic-seq.patch"
       sha256 "0c570ee41299073ec2232ad089d8ee10a2010e6dfc9edc28f66912dae6999d75"
     end
+  end
+
+  resource "test" do
+    url "https://github.com/coin-or/Ipopt/archive/releases/3.14.1.tar.gz"
+    sha256 "afa37bbb0d91003c58284113717dc304718a1f236c97fe097dfab1672cb879c6"
   end
 
   def install
@@ -44,7 +50,11 @@ class Ipopt < Formula
       ENV.deparallelize { system "make", "d" }
 
       (buildpath/"mumps_include").install Dir["include/*.h", "libseq/mpi.h"]
-      lib.install Dir["lib/*.dylib", "libseq/*.dylib", "PORD/lib/*.dylib"]
+      lib.install Dir[
+        "lib/#{shared_library("*")}",
+        "libseq/#{shared_library("*")}",
+        "PORD/lib/#{shared_library("*")}"
+      ]
     end
 
     args = [
@@ -54,8 +64,10 @@ class Ipopt < Formula
       "--enable-shared",
       "--prefix=#{prefix}",
       "--with-blas=-L#{Formula["openblas"].opt_lib} -lopenblas",
-      "--with-mumps-incdir=#{buildpath}/mumps_include",
-      "--with-mumps-lib=-L#{lib} -ldmumps -lmpiseq -lmumps_common -lopenblas -lpord",
+      "--with-mumps-cflags=-I#{buildpath}/mumps_include",
+      "--with-mumps-lflags=-L#{lib} -ldmumps -lmpiseq -lmumps_common -lopenblas -lpord",
+      "--with-asl-cflags=-I#{Formula["ampl-mp"].opt_include}/asl",
+      "--with-asl-lflags=-L#{Formula["ampl-mp"].opt_lib} -lasl",
     ]
 
     system "./configure", *args
@@ -66,20 +78,10 @@ class Ipopt < Formula
   end
 
   test do
-    (testpath/"test.cpp").write <<~EOS
-      #include <cassert>
-      #include <IpIpoptApplication.hpp>
-      #include <IpReturnCodes.hpp>
-      #include <IpSmartPtr.hpp>
-      int main() {
-        Ipopt::SmartPtr<Ipopt::IpoptApplication> app = IpoptApplicationFactory();
-        const Ipopt::ApplicationReturnStatus status = app->Initialize();
-        assert(status == Ipopt::Solve_Succeeded);
-        return 0;
-      }
-    EOS
+    testpath.install resource("test")
     pkg_config_flags = `pkg-config --cflags --libs ipopt`.chomp.split
-    system ENV.cxx, "test.cpp", *pkg_config_flags
+    system ENV.cxx, "examples/hs071_cpp/hs071_main.cpp", "examples/hs071_cpp/hs071_nlp.cpp", *pkg_config_flags
     system "./a.out"
+    system "#{bin}/ipopt", "#{Formula["ampl-mp"].opt_pkgshare}/example/wb"
   end
 end

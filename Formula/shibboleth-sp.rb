@@ -1,8 +1,9 @@
 class ShibbolethSp < Formula
   desc "Shibboleth 2 Service Provider daemon"
   homepage "https://wiki.shibboleth.net/confluence/display/SHIB2"
-  url "https://shibboleth.net/downloads/service-provider/3.1.0/shibboleth-sp-3.1.0.tar.bz2"
-  sha256 "40dfedbb0f8e604ed4b6d606143de7980b4f8c13fc4682375ace94f8ac194654"
+  url "https://shibboleth.net/downloads/service-provider/3.2.3/shibboleth-sp-3.2.3.tar.bz2"
+  sha256 "a02b441c09dc766ca65b78fe631277a17c5eb2f0a441b035cdb6a4720fb94024"
+  license "Apache-2.0"
 
   livecheck do
     url "https://shibboleth.net/downloads/service-provider/latest/"
@@ -10,9 +11,10 @@ class ShibbolethSp < Formula
   end
 
   bottle do
-    sha256 "0e9ce54b4624d94327ad5d0c67ebcb6dc01d4a47f9bef359424c050b332ffe82" => :catalina
-    sha256 "d6f41e0976912dd5bf59bada50f91c4254a42eb45b9371a84f9ba8e4177706f3" => :mojave
-    sha256 "25841e4f4a66c574dd42f94ad9d2ef18e793b64ff94c7d193740fb5067d8f6bf" => :high_sierra
+    sha256 arm64_big_sur: "5da6a421faf2e3aaf0d222816712269cd31a78fa716854492d2c9f87a6115a77"
+    sha256 big_sur:       "99e4e8bb7eb6fb35d545079b836382f8b1e5fa71c8e6473cde4f18fb109e3b09"
+    sha256 catalina:      "1f8547fa3587591c061f7569668cd128f4918e78555c9b180a694d5a45adb4ce"
+    sha256 mojave:        "cf2279276c1f7e2585ce9d1cd12f456550215f0b4f8f950be607c1f8e6574cb3"
   end
 
   depends_on "apr" => :build

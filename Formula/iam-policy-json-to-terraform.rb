@@ -1,34 +1,23 @@
 class IamPolicyJsonToTerraform < Formula
   desc "Convert a JSON IAM Policy into terraform"
   homepage "https://github.com/flosell/iam-policy-json-to-terraform"
-  url "https://github.com/flosell/iam-policy-json-to-terraform/archive/1.5.0.tar.gz"
-  sha256 "9d58642d3f532c4334dc63f45e44ff9cae254360f977bca925f20033338fadcb"
+  url "https://github.com/flosell/iam-policy-json-to-terraform/archive/1.8.0.tar.gz"
+  sha256 "428ee4c7c40a77c3f2c08f1ea5b5ac145db684bba038ab113848e1697ef906dc"
   license "Apache-2.0"
   head "https://github.com/flosell/iam-policy-json-to-terraform.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d5aa3dea843226e508c13bd46c418d7d76e928d631863002054a0bd05b139a73" => :catalina
-    sha256 "b7d80897886195d53da78f483318c12c5873483faaf73bf42dc91dfe1d7ddfbc" => :mojave
-    sha256 "1ad4ad756d400206cc8583a53dc57e50139b45865118d13594c5cc4acef7ff75" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "ac00a7ac5a6ff93c27f096a6a8ff9e77cfbe65a18825f4d70411b0dfd93c64ed"
+    sha256 cellar: :any_skip_relocation, big_sur:       "414adbbf759816cf41a250c66cf375e85d0d4e03d94cdb6b41aba59000f72b87"
+    sha256 cellar: :any_skip_relocation, catalina:      "414adbbf759816cf41a250c66cf375e85d0d4e03d94cdb6b41aba59000f72b87"
+    sha256 cellar: :any_skip_relocation, mojave:        "414adbbf759816cf41a250c66cf375e85d0d4e03d94cdb6b41aba59000f72b87"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "04e3ec2788df5965f842759d48c939efbd699fbcc66d2d3e000a6c844607630e"
   end
 
-  depends_on "dep" => :build
   depends_on "go" => :build
 
   def install
-    ENV["GOPATH"] = buildpath
-    ENV["GOOS"] = "darwin"
-
-    dir = buildpath/"src/github.com/flosell/iam-policy-json-to-terraform"
-    dir.install buildpath.children
-    cd "src/github.com/flosell/iam-policy-json-to-terraform" do
-      # system "go", "build", "-o", "iam-policy-json-to-terraform", "*.go"
-      system "make", "iam-policy-json-to-terraform_darwin"
-      mv "iam-policy-json-to-terraform_darwin", "iam-policy-json-to-terraform"
-      bin.install "iam-policy-json-to-terraform"
-      prefix.install_metafiles
-    end
+    system "go", "build", *std_go_args(ldflags: "-s -w")
   end
 
   test do

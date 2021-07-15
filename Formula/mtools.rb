@@ -1,40 +1,37 @@
 class Mtools < Formula
   desc "Tools for manipulating MSDOS files"
   homepage "https://www.gnu.org/software/mtools/"
-  url "https://ftp.gnu.org/gnu/mtools/mtools-4.0.24.tar.gz"
-  mirror "https://ftpmirror.gnu.org/mtools/mtools-4.0.24.tar.gz"
-  sha256 "3483bdf233e77d0cf060de31df8e9f624c4bf26bd8a38ef22e06ca799d60c74e"
-  license "GPL-3.0"
-
-  livecheck do
-    url :stable
-  end
+  url "https://ftp.gnu.org/gnu/mtools/mtools-4.0.31.tar.gz"
+  mirror "https://ftpmirror.gnu.org/mtools/mtools-4.0.31.tar.gz"
+  sha256 "37d0a97717625453e9a88b51c41233f00f2757a51d7eeffe8a0841784bb6f3d6"
+  license "GPL-3.0-or-later"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "a5229fbfcd666abf4c79cd065be6a58801228460f999319a0234319ccb8aba3a" => :catalina
-    sha256 "3a9d80e7a7e9a6dd377d0030a5fbc29e509ca6dd598e24943b36169ed1512670" => :mojave
-    sha256 "ebed9be10002c3a8a68089ff43702b24f1f2c451be9e14778eaece3ad4e0cdc0" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "c4a2c598ecc8fa73fc8b3aaa9bd56b91c3137c1cfb431ce9c795ee69d9cab3ba"
+    sha256 cellar: :any_skip_relocation, big_sur:       "a38b210941937a9424d92096af7fa3470b9664460ba19d17631675b88889c4e8"
+    sha256 cellar: :any_skip_relocation, catalina:      "9561b64f4c3ca6d11fe5f13e7fa205a777dbecbb4c150b936dbb97eed15c9e8b"
+    sha256 cellar: :any_skip_relocation, mojave:        "0178acec6b4cb1d206534712d0304de310d8887ef4733998387286f46137c16a"
   end
 
   conflicts_with "multimarkdown", because: "both install `mmd` binaries"
 
-  def install
-    # Prevents errors such as "mainloop.c:89:15: error: expected ')'"
-    # Upstream issue https://lists.gnu.org/archive/html/info-mtools/2014-02/msg00000.html
-    if ENV.cc == "clang"
-      inreplace "sysincludes.h",
-        "#  define UNUSED(x) x __attribute__ ((unused));x",
-        "#  define UNUSED(x) x"
-    end
+  # 4.0.25 doesn't include the proper osx locale headers.
+  patch :DATA
 
+  def install
     args = %W[
-      LIBS=-liconv
       --disable-debug
       --prefix=#{prefix}
       --sysconfdir=#{etc}
       --without-x
     ]
+    on_macos do
+      args << "LIBS=-liconv"
+    end
+
+    # The mtools configure script incorrectly detects stat64. This forces it off
+    # to fix build errors on Apple Silicon. See stat(6) and pv.rb.
+    ENV["ac_cv_func_stat64"] = "no" if Hardware::CPU.arm?
 
     system "./configure", *args
     system "make"
@@ -43,6 +40,21 @@ class Mtools < Formula
   end
 
   test do
-    assert_match /#{version}/, shell_output("#{bin}/mtools --version")
+    assert_match version.to_s, shell_output("#{bin}/mtools --version")
   end
 end
+
+__END__
+diff --git a/sysincludes.h b/sysincludes.h
+index 056218e..ba3677b 100644
+--- a/sysincludes.h
++++ b/sysincludes.h
+@@ -279,6 +279,8 @@ extern int errno;
+ #include <pwd.h>
+ #endif
+ 
++#include <xlocale.h>
++#include <strings.h>
+ 
+ #ifdef HAVE_STRING_H
+ # include <string.h>

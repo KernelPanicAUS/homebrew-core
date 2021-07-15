@@ -1,25 +1,25 @@
 class Libtcod < Formula
   desc "API for roguelike developers"
   homepage "https://github.com/libtcod/libtcod"
-  url "https://github.com/libtcod/libtcod/archive/1.15.1.tar.gz"
-  sha256 "2713d8719be53db7a529cbf53064e5bc9f3adf009db339d3a81b50d471bc306f"
+  url "https://github.com/libtcod/libtcod/archive/1.18.1.tar.gz"
+  sha256 "6bced6115bc764c0465db96e3553662ae6dc2f9358c5499a1984758a841f8ec7"
   license "BSD-3-Clause"
-  revision 1
 
   bottle do
-    cellar :any
-    sha256 "f6cbbe0ba4037f31da72f30fb97138c9f24b03a1f9293336971f771f3df40489" => :catalina
-    sha256 "1e61a2db504b8999e3796ada0dcd1de3d42e07f00a6fd7f84b2b767d8883a047" => :mojave
-    sha256 "3fec806904f3aad780ba54cb4deec9f34422fafc096ef18b7762989c90b2ae8e" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "1fab6b1ff1ee7f9ab0ded5b89867f4250b882445ffef5c73b20348227abdd00f"
+    sha256 cellar: :any, big_sur:       "0110681440d6825ef184dea27219a190126ab176d5e278c5d27c2e38c33444f5"
+    sha256 cellar: :any, catalina:      "55e5e93eb87f3e7b7df2fdaa497b8888bf899139b4cad0cb1c1790eeed77bb6b"
+    sha256 cellar: :any, mojave:        "b9b4bd6b64f52cac8e09e7263caed4bad328eae3a58e3e43cba7b50a957c1371"
   end
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
   depends_on "pkg-config" => :build
-  depends_on "python@3.8" => :build
-  depends_on :macos # Due to Python 2
+  depends_on "python@3.9" => :build
   depends_on "sdl2"
+
+  conflicts_with "libzip", "minizip-ng", because: "libtcod, libzip and minizip-ng install a `zip.h` header"
 
   def install
     cd "buildsys/autotools" do
@@ -51,6 +51,7 @@ class Libtcod < Formula
     assert_equal "#{version}\n", `./version-c`
     (testpath/"version-cc.cc").write <<~EOS
       #include <libtcod/libtcod.hpp>
+      #include <iostream>
       int main()
       {
         std::cout << TCOD_STRVERSION << std::endl;

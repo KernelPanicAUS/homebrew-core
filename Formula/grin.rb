@@ -1,15 +1,15 @@
 class Grin < Formula
   desc "Minimal implementation of the Mimblewimble protocol"
   homepage "https://grin.mw/"
-  url "https://github.com/mimblewimble/grin/archive/v4.0.2.tar.gz"
-  sha256 "398f5ecdd80266227494e515e214218861c7dc597c0973e337b9f5ef050d7345"
+  url "https://github.com/mimblewimble/grin/archive/v5.1.0.tar.gz"
+  sha256 "8c8bad23e32fc45bf8bce484c46bd5d782f9bd13ff7d442e316e5140fea1ed72"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "21a6189271d6a92aab6103f9e48f5ca4e4aaad9e2bb6f3c1fbe042ba84dee292" => :catalina
-    sha256 "f88f2da4ab778f5b1488fa55599418863c312d3847303f736265b9478e81657b" => :mojave
-    sha256 "a2779bb17742ddb0a1706fb48202c677a8d5c6a2f8da941c9cff43a0e71534be" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "4c8fedce6fb2014c390914a9c16ab8c42ef06d34b0e7cf8278ce5ffbbc3a36a9"
+    sha256 cellar: :any_skip_relocation, big_sur:       "bf2f070ac6aea3f7ca867167068684b0279c4f9ed13b02e328e88e5c94fa6f6b"
+    sha256 cellar: :any_skip_relocation, catalina:      "aa5d88ba12bae1e7e468d6bfc165b1c105790e391e26493a22d7500c3d13dee5"
+    sha256 cellar: :any_skip_relocation, mojave:        "94e2c97fc9dc4b3f3e1ebb47d1505484052e567d8a04b1bd082c828bce448014"
   end
 
   depends_on "llvm" => :build # for libclang

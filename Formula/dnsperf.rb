@@ -1,8 +1,8 @@
 class Dnsperf < Formula
   desc "Measure DNS performance by simulating network conditions"
   homepage "https://www.dns-oarc.net/tools/dnsperf"
-  url "https://www.dns-oarc.net/files/dnsperf/dnsperf-2.3.4.tar.gz"
-  sha256 "adcb3ad28ad46ef9ff4a218c67bd5ea9a9dde556b9a277059a1f390ce0f86581"
+  url "https://www.dns-oarc.net/files/dnsperf/dnsperf-2.6.0.tar.gz"
+  sha256 "7d5e0a41798b02b634ad80401b71efe51ff5cfe3c07e1030149cf5772c45b72e"
   license "Apache-2.0"
 
   livecheck do
@@ -11,30 +11,21 @@ class Dnsperf < Formula
   end
 
   bottle do
-    cellar :any
-    sha256 "29ce167d9cac25446abbab3948a4de2b66bead70576bca24f13bda51c1d79de4" => :catalina
-    sha256 "4cc4b444f46fe98328a3d07c70672b6e963b7b530a10515a02a1f40eab1b2d42" => :mojave
-    sha256 "d2bad43d4858579143f5f01aab16ca5fe8a528b3fe81051ee212ebefc7e4a057" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "ef54bb098cec7337125aa3467c8ecf98d2fb78fdcd241ae037ea23fefcd573a7"
+    sha256 cellar: :any,                 big_sur:       "3b8e3c295bf3e25a27e3f94df39ebbc961ef4db9042682f54a72af05bd04b81d"
+    sha256 cellar: :any,                 catalina:      "f1233b930f07f50f522ce62927580eeea780dc8b6143b1f6c9b29ca76991e862"
+    sha256 cellar: :any,                 mojave:        "4faa3586b9198b874e26b3dddf89ae5579ffcb14e7f475bc46f7bf7df98f160c"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "7ce597e00cfa864bfd3eabc3d109ad46c0f69d05bb6a9f5fe1b49999d1712bf8"
   end
 
   depends_on "pkg-config" => :build
-  depends_on "bind"
-  depends_on "krb5"
-  depends_on "libxml2"
+  depends_on "concurrencykit"
+  depends_on "ldns"
+  depends_on "openssl@1.1"
 
   def install
-    # Fix "ld: file not found: /usr/lib/system/libsystem_darwin.dylib" for lxml
-    ENV["SDKROOT"] = MacOS.sdk_path if MacOS.version == :sierra
-
-    # Extra linker flags are needed to build this on macOS.
-    # Upstream bug ticket: https://github.com/DNS-OARC/dnsperf/issues/80
-    ENV.append "LDFLAGS", "-framework CoreFoundation"
-    ENV.append "LDFLAGS", "-framework CoreServices"
-    ENV.append "LDFLAGS", "-framework Security"
-    ENV.append "LDFLAGS", "-framework GSS"
-    ENV.append "LDFLAGS", "-framework Kerberos"
-
     system "./configure", "--prefix=#{prefix}"
+    system "make"
     system "make", "install"
   end
 

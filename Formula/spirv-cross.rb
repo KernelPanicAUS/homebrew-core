@@ -1,16 +1,17 @@
 class SpirvCross < Formula
   desc "Performing reflection and disassembling SPIR-V"
   homepage "https://github.com/KhronosGroup/SPIRV-Cross"
-  url "https://github.com/KhronosGroup/SPIRV-Cross/archive/2020-06-29.tar.gz"
-  version "2020-06-29"
-  sha256 "29523168867fcfa55b03a65970a8572be67e37accb08ce1051b2d3ae19011452"
+  url "https://github.com/KhronosGroup/SPIRV-Cross/archive/2021-01-15.tar.gz"
+  version "2021-01-15"
+  sha256 "d700863b548cbc7f27a678cee305f561669a126eb2cc11d36a7023dfc462b9c4"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "e23ad5f26f55793c665977deecea85f7d1ac92a9f80bef9c86eaf8195709007a" => :catalina
-    sha256 "33675bde9b1f2e5861d6c5b37f027ac9be2f9a1783d2efdc84f7756c483b085e" => :mojave
-    sha256 "51295b9f28b4bff7807d938c741c7a0c5a807d22808dd84df97457bbcde9f621" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "80a4ee152f875a3b653457ee40e0a05fa9892cc6203fd3d525e16157e646c3c0"
+    sha256 cellar: :any_skip_relocation, big_sur:       "224f4a1ac8dbc055a8ea1a431a82e275a3de850f805d7aa5388d05696616e403"
+    sha256 cellar: :any_skip_relocation, catalina:      "612183441f7920e7f6a3f4d87181e30ecc071a3d2d20185c8b3d614dc2deb30b"
+    sha256 cellar: :any_skip_relocation, mojave:        "df9e5893b35edc958ae73b9e763ff63e35d5e8438f9e67cc332ec14ce00f6def"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "95b1a4f371d7235a3c7552c6a9b160adb90ab6dbbc50005d3e89981a0ffe93b6"
   end
 
   depends_on "cmake" => :build

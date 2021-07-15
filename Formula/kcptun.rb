@@ -1,16 +1,16 @@
 class Kcptun < Formula
   desc "Stable & Secure Tunnel based on KCP with N:M multiplexing and FEC"
   homepage "https://github.com/xtaci/kcptun"
-  url "https://github.com/xtaci/kcptun/archive/v20200701.tar.gz"
-  sha256 "d5b2d212c6806f1c4eba5fbce8797734eaa8ae0f8cdd90dd06d0844392888ff0"
+  url "https://github.com/xtaci/kcptun/archive/v20210624.tar.gz"
+  sha256 "3f39eb2e6ee597751888b710afc83147b429c232591e91bc97565b32895f33a8"
   license "MIT"
   head "https://github.com/xtaci/kcptun.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "6b2353c5753b2266b6dc9cbdfe8f4bc9266b299f1bcf2fea100b8276fa2c4074" => :catalina
-    sha256 "e5fb829f053fd71f14b8f290fabd22f87fd6961be01f1feb75df2c43c6753150" => :mojave
-    sha256 "872b2cc7078e268c38a78ed3e98cc7d6b201426584f57f11ee7c231cdcbdfe16" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "6e345408ba16132ad0013c13015df96fc97fdf4661e67d4f0fc01c574a203097"
+    sha256 cellar: :any_skip_relocation, big_sur:       "2cd2c509194e43eafd7b14cb3374e2b96b2438f0c8430aea762915fcfc1d5971"
+    sha256 cellar: :any_skip_relocation, catalina:      "cd5687433da66043168a885f2ce895232fa7e44564a4ac73ae2875eaf1310fa2"
+    sha256 cellar: :any_skip_relocation, mojave:        "19f310dd4027105d9dc76a526571f9e286c1d77f530de3012a9130daf3f806d9"
   end
 
   depends_on "go" => :build

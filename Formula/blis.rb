@@ -1,16 +1,15 @@
 class Blis < Formula
   desc "BLAS-like Library Instantiation Software Framework"
   homepage "https://github.com/flame/blis"
-  url "https://github.com/flame/blis/archive/0.7.0.tar.gz"
-  sha256 "7e345d666799e15bba570bd125f97042f17bf752a61dcf314486a6cd096d5f68"
+  url "https://github.com/flame/blis/archive/0.8.1.tar.gz"
+  sha256 "729694128719801e82fae7b5f2489ab73e4a467f46271beff09588c9265a697b"
   license "BSD-3-Clause"
   head "https://github.com/flame/blis.git"
 
   bottle do
-    cellar :any
-    sha256 "8ac1fb34cdaad5dfdac2e3ac454de08e7ff2a165571554f0bfd665ab2e5f2a71" => :catalina
-    sha256 "2ab25f7e90a115e604a5233420b190c7ab60c73642f6eedc3b519f96d20c7bc2" => :mojave
-    sha256 "4f19883538758550e8a0ce958d661e186b42cd8af66d6671e3589c30a6e96e14" => :high_sierra
+    sha256 cellar: :any, big_sur:  "ad2e6862fd4b5a425769c108e7a36e33ac7e7fc77ce699756fe051e68524518d"
+    sha256 cellar: :any, catalina: "b26e5e7deb7b85319fa539a061ff84df842378a902e3695a4f6df63eba9f5cdb"
+    sha256 cellar: :any, mojave:   "333cceec593098d68f438ddcfc6415d44cf0af565601c0163496e23bdf4a8aec"
   end
 
   def install

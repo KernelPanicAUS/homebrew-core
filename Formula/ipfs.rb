@@ -2,34 +2,34 @@ class Ipfs < Formula
   desc "Peer-to-peer hypermedia protocol"
   homepage "https://ipfs.io/"
   url "https://github.com/ipfs/go-ipfs.git",
-      tag:      "v0.6.0",
-      revision: "d6e036a888ba95c15ce243a45c0cacb4a5bb8ee4"
-  # license ["Apache-2.0", "MIT"] - pending https://github.com/Homebrew/brew/pull/7953
-  license "Apache-2.0"
-  revision 1
+      tag:      "v0.9.0",
+      revision: "179d1d15079ab331648023670b766604c764dc17"
+  license all_of: [
+    "MIT",
+    any_of: ["MIT", "Apache-2.0"],
+  ]
   head "https://github.com/ipfs/go-ipfs.git"
 
   livecheck do
-    url :head
+    url :stable
     regex(/^v?(\d+(?:\.\d+)+)$/i)
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "0a54783b7614037349b7c378897bd9da2212db9bf43db160a94a5e463dd1ee33" => :catalina
-    sha256 "aff43c71a166c388cb8e6ca5a46d8282dd54f8111632f6d8f8f7cd9a910577c5" => :mojave
-    sha256 "d7bea0bd153859687ad5f6375a6a6bb95ce8968366342aec0e005500bc2d159e" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "082d26de8a7fb59d605f9d041bb60c73e018bc8d68bdb261ad96bfcb84cde64a"
+    sha256 cellar: :any_skip_relocation, big_sur:       "cf27a87766f08ae1164b07e4764cc23022c90e61a7a09ef4933772ba780cf7be"
+    sha256 cellar: :any_skip_relocation, catalina:      "25fed340fbbb800032ade9a9b8e336dd1a281677d212b0045ad3ac5d25c8230b"
+    sha256 cellar: :any_skip_relocation, mojave:        "99ecea05edda6979e511ef1a81064beb45469b258d9ae6ddf9a551b1bbb44ed5"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "c2d5b7e1972348264bab5bf9e0e656f032788bfddbb34c3b96f287b3a41ccfad"
   end
 
-  depends_on "go@1.14" => :build
+  depends_on "go" => :build
 
   def install
-    ENV["GOPATH"] = buildpath
-    (buildpath/"src/github.com/ipfs/go-ipfs").install buildpath.children
-    cd("src/github.com/ipfs/go-ipfs") { system "make", "install" }
-    bin.install "bin/ipfs"
+    system "make", "build"
+    bin.install "cmd/ipfs/ipfs"
 
-    cd("src/github.com/ipfs/go-ipfs") { bash_completion.install "misc/completion/ipfs-completion.bash" }
+    bash_completion.install "misc/completion/ipfs-completion.bash"
   end
 
   plist_options manual: "ipfs daemon"

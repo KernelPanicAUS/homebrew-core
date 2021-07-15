@@ -1,31 +1,31 @@
 class Austin < Formula
   desc "Python frame stack sampler for CPython"
   homepage "https://github.com/P403n1x87/austin"
-  url "https://github.com/P403n1x87/austin/archive/v1.0.1.tar.gz"
-  sha256 "f86804f777f2f466ddede5d530d3ca67582b2a1467d000662d81272d6e9c5639"
-  license "GPL-3.0"
+  url "https://github.com/P403n1x87/austin/archive/v3.0.0.tar.gz"
+  sha256 "df57cd33e74fe9b7b0c87ea82827b0d7863cc5761bd3e75b3367d7d3384c3836"
+  license "GPL-3.0-or-later"
   head "https://github.com/P403n1x87/austin.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d54d25854d57ba21937ee4cf57bf9948f084e38afb19723150c787e2742697c2" => :catalina
-    sha256 "7e87587953588d5f50dbdaa09d731653f1fa354913da4bcc43a34b505cfde2fa" => :mojave
-    sha256 "700f3399a63c70da0b0ee0a3be9d64a886ea503a7ea9192062998a63d8a7f23b" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "7f3464bfa7fd1f576832f25a56e19f551bf5c6778d77a158ca1b25b48f7c671d"
+    sha256 cellar: :any_skip_relocation, big_sur:       "088ef140bf30d7b91cbfa194dabbacae049979a65a71fad25a6d550296af3589"
+    sha256 cellar: :any_skip_relocation, catalina:      "a7ffc95aa5460830509c80307b327a10b170f22e7e35012c4cf4d3c5d1afb2d8"
+    sha256 cellar: :any_skip_relocation, mojave:        "9fe770bb131628dab6120be4996b919a5b6eab70c45fb03e2e88f454dac8f6f0"
   end
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
-  depends_on "python@3.8" => :test
+  depends_on "python@3.9" => :test
 
   def install
     system "autoreconf", "--install"
     system "./configure", "--prefix=#{prefix}"
     system "make"
     system "make", "install"
-    man1.install "debian/austin.1"
+    man1.install "src/austin.1"
   end
 
   test do
-    shell_output("#{bin}/austin #{Formula["python@3.8"].opt_bin}/python3 -c \"print('Test')\"", 33)
+    shell_output("#{bin}/austin #{Formula["python@3.9"].opt_bin}/python3 -c \"from time import sleep; sleep(1)\"", 37)
   end
 end

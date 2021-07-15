@@ -1,25 +1,22 @@
 class Nifi < Formula
   desc "Easy to use, powerful, and reliable system to process and distribute data"
   homepage "https://nifi.apache.org"
-  url "https://www.apache.org/dyn/closer.lua?path=/nifi/1.12.0/nifi-1.12.0-bin.tar.gz"
-  mirror "https://archive.apache.org/dist/nifi/1.12.0/nifi-1.12.0-bin.tar.gz"
-  sha256 "e2ddbc1b57d88e1e154c40d2c533b42ff37275bed1d71a392eb2fa111511651b"
+  url "https://www.apache.org/dyn/closer.lua?path=/nifi/1.13.2/nifi-1.13.2-bin.tar.gz"
+  mirror "https://archive.apache.org/dist/nifi/1.13.2/nifi-1.13.2-bin.tar.gz"
+  sha256 "1d4f5315e8bc04f68628e797cc1c674e8546d67e780e1a7fbdea9ca10a39cd2a"
   license "Apache-2.0"
 
-  livecheck do
-    url :stable
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "6d706bd32d88aff01c78bc7c9447dbe104731aeb6698f7a1fe08c95b91d58d8e"
   end
 
-  bottle :unneeded
-
-  depends_on "openjdk"
+  depends_on "openjdk@11"
 
   def install
     libexec.install Dir["*"]
 
     (bin/"nifi").write_env_script libexec/"bin/nifi.sh",
-                                  NIFI_HOME: libexec,
-                                  JAVA_HOME: Formula["openjdk"].opt_prefix
+                                  Language::Java.overridable_java_home_env("11").merge(NIFI_HOME: libexec)
   end
 
   test do

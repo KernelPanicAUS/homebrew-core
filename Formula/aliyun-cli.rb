@@ -1,29 +1,26 @@
 class AliyunCli < Formula
   desc "Universal Command-Line Interface for Alibaba Cloud"
   homepage "https://github.com/aliyun/aliyun-cli"
-  url "https://github.com/aliyun/aliyun-cli/archive/v3.0.56.tar.gz"
-  sha256 "2c8aa50d18702c8b8066b58272f143fc7c742d50335a25841ea319270be1135b"
+  url "https://github.com/aliyun/aliyun-cli.git",
+    tag:      "v3.0.81",
+    revision: "5f1669f9b0671763151b753a23d9fbe736802384"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "268ee78cc8af1c93a96cf6082f03bf627aa7f772058f17cf7e2129981c957a90" => :catalina
-    sha256 "e0df3220e590dd96a26947c6f5830a6dca22633e78c3eef1e51aa2a9cde3f422" => :mojave
-    sha256 "227461d864a15bf3217a177f00c1a80ce2c33490ee3b39cc776307421982e918" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "1b8b3e9fa621f7d1973418c29678d8dab915183116363fb57586f3d00dae8e0f"
+    sha256 cellar: :any_skip_relocation, big_sur:       "75a04a700fa34534a47fbbc09b8e43a01db5c098a408de29047cdea7f9caec67"
+    sha256 cellar: :any_skip_relocation, catalina:      "28cb8aed86428023757746703178ebc2ca64b551deac995a8aaf48b2a24bc93f"
+    sha256 cellar: :any_skip_relocation, mojave:        "93d52a697456ae5949bef1b6ae8abb89bddf5b9242cfdcb89408dec15dffe25b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "831ea3e8913c867c2d5993a3d69158d2faeb339f2c61813dd559ae7c9c1de36e"
   end
 
   depends_on "go" => :build
+  depends_on "go-bindata" => :build
 
   def install
-    ENV["GO111MODULE"] = "off"
-    ENV["GOPATH"] = buildpath
-    ENV["PATH"] = "#{ENV["PATH"]}:#{buildpath}/bin"
-    (buildpath/"src/github.com/aliyun/aliyun-cli").install buildpath.children
-    cd "src/github.com/aliyun/aliyun-cli" do
-      system "make", "metas"
-      system "go", "build", "-o", bin/"aliyun", "-ldflags",
-                            "-X 'github.com/aliyun/aliyun-cli/cli.Version=#{version}'", "main/main.go"
-    end
+    system "make", "metas"
+    system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/aliyun/aliyun-cli/cli.Version=#{version}"),
+                          "-o", bin/"aliyun", "main/main.go"
   end
 
   test do

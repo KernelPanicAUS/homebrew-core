@@ -1,19 +1,21 @@
 class Openvpn < Formula
   desc "SSL/TLS VPN implementing OSI layer 2 or 3 secure network extension"
-  homepage "https://openvpn.net/index.php/download/community-downloads.html"
-  url "https://swupdate.openvpn.org/community/releases/openvpn-2.4.9.tar.xz"
-  mirror "https://build.openvpn.net/downloads/releases/openvpn-2.4.9.tar.xz"
-  sha256 "641f3add8694b2ccc39fd4fd92554e4f089ad16a8db6d2b473ec284839a5ebe2"
+  homepage "https://openvpn.net/community/"
+  url "https://swupdate.openvpn.org/community/releases/openvpn-2.5.3.tar.xz"
+  mirror "https://build.openvpn.net/downloads/releases/openvpn-2.5.3.tar.xz"
+  sha256 "fb6a9943c603a1951ca13e9267653f8dd650c02f84bccd2b9d20f06a4c9c9a7e"
+  license "GPL-2.0-only" => { with: "openvpn-openssl-exception" }
 
   livecheck do
-    url :homepage
+    url "https://openvpn.net/community-downloads/"
     regex(/href=.*?openvpn[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
   bottle do
-    sha256 "b4d2c905d810562fc11e83c226ed8572386482f1e856e0f8de3e5ff63ee00526" => :catalina
-    sha256 "315e55c0f3b2cdbf4c3e8545c98702e1c4eeff20bc37dbf89921389494b3ef54" => :mojave
-    sha256 "bb3ce3b1fbbdf51cf5a207d00a1f60d22eb9b98096595fb81c563dffac077c0f" => :high_sierra
+    sha256 arm64_big_sur: "433d03f96b84988645792035d030fe75d6dd5798ef8378801819ea26fcf47e53"
+    sha256 big_sur:       "2793ac511bf39ba8188d91f44ed4e54a3d4d7ebe343b12bc51ab5230527dafa5"
+    sha256 catalina:      "934be2e38dcba81a70b32c075bde79d5bbe57f5f754c9216c24edb0c8a1a581f"
+    sha256 mojave:        "e7b821dff3579fbb6e1d3b9c0ece0e2152ede9eac7ff98daec488300d92c50ac"
   end
 
   depends_on "pkg-config" => :build
@@ -23,6 +25,11 @@ class Openvpn < Formula
   depends_on "openssl@1.1"
   depends_on "pkcs11-helper"
 
+  on_linux do
+    depends_on "linux-pam"
+    depends_on "net-tools"
+  end
+
   def install
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
@@ -30,6 +37,9 @@ class Openvpn < Formula
                           "--with-crypto-library=openssl",
                           "--enable-pkcs11",
                           "--prefix=#{prefix}"
+    inreplace "sample/sample-plugins/Makefile",
+              HOMEBREW_SHIMS_PATH/"mac/super/pkg-config",
+              Formula["pkg-config"].opt_bin/"pkg-config"
     system "make", "install"
 
     inreplace "sample/sample-config-files/openvpn-startup.sh",

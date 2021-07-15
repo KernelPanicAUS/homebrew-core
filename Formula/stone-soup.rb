@@ -1,35 +1,36 @@
 class StoneSoup < Formula
   desc "Dungeon Crawl Stone Soup: a roguelike game"
   homepage "https://crawl.develz.org/"
-  url "https://github.com/crawl/crawl/archive/0.25.1.tar.gz"
-  sha256 "41ddf73543940a4d16a7f23c618e2f464dd6d3dd3affc999d2412d8af3f01126"
-  license "GPL-2.0"
+  url "https://github.com/crawl/crawl/archive/0.26.1.tar.gz"
+  sha256 "c8c6abbefa7f21383ea77cd017033050471e06c60ea4deebd033f5198bc39596"
+  license "GPL-2.0-or-later"
 
   livecheck do
-    url "https://crawl.develz.org/download.htm"
-    regex(/Stable.*?>v?(\d+(?:\.\d+)+)</i)
+    url :stable
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
   end
 
   bottle do
-    sha256 "aed9973952598da0eec03689ab04b5133e6170ad2b3009da470191a2fbb0b3b6" => :catalina
-    sha256 "3ca35a24927cb22726a0f187d794b90637e1b6c09151f507507e79156f6bc33c" => :mojave
-    sha256 "dc43d1b520ed222b5f00b1a92610422fb2f4dcdf134d5f624cc41b0c23629f6d" => :high_sierra
+    sha256 arm64_big_sur: "d136c116fe8948a031660fbe114cf7bf808312179d99f90d7edae96a82b5a503"
+    sha256 big_sur:       "e9dc79251315b89b4c9b1fdc4f3a0b33cf3e386c7258f849b6ba4961aa668e61"
+    sha256 catalina:      "620b9518a611c1496206fbf76a428ad41c471fb1d22d38430245a33e3036206e"
+    sha256 mojave:        "b8b7913385df4b0930bd3dc4c046b1b8ed59c4ebad8cdc2a4dcbb9e2546d9565"
   end
 
   depends_on "pkg-config" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
   depends_on "lua@5.1"
   depends_on "pcre"
   depends_on "sqlite"
 
   resource "PyYAML" do
-    url "https://files.pythonhosted.org/packages/64/c2/b80047c7ac2478f9501676c988a5411ed5572f35d1beff9cae07d321512c/PyYAML-5.3.1.tar.gz"
-    sha256 "b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d"
+    url "https://files.pythonhosted.org/packages/a0/a4/d63f2d7597e1a4b55aa3b4d6c5b029991d3b824b5bd331af8d4ab1ed687d/PyYAML-5.4.1.tar.gz"
+    sha256 "607774cbba28732bfa802b54baa7484215f530991055bb562efbed5b2f20a45e"
   end
 
   def install
     ENV.cxx11
-    ENV.prepend_path "PATH", Formula["python@3.8"].opt_libexec/"bin"
+    ENV.prepend_path "PATH", Formula["python@3.9"].opt_libexec/"bin"
     xy = Language::Python.major_minor_version "python3"
     ENV.prepend_create_path "PYTHONPATH", buildpath/"vendor/lib/python#{xy}/site-packages"
 

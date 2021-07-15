@@ -1,35 +1,31 @@
 class Gdb < Formula
   desc "GNU debugger"
   homepage "https://www.gnu.org/software/gdb/"
-  url "https://ftp.gnu.org/gnu/gdb/gdb-9.2.tar.xz"
-  mirror "https://ftpmirror.gnu.org/gdb/gdb-9.2.tar.xz"
-  sha256 "360cd7ae79b776988e89d8f9a01c985d0b1fa21c767a4295e5f88cb49175c555"
-  license "GPL-2.0"
-  revision 1
+  url "https://ftp.gnu.org/gnu/gdb/gdb-10.2.tar.xz"
+  mirror "https://ftpmirror.gnu.org/gdb/gdb-10.2.tar.xz"
+  sha256 "aaa1223d534c9b700a8bec952d9748ee1977513f178727e1bee520ee000b4f29"
+  license "GPL-3.0-or-later"
   head "https://sourceware.org/git/binutils-gdb.git"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    sha256 "fbfb5bb6a5f8d7edb33937ebd505fbfe5074db3d49a0403803edafcbcbde297f" => :catalina
-    sha256 "64fdeef2403ae8dad106d4933dc6b5c555d560249a18dccc0a518c53f8ea26b1" => :mojave
-    sha256 "cbf828704099f07e8c863c962ef8deb60b932e3d75146a16b20967e3ddca7cbe" => :high_sierra
+    sha256 big_sur:      "31de67be9674e5bd363a554e7f02002687a5ac9734526983e0430b041acea042"
+    sha256 catalina:     "66f0ab39e075db4f5de3403c0f8125b54be84b7d009491e0b8e040d774721c3b"
+    sha256 mojave:       "f1392338a52a0e3d74b3b4f9f1ad4e70977d80ad672789a1371bed545d5528e4"
+    sha256 x86_64_linux: "5f21f90491812fec4b5408fa7c0a308b3a7e60f12b435733364f635b9ae88cc9"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
   depends_on "xz" # required for lzma support
 
+  uses_from_macos "texinfo" => :build
   uses_from_macos "expat"
   uses_from_macos "ncurses"
 
   on_linux do
     depends_on "pkg-config" => :build
+    depends_on "gcc"
     depends_on "guile"
   end
-
-  conflicts_with "i386-elf-gdb", because: "both install include/gdb, share/gdb and share/info"
 
   fails_with :clang do
     build 800
@@ -39,6 +35,8 @@ class Gdb < Formula
     EOS
   end
 
+  fails_with gcc: "5"
+
   def install
     args = %W[
       --enable-targets=all
@@ -46,7 +44,7 @@ class Gdb < Formula
       --disable-debug
       --disable-dependency-tracking
       --with-lzma
-      --with-python=#{Formula["python@3.8"].opt_bin}/python3
+      --with-python=#{Formula["python@3.9"].opt_bin}/python3
       --disable-binutils
     ]
 
@@ -55,7 +53,7 @@ class Gdb < Formula
       system "make"
 
       # Don't install bfd or opcodes, as they are provided by binutils
-      system "make", "install-gdb"
+      system "make", "install-gdb", "maybe-install-gdbserver"
     end
   end
 

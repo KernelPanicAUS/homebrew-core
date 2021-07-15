@@ -8,11 +8,13 @@ class PyenvVirtualenv < Formula
   head "https://github.com/pyenv/pyenv-virtualenv.git"
 
   livecheck do
-    url "https://github.com/pyenv/pyenv-virtualenv/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "0e3bfba31c3d4bc538ff156e225ca3dbb1fd15e27cd8fd5885706eb0efdb4405"
+  end
 
   depends_on "pyenv"
 

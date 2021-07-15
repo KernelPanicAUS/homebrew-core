@@ -1,15 +1,17 @@
 class Okteto < Formula
   desc "Build better apps by developing and testing code directly in Kubernetes"
   homepage "https://okteto.com"
-  url "https://github.com/okteto/okteto/archive/1.8.17.tar.gz"
-  sha256 "ef21e6209658096e0ba3946e9977d82e1bdb2ed5519382b4dfea21804e8290a0"
+  url "https://github.com/okteto/okteto/archive/1.13.1.tar.gz"
+  sha256 "8b1beb404a603baa10bd7225275cec886988df693b3785923553a0b4800425ac"
   license "Apache-2.0"
+  head "https://github.com/okteto/okteto.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "a7db58614a165a15db54fbbe99aed87ed0b66a468dbb4db78b4ef6f573479429" => :catalina
-    sha256 "b8ccfc8b1d2433c99a67f0e89378d5b6edc0f64aa2e2d1ea2cc4c17eda106210" => :mojave
-    sha256 "f255579a5e3280256d317f2d4bd270fc21cf242d4ece99a005ea317fec847dde" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "465b288730b4047a1f9c79137b46e8a951125de63fdf6d925c27f6e80aeb3a88"
+    sha256 cellar: :any_skip_relocation, big_sur:       "3112361c3f62ed29c7c0fff6c53e812683b7c0afc8b9833fed37e1489abf1ab8"
+    sha256 cellar: :any_skip_relocation, catalina:      "352dc881b3bfa09347b62b5570555b948625c98adc4df501b2e9fbd02996d04d"
+    sha256 cellar: :any_skip_relocation, mojave:        "4a821e7549aa89a67cd6eba2461e2afa34f4413ceac164397bb6c0ae9e65ea53"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "95457c0accc78664d5a00372ff64557ac402297fccae9c6c47f9a316a89c1f92"
   end
 
   depends_on "go" => :build
@@ -17,26 +19,14 @@ class Okteto < Formula
   def install
     ldflags = "-s -w -X github.com/okteto/okteto/pkg/config.VersionString=#{version}"
     tags = "osusergo netgo static_build"
-    system "go", "build", "-o", "#{bin}/#{name}", "-trimpath", "-ldflags", ldflags, "-tags", tags
+    system "go", "build", *std_go_args(ldflags: ldflags), "-tags", tags
   end
 
   test do
+    assert_match "okteto version #{version}", shell_output("#{bin}/okteto version")
+
     touch "test.rb"
-    system "echo | okteto init --overwrite --file test.yml"
-    expected = <<~EOS
-      name: #{Pathname.getwd.basename}
-      image: okteto/ruby:2
-      command:
-      - bash
-      workdir: /okteto
-      sync:
-      - .:/okteto
-      forward:
-      - 1234:1234
-      - 8080:8080
-      persistentVolume: {}
-    EOS
-    got = File.read("test.yml")
-    assert_equal expected, got
+    assert_match "Failed to load your local Kubeconfig",
+      shell_output("echo | #{bin}/okteto init --overwrite --file test.yml 2>&1")
   end
 end

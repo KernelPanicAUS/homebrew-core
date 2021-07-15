@@ -1,27 +1,27 @@
 class Flarectl < Formula
   desc "CLI application for interacting with a Cloudflare account"
   homepage "https://github.com/cloudflare/cloudflare-go/tree/master/cmd/flarectl"
-  url "https://github.com/cloudflare/cloudflare-go/archive/v0.13.1.tar.gz"
-  sha256 "f59209fe1cb1cd9b3a4de51f4b82d03e25e4efe04c50fda0f969c806584104d4"
+  url "https://github.com/cloudflare/cloudflare-go/archive/v0.19.0.tar.gz"
+  sha256 "f0ed63950bfed416d0f085e4e753d27d8a9baf0d2f1f83670900a73336809926"
   license "BSD-3-Clause"
   head "https://github.com/cloudflare/cloudflare-go.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "501d90b9b83b8fd898ceb43e3cfed81d653cd5dde92213a85b6a1e7b86e24043" => :catalina
-    sha256 "d44748d6dd6550bc3a8940f4c2a91451126b774cc6233480fe717f16d8a6f5df" => :mojave
-    sha256 "1e202ff7da87a0e66c2529c693e45d6ff8cb456ef5c2751d2a5f7d2f3b400810" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "f5fde10ed87fc9ce8b9caa717ec691442556b75493002b0c9ee471a33ef81a19"
+    sha256 cellar: :any_skip_relocation, big_sur:       "4d9645e8cda9639823c37036cfb2bb930edeb524e1b551d94020033146491c6d"
+    sha256 cellar: :any_skip_relocation, catalina:      "0c8765e93fcebe45e3c4b8eb7c118013fa5f9325396932115951b5f3228b59e4"
+    sha256 cellar: :any_skip_relocation, mojave:        "31cc48e6267377eb496350cbb8b8b6e3f1b6801cb1a4b1855a861bb8be3107e8"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "2629f46b3b892920ef4252bc4fc8f931c8327f47c9676665a826df50b83470be"
   end
 
   depends_on "go" => :build
 
   def install
-    cd "cmd/flarectl"
-    system "go", "build", *std_go_args, "-ldflags", "-s -w", "./..."
+    system "go", "build", *std_go_args(ldflags: "-s -w"), "./cmd/flarectl"
   end
 
   test do
     ENV["CF_API_TOKEN"] = "invalid"
-    assert_match "Invalid format for Authorization header", shell_output("#{bin}/flarectl u i")
+    assert_match "HTTP status 400: Invalid request headers (6003)", shell_output("#{bin}/flarectl u i", 1)
   end
 end

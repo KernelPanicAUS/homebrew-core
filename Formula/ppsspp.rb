@@ -1,17 +1,29 @@
 class Ppsspp < Formula
   desc "PlayStation Portable emulator"
   homepage "https://ppsspp.org/"
-  url "https://github.com/hrydgard/ppsspp.git",
-      tag:      "v1.10.3",
-      revision: "087de849bdc74205dd00d8e6e11ba17a591213ab"
-  license "BSD-3-Clause"
+  license all_of: ["GPL-2.0-or-later", "BSD-3-Clause"]
   head "https://github.com/hrydgard/ppsspp.git"
 
+  # Remove stable block when patch is removed
+  stable do
+    url "https://github.com/hrydgard/ppsspp.git",
+        tag:      "v1.11.3",
+        revision: "f7ace3b8ee33e97e156f3b07f416301e885472c5"
+
+    # Fix build with latest FFmpeg. Remove in the next release.
+    # See https://github.com/hrydgard/ppsspp/pull/14176
+    patch do
+      url "https://github.com/hrydgard/ppsspp/commit/8a69c3d1226fe174c49437514a2d3ca7e411c3fa.patch?full_index=1"
+      sha256 "1ae7265d299f26beffcff0f05c1567dcda6dd02d1ba1655892061530d5d6c008"
+    end
+  end
+
   bottle do
-    cellar :any
-    sha256 "1c79cc6ca4e1add2d0241309d597a7d438cb9c3f1ea67acb39682e1b5614e8ce" => :catalina
-    sha256 "8acc30ceaa93a21f13dd3e21756ab08fee494537a7ea0e0e94cd6421691e28bd" => :mojave
-    sha256 "e9d362ed61fcc7bfbaa23db4ea427e00ea89cfa931c11133782ae4497bccca9a" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any, arm64_big_sur: "e2fbd7a06918037ba8d7cd4cd63aac2a91da169109846858d289abf2c506dbea"
+    sha256 cellar: :any, big_sur:       "1fb64f1bf453622476e94460904d4f033e05f42755d3f6793775233e9a55dec9"
+    sha256 cellar: :any, catalina:      "9b375483a60f6e4e631c5c01a0f5b69c15ff69570749d31f0af77014a6e2c373"
+    sha256 cellar: :any, mojave:        "6d22974f4e46d094860b1b1de2ed5b1d9a77e41ae777519fe77e8172fc1ada54"
   end
 
   depends_on "cmake" => :build

@@ -4,8 +4,8 @@ class AwscliAT1 < Formula
   desc "Official Amazon AWS command-line interface"
   homepage "https://aws.amazon.com/cli/"
   # awscli should only be updated every 10 releases on multiples of 10
-  url "https://github.com/aws/aws-cli/archive/1.18.120.tar.gz"
-  sha256 "21bc80ba44dcaccc00ac1449a03cb8cc8af1bf9f72284ef01d1a1e0364c08483"
+  url "https://github.com/aws/aws-cli/archive/1.19.110.tar.gz"
+  sha256 "c2674f4323a239bd44544f5b413ef79430f5dca5071a8843ff80e2ac754c9e07"
   license "Apache-2.0"
 
   livecheck do
@@ -14,17 +14,18 @@ class AwscliAT1 < Formula
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "b9ad0825aaa6d73857528ece6c2353999782daceb481a3e16b26377fad387bb1" => :catalina
-    sha256 "a65df1a126ded52e7a23e08693d62a43473684f6237373c0fbcea37736adfb49" => :mojave
-    sha256 "f237742d73fe19050c929364640adb627b1c91c06a994bb644fcce8ff6c9679d" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "132efee0aaaeaf48fb086dc266176c28a2d34b433945e5f98c5ec94a2dbb40f7"
+    sha256 cellar: :any_skip_relocation, big_sur:       "7013c26ea7616b3ca8654cfc1b1060bb1f361cadb9812c122ebd5b9e54d9555c"
+    sha256 cellar: :any_skip_relocation, catalina:      "731f250e6a090bb5423f09395163135872abea6341b06246ab7a7c203ec36517"
+    sha256 cellar: :any_skip_relocation, mojave:        "84832cdede967853af4c590a82b29bd9c419b23ce3e48e1f88db5b6dfe7c76ea"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "9d46e30a175df04087e5e2cdfe354b1dc441e66e0f998b98da3fbaac06a8589c"
   end
 
   keg_only :versioned_formula
 
   # Some AWS APIs require TLS1.2, which system Python doesn't have before High
   # Sierra
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   uses_from_macos "groff"
 

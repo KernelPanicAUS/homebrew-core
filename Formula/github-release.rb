@@ -1,22 +1,25 @@
 class GithubRelease < Formula
   desc "Create and edit releases on Github (and upload artifacts)"
   homepage "https://github.com/github-release/github-release"
-  url "https://github.com/github-release/github-release/archive/v0.8.1.tar.gz"
-  sha256 "c32d615e94cfa1d7c64af5ca84820bfc6193c867b0e9041b4e21b40f0b3df307"
+  url "https://github.com/github-release/github-release/archive/v0.10.0.tar.gz"
+  sha256 "79bfaa465f549a08c781f134b1533f05b02f433e7672fbaad4e1764e4a33f18a"
   license "MIT"
   head "https://github.com/github-release/github-release.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "67399d81e62c8b1fb7d5b26ebea79de5d806757cd194d2055dcd5dc8935167e2" => :catalina
-    sha256 "3640960eb97bed10dfe75237cc61b3e8fb36f526c9d50c6820cd07c841432842" => :mojave
-    sha256 "53b5ef103a6190a891f53a5c52019ab2e12e31f15f4f97775cb2cb169befefa1" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "dfaa0f4ae21d44b1e0716ef71cabf02ac60a8692893b2a49bb32e096cb441a4a"
+    sha256 cellar: :any_skip_relocation, big_sur:       "d7770942546f2a49c7b44104fe69ad7cf724cc1eac39280d1217af66ccd97e3b"
+    sha256 cellar: :any_skip_relocation, catalina:      "6dc8bf5543967949480fb9bf3f24e149a5ef52857cc38877125f9ad6281eeb58"
+    sha256 cellar: :any_skip_relocation, mojave:        "745fcc9458243936c5e482098357c5f83d44e5126e5346f1f6c6ca90ee55a4c6"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "c8a0776dbf6e7156af66a6ce7aefff22e5f12ab47f310748fe75fa6aba8edd3d"
   end
 
   depends_on "go" => :build
 
   def install
     ENV["GOPATH"] = buildpath
+    ENV["GO111MODULE"] = "auto"
     system "make"
     bin.install "github-release"
   end

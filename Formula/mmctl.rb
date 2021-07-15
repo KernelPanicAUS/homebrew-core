@@ -2,16 +2,22 @@ class Mmctl < Formula
   desc "Remote CLI tool for Mattermost server"
   homepage "https://github.com/mattermost/mmctl"
   url "https://github.com/mattermost/mmctl.git",
-      tag:      "v5.27.0",
-      revision: "1dc9cda2e80757ff8fc694f32efc7ea76e327635"
+      tag:      "v5.36.0",
+      revision: "a3c6ff14a9f44dc847fa629a9e8ab516b8b883ec"
   license "Apache-2.0"
   head "https://github.com/mattermost/mmctl.git"
 
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
+
   bottle do
-    cellar :any_skip_relocation
-    sha256 "c6487e68fdd7c307affcefb22559d490f91d872c42c9603126abbba7abbd64df" => :catalina
-    sha256 "f657c4416f8cebc8f3491f422d64637181b20fab332bf43bb15771fc78e4a77d" => :mojave
-    sha256 "81083c3540155a6f3413b83f24ec46eab80081a9e1f84b9d9243b0419e66217e" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "2100b6ed7798a993f34233c4b6b58759c83ce0f96b3c39a66d192d6a89c3d570"
+    sha256 cellar: :any_skip_relocation, big_sur:       "1e14c73707eb41c21ad5b9b6aea1850b56b71b79dd7fa6e8ccd8ec48e888c162"
+    sha256 cellar: :any_skip_relocation, catalina:      "9c7223fc02910173dabd773352af3617e92e1cfacc37337e43f5606cfeeef13d"
+    sha256 cellar: :any_skip_relocation, mojave:        "4db09ecf5831227464cf41b6bd512e37a079406c124d32ec93b4ce14987772cd"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "1b588231aa08d4972a9aed9e0d57d022090dcfb295a2a32a8c17cb766d561ea2"
   end
 
   depends_on "go" => :build
@@ -19,7 +25,7 @@ class Mmctl < Formula
   def install
     ENV["GOBIN"] = buildpath/bin
     ENV["ADVANCED_VET"] = "FALSE"
-    ENV["BUILD_HASH"] = Utils.safe_popen_read("git", "rev-parse", "HEAD").chomp
+    ENV["BUILD_HASH"] = Utils.git_head
     ENV["BUILD_VERSION"] = version.to_s
     (buildpath/"src/github.com/mattermost/mmctl").install buildpath.children
     cd "src/github.com/mattermost/mmctl" do
@@ -35,8 +41,8 @@ class Mmctl < Formula
 
   test do
     output = pipe_output("#{bin}/mmctl help 2>&1")
-    assert_no_match /.*No such file or directory.*/, output
-    assert_no_match /.*command not found.*/, output
-    assert_match /.*mmctl \[command\].*/, output
+    refute_match(/.*No such file or directory.*/, output)
+    refute_match(/.*command not found.*/, output)
+    assert_match(/.*mmctl \[command\].*/, output)
   end
 end

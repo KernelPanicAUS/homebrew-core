@@ -1,8 +1,8 @@
 class X3270 < Formula
   desc "IBM 3270 terminal emulator for the X Window System and Windows"
   homepage "http://x3270.bgp.nu/"
-  url "http://x3270.bgp.nu/download/04.00/suite3270-4.0ga10-src.tgz"
-  sha256 "05db34a7508a0d61c95a43563472e61d0f7fa12ce0d5f3ed3e5f88e966d8d98c"
+  url "http://x3270.bgp.nu/download/04.00/suite3270-4.0ga14-src.tgz"
+  sha256 "9796f2b47ed222776d4fe2756a0db3617f84dbbf02d0a9374c36a13b1b416375"
   license "BSD-3-Clause"
 
   livecheck do
@@ -11,12 +11,15 @@ class X3270 < Formula
   end
 
   bottle do
-    sha256 "c6fe40f28c1b0e20cb3ee10280f324ac272f5b4b4fc77209660bf2a095d855a3" => :catalina
-    sha256 "6b56b9d4bee80297a4e2ee4e18e1ca50efab5b5870445e7741a2c446732d237d" => :mojave
-    sha256 "7de587f8dd4eb24ddd2c2d9ab48b82aa9ca2097cf5797bb8a33c35494acd8840" => :high_sierra
+    sha256 arm64_big_sur: "bf8dcba7b17bb1ebc1fdf8987badc037236e2f83c20a5621c914295355e0f545"
+    sha256 big_sur:       "0fb9e40a2f6d56e3f166d7cee9ef8eae4166e3e038c19b114ff840e33a3aad3e"
+    sha256 catalina:      "1e8f59bedd3fbda46cab9db08944ab21b3549f9ca9002423590015da3cf75ce6"
+    sha256 mojave:        "50108883c53cb6ef78dd63372952451db9d182d4409e340a31146397fbacaf93"
   end
 
   depends_on "readline"
+
+  uses_from_macos "tcl-tk"
 
   def install
     args = %W[

@@ -6,18 +6,15 @@ class Luabind < Formula
   license "MIT"
   revision 2
 
-  livecheck do
-    url :stable
+  bottle do
+    sha256 cellar: :any, mojave:      "aa095d38915e09287c86d11d65871b5a4e6604799a961f0e055c9bf526ba403b"
+    sha256 cellar: :any, high_sierra: "736bb4cb6a49338eecab9a179f3104e8328d7133366b921b2fece14b6fd2aa26"
+    sha256 cellar: :any, sierra:      "39e74593d47fd648230e177e9a8a90e1b3a888c84d6c7d38f358265d5b93ce94"
+    sha256 cellar: :any, el_capitan:  "914a79679264790d9ffb0726a1f303954d816da3dd23db3b8816873cf467677f"
+    sha256 cellar: :any, yosemite:    "171123f48a6cf2431d6b143b84bf31dbb955f103195aa30597a61b7a61943982"
   end
 
-  bottle do
-    cellar :any
-    sha256 "aa095d38915e09287c86d11d65871b5a4e6604799a961f0e055c9bf526ba403b" => :mojave
-    sha256 "736bb4cb6a49338eecab9a179f3104e8328d7133366b921b2fece14b6fd2aa26" => :high_sierra
-    sha256 "39e74593d47fd648230e177e9a8a90e1b3a888c84d6c7d38f358265d5b93ce94" => :sierra
-    sha256 "914a79679264790d9ffb0726a1f303954d816da3dd23db3b8816873cf467677f" => :el_capitan
-    sha256 "171123f48a6cf2431d6b143b84bf31dbb955f103195aa30597a61b7a61943982" => :yosemite
-  end
+  disable! date: "2020-12-08", because: :unmaintained
 
   depends_on "boost-build" => :build
   depends_on "boost"
@@ -39,8 +36,8 @@ class Luabind < Formula
 
   # apply upstream commit to enable building with clang
   patch do
-    url "https://github.com/luabind/luabind/commit/3044a9053ac50977684a75c4af42b2bddb853fad.diff?full_index=1"
-    sha256 "d04cbe7e5ed732943b1caf547321ac81b1db49271a5956a5f218905016c8900e"
+    url "https://github.com/luabind/luabind/commit/3044a9053ac50977684a75c4af42b2bddb853fad.patch?full_index=1"
+    sha256 "0e213656165de17c2047e18ac451fa891355a7f58b2995b5b8e0d95c23acdb1c"
   end
 
   # include C header that is not pulled in automatically on OS X 10.9 anymore

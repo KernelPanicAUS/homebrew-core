@@ -3,36 +3,33 @@ class Jc < Formula
 
   desc "Serializes the output of command-line tools to structured JSON output"
   homepage "https://github.com/kellyjonbrazil/jc"
-  url "https://files.pythonhosted.org/packages/e3/b9/7878a4f71c873c7d67f39615086f1c8315740534b25eddc1a4f75f314832/jc-1.13.4.tar.gz"
-  sha256 "45480ac3d399f70b57d8cc97a6795ea875a19863c55a56eae596c6e67303c5b8"
+  url "https://files.pythonhosted.org/packages/3c/14/41440102691264714148c55c29e7220cbd7ee11c2c06617693377ccabb94/jc-1.15.6.tar.gz"
+  sha256 "249ea24e16e324eab35caae2b9ddd31eaf3e0820ef46d587a4fcfd30a9532c17"
   license "MIT"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "7702ba20f9132d178d6b8a601ed0ae78df11a99df16453643d38c348d91ee053" => :catalina
-    sha256 "e8ed48546f16a735a4b54bd7384222698c77e0a99df9b9041cc76240e1f1f4ae" => :mojave
-    sha256 "d41d6e5ab5e6b58bb8850d84f2c93dac3903ac7955b80d1c9edcde9d6316236e" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "cc48dbd4bc4971371b98a38ac00184bf71c6bfdd3255ff9481b3093e1dc623d1"
+    sha256 cellar: :any_skip_relocation, big_sur:       "b63408852e77d527bea6ca4fc301f08056bd82439770ccbceafd9449a99f2ca7"
+    sha256 cellar: :any_skip_relocation, catalina:      "3eab5b0b5a38b24da1ea61343b95d1fc5ee721df216421769447ac727ec057c3"
+    sha256 cellar: :any_skip_relocation, mojave:        "997c1be1d30d1aa5bfcbbe89e8c5643250adcbb55d917b3f7dce7f2f15b1b02d"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "4ae93175585b4c20c29646b794f3ba54159c00b4db7fe1a60060becc3c70c59c"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   resource "Pygments" do
-    url "https://files.pythonhosted.org/packages/6e/4d/4d2fe93a35dfba417311a4ff627489a947b01dc0cc377a3673c00cf7e4b2/Pygments-2.6.1.tar.gz"
-    sha256 "647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44"
+    url "https://files.pythonhosted.org/packages/ba/6e/7a7c13c21d8a4a7f82ccbfe257a045890d4dbf18c023f985f565f97393e3/Pygments-2.9.0.tar.gz"
+    sha256 "a18f47b506a429f6f4b9df81bb02beab9ca21d0a5fee38ed15aef65f0545519f"
   end
 
   resource "ruamel.yaml" do
-    url "https://files.pythonhosted.org/packages/16/8b/54a26c1031595e5edd0e616028b922d78d8ffba8bc775f0a4faeada846cc/ruamel.yaml-0.16.10.tar.gz"
-    sha256 "099c644a778bf72ffa00524f78dd0b6476bca94a1da344130f4bf3381ce5b954"
+    url "https://files.pythonhosted.org/packages/83/59/4f576abb336d30b3d47061717224be714a9dc39c774061c34cb41c1795cf/ruamel.yaml-0.17.10.tar.gz"
+    sha256 "106bc8d6dc6a0ff7c9196a47570432036f41d556b779c6b4e618085f57e39e67"
   end
 
   resource "ruamel.yaml.clib" do
-    url "https://files.pythonhosted.org/packages/92/28/612085de3fae9f82d62d80255d9f4cf05b1b341db1e180adcf28c1bf748d/ruamel.yaml.clib-0.2.0.tar.gz"
-    sha256 "b66832ea8077d9b3f6e311c4a53d06273db5dc2db6e8a908550f3c14d67e718c"
+    url "https://files.pythonhosted.org/packages/b7/81/c04fb9be62657d4dce8aa2d99fde258a3af1cd77ec72af525593e9560127/ruamel.yaml.clib-0.2.4.tar.gz"
+    sha256 "f997f13fd94e37e8b7d7dbe759088bb428adc6570da06b64a913d932d891ac8d"
   end
 
   resource "xmltodict" do
@@ -42,10 +39,11 @@ class Jc < Formula
 
   def install
     virtualenv_install_with_resources
+    man1.install "jc/man/jc.1.gz"
   end
 
   test do
-    assert_equal "[{\"header1\": \"data1\", \"header2\": \"data2\"}]\n", \
+    assert_equal "[{\"header1\":\"data1\",\"header2\":\"data2\"}]\n", \
                   pipe_output("#{bin}/jc --csv", "header1, header2\n data1, data2")
   end
 end

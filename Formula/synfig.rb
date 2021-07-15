@@ -1,8 +1,11 @@
 class Synfig < Formula
   desc "Command-line renderer"
   homepage "https://synfig.org/"
-  url "https://downloads.sourceforge.net/project/synfig/releases/1.2.2/source/synfig-1.2.2.tar.gz"
-  sha256 "5f5f7b33483041165f9a63fe4d95eb815971c7444569e574206f6964e83cc2ef"
+  # NOTE: Please keep these values in sync with etl.rb when updating.
+  url "https://downloads.sourceforge.net/project/synfig/releases/1.4.1/synfig-1.4.1.tar.gz"
+  mirror "https://github.com/synfig/synfig/releases/download/v1.4.1/synfig-1.4.1.tar.gz"
+  sha256 "f90f1dcff1a409bbe2bfbb2cf42b7019cf735bec3223722db2feba6e198d1bc1"
+  license "GPL-3.0-or-later"
   revision 4
   head "https://svn.code.sf.net/p/synfig/code/"
 
@@ -12,9 +15,10 @@ class Synfig < Formula
   end
 
   bottle do
-    sha256 "6d117163a9f6842aacaf99fcbb72ba7b4af4a69ee7d39dcd76837fb24f79319a" => :catalina
-    sha256 "b955e3352a86133f4175d8de262089638eb79bc59c6342c5addf5958fcf6fbc8" => :mojave
-    sha256 "1d95e144c64e8564497e2e2913d8644dcca7f0d50e90448a24ccae9a1cdafbbb" => :high_sierra
+    sha256 arm64_big_sur: "015a7a0d3bc4c03bab892a7f61185d3743ccf259221986ad2ce522768cec834e"
+    sha256 big_sur:       "fb07afb2d55b011f10916a314cb26d640b8b2fe61312181d490b281f65fbd1aa"
+    sha256 catalina:      "0a58958fe741c068768e401541fb051615f9ecc190a983b37e5921a3a644d439"
+    sha256 mojave:        "50b62cfc4d6c2d6c1a2fecbbbdb7348a312adbee8d882e41fc2d8aef1f542893"
   end
 
   depends_on "intltool" => :build
@@ -46,6 +50,7 @@ class Synfig < Formula
 
   test do
     (testpath/"test.cpp").write <<~EOS
+      #include <stddef.h>
       #include <synfig/version.h>
       int main(int argc, char *argv[])
       {
@@ -60,7 +65,7 @@ class Synfig < Formula
     freetype = Formula["freetype"]
     gettext = Formula["gettext"]
     glib = Formula["glib"]
-    glibmm = Formula["glibmm"]
+    glibmm = Formula["glibmm@2.66"]
     libpng = Formula["libpng"]
     libsigcxx = Formula["libsigc++@2"]
     libxmlxx = Formula["libxml++"]
@@ -85,9 +90,7 @@ class Synfig < Formula
       -I#{libsigcxx.opt_lib}/sigc++-2.0/include
       -I#{libxmlxx.opt_include}/libxml++-2.6
       -I#{libxmlxx.opt_lib}/libxml++-2.6/include
-      -I#{mlt.opt_include}
-      -I#{mlt.opt_include}/mlt
-      -I#{mlt.opt_include}/mlt++
+      -I#{mlt.opt_include}/mlt-7
       -I#{pango.opt_include}/pango-1.0
       -I#{pixman.opt_include}/pixman-1
       -D_REENTRANT
@@ -107,8 +110,8 @@ class Synfig < Formula
       -lglibmm-2.4
       -lgobject-2.0
       -lintl
-      -lmlt
-      -lmlt++
+      -lmlt-7
+      -lmlt++-7
       -lpango-1.0
       -lpangocairo-1.0
       -lpthread

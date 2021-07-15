@@ -1,12 +1,17 @@
 class SonarScanner < Formula
   desc "Launcher to analyze a project with SonarQube"
   homepage "https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner"
-  url "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170.zip"
-  sha256 "b24c19e948f152a4ea8dc43d037253234add639503d42194f6175869693ff058"
-  license "LGPL-3.0"
+  url "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472.zip"
+  sha256 "344bfeff44b09a11082b4a4646b1ed14f213feb00a5cd6d01c86f3767cb32471"
+  license "LGPL-3.0-or-later"
+  revision 1
   head "https://github.com/SonarSource/sonar-scanner-cli.git"
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "4f39cced5ca59962499fcd43aae7cc4f6a23357dec24fb2ac629e748b317dec6"
+  end
+
+  depends_on "openjdk@11"
 
   def install
     rm_rf Dir["bin/*.bat"]
@@ -14,7 +19,7 @@ class SonarScanner < Formula
     bin.install libexec/"bin/sonar-scanner"
     etc.install libexec/"conf/sonar-scanner.properties"
     ln_s etc/"sonar-scanner.properties", libexec/"conf/sonar-scanner.properties"
-    bin.env_script_all_files libexec/"bin/", SONAR_SCANNER_HOME: libexec
+    bin.env_script_all_files libexec/"bin/", SONAR_SCANNER_HOME: libexec, JAVA_HOME: Formula["openjdk@11"].opt_prefix
   end
 
   test do

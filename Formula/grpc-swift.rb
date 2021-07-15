@@ -1,25 +1,24 @@
 class GrpcSwift < Formula
-  desc "The Swift language implementation of gRPC"
+  desc "Swift language implementation of gRPC"
   homepage "https://github.com/grpc/grpc-swift"
-  url "https://github.com/grpc/grpc-swift/archive/0.11.0.tar.gz"
-  sha256 "82e0a3d8fe2b9ee813b918e1a674f5a7c6dc024abe08109a347b686db6e57432"
+  url "https://github.com/grpc/grpc-swift/archive/1.1.1.tar.gz"
+  sha256 "ec703946c1f9d379ed9d910333f27eed4d1bc58e887849186802f951b9e9448b"
   license "Apache-2.0"
   head "https://github.com/grpc/grpc-swift.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "c4b65a7ca86cce5a51c4d361f242f3223db64ada30295215636abe6c5e2e6682" => :catalina
-    sha256 "44d0cea0079f5b8ead3ae00b5ffe0268424c1b9c894d3f84f9b56e9295cfc4d6" => :mojave
-    sha256 "01f53ec401f366d2eedc15b6bf24221443cf3e4728e25891fa87cd89d389efb2" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "8c458c0f9cc1c3241a77fbe7c1c040a7382cdd1d44c56f4e11805bf9e0aa1c5b"
+    sha256 cellar: :any_skip_relocation, big_sur:       "fd7850786f7d0ade8e78efd516204ac052a15edaf21a7e7ac6fc76fb5cde38a6"
+    sha256 cellar: :any_skip_relocation, catalina:      "e20794d763ad566abb787523804cb0a66207800e57e70bf21adfd39bedd73c43"
   end
 
-  depends_on xcode: ["10.0", :build]
+  depends_on xcode: ["12.0", :build]
   depends_on "protobuf"
   depends_on "swift-protobuf"
 
   def install
-    system "swift", "build", "--disable-sandbox", "-c", "release", "--product", "protoc-gen-swiftgrpc"
-    bin.install ".build/release/protoc-gen-swiftgrpc"
+    system "swift", "build", "--disable-sandbox", "-c", "release", "--product", "protoc-gen-grpc-swift"
+    bin.install ".build/release/protoc-gen-grpc-swift"
   end
 
   test do
@@ -38,7 +37,7 @@ class GrpcSwift < Formula
         string text = 1;
       }
     EOS
-    system Formula["protobuf"].opt_bin/"protoc", "echo.proto", "--swiftgrpc_out=."
+    system Formula["protobuf"].opt_bin/"protoc", "echo.proto", "--grpc-swift_out=."
     assert_predicate testpath/"echo.grpc.swift", :exist?
   end
 end

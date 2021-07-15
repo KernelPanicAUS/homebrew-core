@@ -1,25 +1,27 @@
 class Mbedtls < Formula
   desc "Cryptographic & SSL/TLS library"
   homepage "https://tls.mbed.org/"
-  url "https://github.com/ARMmbed/mbedtls/archive/mbedtls-2.23.0.tar.gz"
-  sha256 "5c8998217402aa1fc734f4afaeac38fad2421470fac4b3abc112bd46391054fe"
+  url "https://github.com/ARMmbed/mbedtls/archive/mbedtls-2.27.0.tar.gz"
+  sha256 "4f6a43f06ded62aa20ef582436a39b65902e1126cbbe2fb17f394e9e9a552767"
   license "Apache-2.0"
   head "https://github.com/ARMmbed/mbedtls.git", branch: "development"
 
   livecheck do
-    url "https://github.com/ARMmbed/mbedtls/releases/latest"
+    url :stable
+    strategy :github_latest
     regex(%r{href=.*?/tag/(?:mbedtls[._-])?v?(\d+(?:\.\d+)+)["' >]}i)
   end
 
   bottle do
-    cellar :any
-    sha256 "3b1d3f3b161a1cd7d570281baaec5412adf9ae1b2bf5eb842e04571f3bf17c4b" => :catalina
-    sha256 "6a061c88f257cce7187aa50bb1406f517ff49e9279f917e2eceae1ff446fc792" => :mojave
-    sha256 "57ffbd38b650a3850c5bca98840dd2c9b3b9a000af499b5237d68e73f5f088d3" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "9cc96f2c4c654cc565556a4ac9f111aebf6b406886998b728c6c0e6827ffc37a"
+    sha256 cellar: :any,                 big_sur:       "84ac67a7a41cafde712cec80c31120c5f1bb896ce9d212da6d132f1c24fdb2de"
+    sha256 cellar: :any,                 catalina:      "f848fa5209380ec469d00a9422101fdb2e5f57b9b588c9cadc4a35ec6fca5c23"
+    sha256 cellar: :any,                 mojave:        "78827838bf19bec7b526320b8156005bfbdd92b1dd83cf8611f0abc2633f98a7"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "ff8a98b8ca64de64e9daa40ef083a05919260972400b674bcc90829e9b9a5a45"
   end
 
   depends_on "cmake" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
 
   def install
     inreplace "include/mbedtls/config.h" do |s|
@@ -29,7 +31,9 @@ class Mbedtls < Formula
       s.gsub! "//#define MBEDTLS_THREADING_C", "#define MBEDTLS_THREADING_C"
     end
 
-    system "cmake", "-DUSE_SHARED_MBEDTLS_LIBRARY=On", *std_cmake_args
+    system "cmake", "-DUSE_SHARED_MBEDTLS_LIBRARY=On",
+      "-DPython3_EXECUTABLE=#{Formula["python@3.9"].opt_bin}/python3",
+      *std_cmake_args
     system "make"
     system "make", "install"
 

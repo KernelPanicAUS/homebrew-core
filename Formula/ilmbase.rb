@@ -1,15 +1,24 @@
 class Ilmbase < Formula
   desc "OpenEXR ILM Base libraries (high dynamic-range image file format)"
   homepage "https://www.openexr.com/"
-  url "https://github.com/openexr/openexr/archive/v2.5.3.tar.gz"
-  sha256 "6a6525e6e3907715c6a55887716d7e42d09b54d2457323fcee35a0376960bebf"
+  # NOTE: Please keep these values in sync with openexr.rb when updating.
+  url "https://github.com/openexr/openexr/archive/v2.5.5.tar.gz"
+  sha256 "59e98361cb31456a9634378d0f653a2b9554b8900f233450f2396ff495ea76b3"
   license "BSD-3-Clause"
+  revision 1
 
   bottle do
-    sha256 "06a9f5b4582372750cf8fb6ba67d65284b00c6c338fc037a363ef9d550c5a9d2" => :catalina
-    sha256 "5cb7f4e1e07f02aba93615d1ef1ec6785a5d868cad642460b2d2871cde3fc08a" => :mojave
-    sha256 "30cea2bd30d5fd3baae5188b0e98d065f78070b741b367b2cdd22b7a7e0269be" => :high_sierra
+    sha256                               arm64_big_sur: "5a95c1ea57a08dde47723507b0406a408664e4170026a5a5771681f42ac3c6df"
+    sha256                               big_sur:       "846c944f66f265e002af5f3ba3f2a989fbbc8a175e394d5e597d56b50b480f74"
+    sha256                               catalina:      "bdb6dad0ee508d3bd86f50ced1eb15c0d0d25a1ffe1133659493f9cfccc41b52"
+    sha256                               mojave:        "7ab7edd363f935a6411b038adea08d1aaf0e8eba1168cdd58fda21182346fc4a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "6cf2850352b13d0c640e213faaf6b26ff6f6f1c59a51e5210ca7ad0948c43364"
   end
+
+  keg_only "ilmbase conflicts with `openexr` and `imath`"
+
+  # https://github.com/AcademySoftwareFoundation/openexr/pull/929
+  deprecate! date: "2021-04-05", because: :unsupported
 
   depends_on "cmake" => :build
 
@@ -18,6 +27,13 @@ class Ilmbase < Formula
       system "cmake", ".", *std_cmake_args, "-DBUILD_TESTING=OFF"
       system "make", "install"
     end
+  end
+
+  def caveats
+    <<~EOS
+      `ilmbase` has been replaced by `imath`. You may want to `brew uninstall ilmbase`
+      or `brew unlink ilmbase` to prevent conflicts.
+    EOS
   end
 
   test do

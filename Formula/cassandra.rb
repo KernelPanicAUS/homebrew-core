@@ -1,24 +1,21 @@
 class Cassandra < Formula
   desc "Eventually consistent, distributed key-value store"
   homepage "https://cassandra.apache.org"
-  url "https://www.apache.org/dyn/closer.lua?path=cassandra/3.11.7/apache-cassandra-3.11.7-bin.tar.gz"
-  mirror "https://archive.apache.org/dist/cassandra/3.11.7/apache-cassandra-3.11.7-bin.tar.gz"
-  sha256 "b9c0d5b08ae2660810227b1881e8b7b5bc9ae0549cb8efb866b99884ad7346e2"
+  url "https://www.apache.org/dyn/closer.lua?path=cassandra/3.11.10/apache-cassandra-3.11.10-bin.tar.gz"
+  mirror "https://archive.apache.org/dist/cassandra/3.11.10/apache-cassandra-3.11.10-bin.tar.gz"
+  sha256 "bbe772956c841158e3228c3b6c8fc38cece6bceeface695473c59c0573039bf1"
   license "Apache-2.0"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "faa06a0b2ef7f257a29c57f2e772256e8b4be0ddd9617f0f4d2b3edca4432281" => :catalina
-    sha256 "5decf89224693fd1dfe2c53f28220729c3b267bb68ada4385f7de7626b5bfab9" => :mojave
-    sha256 "abf2a9566e3895758320a195b266acd1241627eca15621142b58fee16e7c9ed9" => :high_sierra
+    sha256 cellar: :any_skip_relocation, big_sur:  "4babefaee69d52f82b75f93fd15a037b3dc9c37e2f922392ff288547967eb094"
+    sha256 cellar: :any_skip_relocation, catalina: "46bbd9bd4fe297537192cdaa12507943910f05479585286b9feb213a31740efb"
+    sha256 cellar: :any_skip_relocation, mojave:   "8b19e737d3c564ee943d1ae27dc300f9ffe4d8f8f6c46f8958fd9fadc8ce16c4"
   end
 
   depends_on "cython" => :build
-  depends_on :macos # Due to Python 2 (https://issues.apache.org/jira/browse/CASSANDRA-10190)
+  # Due to Python 2 (https://issues.apache.org/jira/browse/CASSANDRA-10190), cassandra 4 will support python3
+  depends_on :macos
+  depends_on "openjdk@8" # cassandra 4 will support Java 11
 
   # Only >=Yosemite has new enough setuptools for successful compile of the below deps.
   # Python 2 needs setuptools < 45.0.0 (https://github.com/pypa/setuptools/issues/2094)
@@ -85,13 +82,16 @@ class Cassandra < Formula
       # Storage path
       s.gsub! "cassandra_storagedir\=\"$CASSANDRA_HOME/data\"",
               "cassandra_storagedir\=\"#{var}/lib/cassandra\""
+
+      s.gsub! "#JAVA_HOME=/usr/local/jdk6",
+              "JAVA_HOME=#{Language::Java.overridable_java_home_env("1.8")[:JAVA_HOME]}"
     end
 
     rm Dir["bin/*.bat", "bin/*.ps1"]
 
     # This breaks on `brew uninstall cassandra && brew install cassandra`
     # https://github.com/Homebrew/homebrew/pull/38309
-    (etc/"cassandra").install Dir["conf/*"]
+    pkgetc.install Dir["conf/*"]
 
     libexec.install Dir["*.txt", "{bin,interface,javadoc,pylib,lib/licenses}"]
     libexec.install Dir["lib/*.jar"]
@@ -140,30 +140,10 @@ class Cassandra < Formula
     (bin/"cqlsh.py").write_env_script libexec/"bin/cqlsh.py", PYTHONPATH: pypath
   end
 
-  plist_options manual: "cassandra -f"
-
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-        <dict>
-          <key>KeepAlive</key>
-          <true/>
-          <key>Label</key>
-          <string>#{plist_name}</string>
-          <key>ProgramArguments</key>
-          <array>
-              <string>#{opt_bin}/cassandra</string>
-              <string>-f</string>
-          </array>
-          <key>RunAtLoad</key>
-          <true/>
-          <key>WorkingDirectory</key>
-          <string>#{var}/lib/cassandra</string>
-        </dict>
-      </plist>
-    EOS
+  service do
+    run [opt_bin/"cassandra", "-f"]
+    keep_alive true
+    working_dir var/"lib/cassandra"
   end
 
   test do

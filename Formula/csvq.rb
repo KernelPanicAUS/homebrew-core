@@ -1,8 +1,8 @@
 class Csvq < Formula
   desc "SQL-like query language for csv"
   homepage "https://mithrandie.github.io/csvq"
-  url "https://github.com/mithrandie/csvq/archive/v1.13.3.tar.gz"
-  sha256 "3242f1dd4b1d36794642356610a8709dbcb257e9bf5fdb287222694c93853242"
+  url "https://github.com/mithrandie/csvq/archive/v1.15.2.tar.gz"
+  sha256 "013d27df901c00dfb75ea164dcc89e93c3ed3d300086d30eff23688f4519c103"
   license "MIT"
 
   livecheck do
@@ -11,10 +11,11 @@ class Csvq < Formula
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "f12b5af1956393fe1c7eb3c8a66af0395a57ca1fabce3fa46ec9abbc42d4c98f" => :catalina
-    sha256 "515f33d52a7f0aadd4fe25263cd1f9b48d93a2cfcd56642437b478e12d806568" => :mojave
-    sha256 "098d117004b545984482edb34ecc8961dd7d230afa950306669197d668d23182" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "02bea931968c6d43c8addab05167b4581a97157f8f232e9f9455f1307559d92e"
+    sha256 cellar: :any_skip_relocation, big_sur:       "2ef66a80dbf62ec07ccf9646db9650b56862a4908eb6d9bd6f481f754b4749d1"
+    sha256 cellar: :any_skip_relocation, catalina:      "f978e4066823494d805bd1d9672c0f9cd9b0d5917763b221e5d2b697c6fa49a0"
+    sha256 cellar: :any_skip_relocation, mojave:        "6512f703828def15a4763fea61299339795e808f9399c048e8807fb1d5e072bb"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "7102a7561fcf110fd0d7180087fa5697360915ac4616bc1b321c64e3cba1830a"
   end
 
   depends_on "go" => :build

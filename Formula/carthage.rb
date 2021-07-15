@@ -2,27 +2,21 @@ class Carthage < Formula
   desc "Decentralized dependency manager for Cocoa"
   homepage "https://github.com/Carthage/Carthage"
   url "https://github.com/Carthage/Carthage.git",
-      tag:      "0.35.0",
-      revision: "c7550f832f23d2c00bf0c014351719839593c641",
+      tag:      "0.38.0",
+      revision: "9a3d1799ba8f8b9e2d4514cfa53a2cca6064136e",
       shallow:  false
   license "MIT"
-  head "https://github.com/Carthage/Carthage.git", shallow: false
+  head "https://github.com/Carthage/Carthage.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "fdaacafff1566fa7b1e42e68e108da69aa7578dc82f4736272dca10283c9cba2" => :catalina
-    sha256 "1da29ca0b1d8e79bec5e548f5ab2433890ebc3fc9007f5fdb70d9e3be281dbb7" => :mojave
-    sha256 "130fcb9bc06ef8e7f1c5ac9af0d155bd347db039b2cf80fa0fef764b3627ffbf" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "e9be26e66087b149d4d6ff813323fb5fa1ac0ec1a55d3d1a26fc3aafc8f8e8ec"
+    sha256 cellar: :any_skip_relocation, big_sur:       "863d4165b65d4a914f0585ca68a2ae15a179d663dbd29e6fd1d0a0ec769b97c3"
+    sha256 cellar: :any_skip_relocation, catalina:      "ea1df2bc55049416020811e5c995a28a3d6a0d26ef4bbe67bc9b248a11727e96"
+    sha256 cellar: :any_skip_relocation, mojave:        "417d7a04952ad1845e88f8699a508e5fee109f9f903433eb7c4c860738b7843e"
   end
 
   depends_on xcode: ["10.0", :build]
-
-  patch do
-    # Fix erroneously re-throwing reduce (on Swift 5.3 pre-release)
-    # https://github.com/Carthage/Carthage/commit/a33d3483b31e28e0488ea51e3efb6b44025f1b5f
-    url "https://github.com/Carthage/Carthage/commit/a33d3483b31e28e0488ea51e3efb6b44025f1b5f.diff?full_index=1"
-    sha256 "75610a77cafbf447ea040d8dea1a4beb626944c577351ea5435ab5e8dda71b1c"
-  end
+  depends_on :macos
 
   def install
     system "make", "prefix_install", "PREFIX=#{prefix}"

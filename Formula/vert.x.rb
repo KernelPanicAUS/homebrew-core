@@ -1,16 +1,18 @@
 class VertX < Formula
   desc "Toolkit for building reactive applications on the JVM"
   homepage "https://vertx.io/"
-  url "https://bintray.com/vertx/downloads/download_file?file_path=vert.x-3.9.2-full.zip"
-  sha256 "3f257bae643e31804816e5723ac39e5f8fe08fcb73034b74d4cc7ccb4e9e5a84"
+  url "https://search.maven.org/remotecontent?filepath=io/vertx/vertx-stack-manager/4.1.1/vertx-stack-manager-4.1.1-full.tar.gz"
+  sha256 "5bdb2664be1c3f096566ae1d4cdf7ab429674da4361bf4bf1755a57daf82fbe0"
   license any_of: ["EPL-2.0", "Apache-2.0"]
 
   livecheck do
-    url "https://vertx.io/download/"
-    regex(/href=.*?vert\.x[._-]v?(\d+(?:\.\d+)+)-full\.t/i)
+    url "https://search.maven.org/remotecontent?filepath=io/vertx/vertx-stack-manager/"
+    regex(%r{href=["']?v?(\d+(?:\.\d+)+)/?["' >]}i)
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "61c8ea3baa1490a367ae7c4b42942f45a89815d98660981e513f44df1a0195e1"
+  end
 
   depends_on "openjdk"
 

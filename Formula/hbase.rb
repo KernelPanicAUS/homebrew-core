@@ -1,19 +1,16 @@
 class Hbase < Formula
   desc "Hadoop database: a distributed, scalable, big data store"
   homepage "https://hbase.apache.org"
-  url "https://www.apache.org/dyn/closer.lua?path=hbase/2.3.1/hbase-2.3.1-bin.tar.gz"
-  mirror "https://archive.apache.org/dist/hbase/2.3.1/hbase-2.3.1-bin.tar.gz"
-  sha256 "f082da6ba9b0fb8270d6a20ead96334590eba62bbfa960f8e74b312d7bc4c00f"
+  url "https://www.apache.org/dyn/closer.lua?path=hbase/2.4.4/hbase-2.4.4-bin.tar.gz"
+  mirror "https://archive.apache.org/dist/hbase/2.4.4/hbase-2.4.4-bin.tar.gz"
+  sha256 "a51f26bb296071018db15845ddcf7e461ba9e40062732e3f48b4045865e7b08d"
   license "Apache-2.0"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    sha256 "fdf0eb89433c3c1d3b6432a5261f9a433dba0c1d128cba544d1a69861d931c07" => :catalina
-    sha256 "cf38cab402d016cfed0c937b67ea84fc4faf620121f422a673b81b422fd2356f" => :mojave
-    sha256 "fd9352d2ba177f23ae5388fe63f7abdc528d7d9013a03a2c022c926456b0268e" => :high_sierra
+    sha256 arm64_big_sur: "0f0e53c8d3e816c017b0fa3d19cad00edf583aec7d607d326a2b1333f465393c"
+    sha256 big_sur:       "2970db02e5585b3123c2e0f483725f52e2057456430de61cf53a5acce88d64f2"
+    sha256 catalina:      "4a08fb8294c6d84920ff4548b7b6dd15db86681034f76d2c1f706a31f8286124"
+    sha256 mojave:        "94906a3b8b2359448d13d4e36e4ba81338a589f20e2c27f6b789275f526d4e2a"
   end
 
   depends_on "ant" => :build
@@ -56,15 +53,15 @@ class Hbase < Formula
       # upstream bugs for ipv6 incompatibility:
       # https://issues.apache.org/jira/browse/HADOOP-8568
       # https://issues.apache.org/jira/browse/HADOOP-3619
-      s.gsub! /^# export HBASE_OPTS$/,
-              "export HBASE_OPTS=\"-Djava.net.preferIPv4Stack=true -XX:+UseConcMarkSweepGC\""
-      s.gsub! /^# export JAVA_HOME=.*/,
-              "export JAVA_HOME=\"${JAVA_HOME:-#{java_home}}\""
+      s.gsub!(/^# export HBASE_OPTS$/,
+              "export HBASE_OPTS=\"-Djava.net.preferIPv4Stack=true -XX:+UseConcMarkSweepGC\"")
+      s.gsub!(/^# export JAVA_HOME=.*/,
+              "export JAVA_HOME=\"${JAVA_HOME:-#{java_home}}\"")
 
       # Default `$HBASE_HOME/logs` is unsuitable as it would cause writes to the
       # formula's prefix. Provide a better default but still allow override.
-      s.gsub! /^# export HBASE_LOG_DIR=.*$/,
-              "export HBASE_LOG_DIR=\"${HBASE_LOG_DIR:-#{var}/log/hbase}\""
+      s.gsub!(/^# export HBASE_LOG_DIR=.*$/,
+              "export HBASE_LOG_DIR=\"${HBASE_LOG_DIR:-#{var}/log/hbase}\"")
     end
 
     # makes hbase usable out of the box
@@ -160,9 +157,9 @@ class Hbase < Formula
 
     cp_r (libexec/"conf"), testpath
     inreplace (testpath/"conf/hbase-site.xml") do |s|
-      s.gsub! /(hbase.rootdir.*)\n.*/, "\\1\n<value>file://#{testpath}/hbase</value>"
-      s.gsub! /(hbase.zookeeper.property.dataDir.*)\n.*/, "\\1\n<value>#{testpath}/zookeeper</value>"
-      s.gsub! /(hbase.zookeeper.property.clientPort.*)\n.*/, "\\1\n<value>#{port}</value>"
+      s.gsub!(/(hbase.rootdir.*)\n.*/, "\\1\n<value>file://#{testpath}/hbase</value>")
+      s.gsub!(/(hbase.zookeeper.property.dataDir.*)\n.*/, "\\1\n<value>#{testpath}/zookeeper</value>")
+      s.gsub!(/(hbase.zookeeper.property.clientPort.*)\n.*/, "\\1\n<value>#{port}</value>")
     end
 
     ENV["HBASE_LOG_DIR"]  = testpath/"logs"

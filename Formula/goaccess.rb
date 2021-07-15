@@ -1,15 +1,22 @@
 class Goaccess < Formula
   desc "Log analyzer and interactive viewer for the Apache Webserver"
   homepage "https://goaccess.io/"
-  url "https://tar.goaccess.io/goaccess-1.4.tar.gz"
-  sha256 "e8fbb9ff852556d72dfd9f1d0134ba075ce5b4c41289902a6f4e0d97c69377be"
+  url "https://tar.goaccess.io/goaccess-1.5.1.tar.gz"
+  sha256 "88417e78e62b70de3980b7622911e4fcd719c3660f003c887968e7196c39970f"
   license "MIT"
   head "https://github.com/allinurl/goaccess.git"
 
+  livecheck do
+    url "https://goaccess.io/download"
+    regex(/href=.*?goaccess[._-]v?(\d+(?:\.\d+)+)\.t/i)
+  end
+
   bottle do
-    sha256 "ca26b40fa6af07692cef8397e8b5cef4a4426f413cea4d08399bf2e075656f70" => :catalina
-    sha256 "ff8280daf00ff222480c70ab73762a74f1661053f68f318b48c934b91215d80c" => :mojave
-    sha256 "fb4fd174c742537f1cbf536ca36a5cfd0580ae0576cfe484dc6848daea208953" => :high_sierra
+    sha256 arm64_big_sur: "17c731e75f74d763c6d6429a68b61a87838c60a84471713697887d80686de430"
+    sha256 big_sur:       "ee16b6e3d3b2c554b0283c1542bb09642900704aee00046784cea3bf033e72b8"
+    sha256 catalina:      "cb169175ffab71ec3cdacdff8c9a52f78a3331599a3e797a282180ffae3b180d"
+    sha256 mojave:        "2f6832aa0c6fb0597e2cea15d9a0f2399630ebd8c8009ea249bd31da148faad7"
+    sha256 x86_64_linux:  "3fb32f60f838b2da1185af1b31eb9bd2ed796939449af9970f67cb798660ac0b"
   end
 
   depends_on "autoconf" => :build
@@ -21,9 +28,6 @@ class Goaccess < Formula
   def install
     ENV.append_path "PATH", Formula["gettext"].bin
     system "autoreconf", "-vfi"
-
-    # upstream issue: https://github.com/allinurl/goaccess/issues/1779
-    inreplace "src/parser.c", "#include <malloc.h>", ""
 
     args = %W[
       --disable-debug

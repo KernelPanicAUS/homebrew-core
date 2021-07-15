@@ -1,19 +1,20 @@
 class Pari < Formula
   desc "Computer algebra system designed for fast computations in number theory"
   homepage "https://pari.math.u-bordeaux.fr/"
-  url "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-2.11.4.tar.gz"
-  sha256 "bfc88fc4f7352f4840e6e352c72f0369cbea8a45403b1834a6269f3709970b1c"
-  license "GPL-2.0"
+  url "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-2.13.2.tar.gz"
+  sha256 "1679985094a0b723d14f49aa891dbe5ec967aa4040050a2c50bd764ddb3eba24"
+  license "GPL-2.0-or-later"
 
   livecheck do
     url "https://pari.math.u-bordeaux.fr/pub/pari/unix/"
-    regex(/pari[._-]v?(\d+\.\d+\.\d+)/i)
+    regex(/href=.*?pari[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
   bottle do
-    sha256 "34bff086dc53fc97511828c3329f71ab67c394011f88d551dc5d820fad455a93" => :catalina
-    sha256 "bb2a09ef34d5e55b7f357169c34cd8e5942bb074770b789757e21388d440d80d" => :mojave
-    sha256 "13613061281235cc2ffb502fd6541775a305ab61aa6ff85ed8ca15b23ec44ae4" => :high_sierra
+    sha256 arm64_big_sur: "ded4bc8651cbbab6d1c13f1209b3d013c39d712dee28ed38e2e927052d4acd77"
+    sha256 big_sur:       "84b7739fcd41c82756c2610a6b6e7686d52d9b338b9cd23b9bc7405aea3b8901"
+    sha256 catalina:      "6eafc6e4947af844a2984f78ee3769df27be397d2beeab046595c87cf54a0576"
+    sha256 mojave:        "6f745e024e7cd4acbea3db05f8942c843549aa0003c621bb597ac9982a65e56d"
   end
 
   depends_on "gmp"
@@ -37,7 +38,7 @@ class Pari < Formula
   def caveats
     <<~EOS
       If you need the graphical plotting functions you need to install X11 with:
-        brew cask install xquartz
+        brew install --cask xquartz
     EOS
   end
 

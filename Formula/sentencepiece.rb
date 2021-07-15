@@ -1,20 +1,21 @@
 class Sentencepiece < Formula
   desc "Unsupervised text tokenizer and detokenizer"
   homepage "https://github.com/google/sentencepiece"
-  url "https://github.com/google/sentencepiece/archive/v0.1.92.tar.gz"
-  sha256 "6e9863851e6277862083518cc9f96211f334215d596fc8c65e074d564baeef0c"
+  url "https://github.com/google/sentencepiece/archive/v0.1.96.tar.gz"
+  sha256 "5198f31c3bb25e685e9e68355a3bf67a1db23c9e8bdccc33dc015f496a44df7a"
   license "Apache-2.0"
   head "https://github.com/google/sentencepiece.git"
 
   livecheck do
-    url "https://github.com/google/sentencepiece/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
   bottle do
-    sha256 "c169b40d2a856514440b4fdfa7f461b9f1b2bc8c7d5e6603c3e42e8e62f90c0f" => :catalina
-    sha256 "c144cb6375e447c1aee9616ab22250830892aa7bfdf230b3edc0c0a41a0bfa96" => :mojave
-    sha256 "eb919fd4dc87993b2f4b6f8a58683831a7c2fb0f3abbcdf4a320f8bf761cdb8e" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "f7f3e11b9915fb85ac7af279eb89461781f1cb9ef849a3af6680b49b4a0a1f4e"
+    sha256 cellar: :any, big_sur:       "eea4ce35e1bcfa7b5d82ba21071128f7afaa528aec2ebacff98fdc18afb7dde2"
+    sha256 cellar: :any, catalina:      "2d6622948cbaf6f114b6bcacf179ff072ce647054161e081a04013b27cf547b4"
+    sha256 cellar: :any, mojave:        "aabe9c776c900c63034f423c7c5d9983ff4cd0156199e2b9153f77a4f2961929"
   end
 
   depends_on "cmake" => :build

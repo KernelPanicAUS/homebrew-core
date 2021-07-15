@@ -1,24 +1,19 @@
 class Logrotate < Formula
   desc "Rotates, compresses, and mails system logs"
   homepage "https://github.com/logrotate/logrotate"
-  url "https://github.com/logrotate/logrotate/releases/download/3.17.0/logrotate-3.17.0.tar.xz"
-  sha256 "58cc2178ff57faa3c0490181cce041345aeca6cff18dba1c5cd1398bf1c19294"
+  url "https://github.com/logrotate/logrotate/releases/download/3.18.1/logrotate-3.18.1.tar.xz"
+  sha256 "14a924e4804b3974e85019a9f9352c2a69726702e6656155c48bcdeace68a5dc"
   license "GPL-2.0"
 
   bottle do
-    cellar :any
-    sha256 "cb0e376e957310bf7a5c3edcd4cdbc41b0f8d2aa12996a3b25f63174090b9358" => :catalina
-    sha256 "94ab5540c338fa37c83de5ee0f1150b170c5bbb5dd50dcab592c9de74893febc" => :mojave
-    sha256 "c40599d984c6c5da3818e7f86c95626bd3006e61ee0bd0e588bed07729bb1242" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "7a35f391118adf13094e83d7ab66a0a0842828b6d17bb825a04a2c15ff0cb8b5"
+    sha256 cellar: :any,                 big_sur:       "6976c5e710c45560e47c8eaba409aaf71e607cec3e86eaa6396df5342685b720"
+    sha256 cellar: :any,                 catalina:      "82980e80bdd29e8b5d21661e5ffd283c654057912fb0d8621e30397f577dc1e4"
+    sha256 cellar: :any,                 mojave:        "2aeb1ee2d25cb426a1d7a746c54451afad0d5f00a24c6cf6f38eb5be2a0c4e5a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "b450a79764d5a0bb3e4cfddf3bc337bb703c34386254b76dbcd45fd09ae72ab7"
   end
 
   depends_on "popt"
-
-  # https://github.com/logrotate/logrotate/pull/344
-  patch do
-    url "https://github.com/logrotate/logrotate/commit/5aee3d4d73bbdca7531bf641a78bcb5ec58d93ea.diff?full_index=1"
-    sha256 "1fd0057b7b97cd5070a5bacacdfd5c2bc4f68c86dcd438b6efd76cdbab86710c"
-  end
 
   def install
     system "./configure", "--disable-dependency-tracking",

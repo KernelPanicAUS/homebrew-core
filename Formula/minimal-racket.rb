@@ -1,20 +1,29 @@
 class MinimalRacket < Formula
   desc "Modern programming language in the Lisp/Scheme family"
   homepage "https://racket-lang.org/"
-  url "https://mirror.racket-lang.org/installers/7.8/racket-minimal-7.8-src-builtpkgs.tgz"
-  sha256 "69b22b7f2054d5adb557fde42e6a3cf2f730bbc705ae7b8e5cba8c867f66c700"
+  url "https://mirror.racket-lang.org/installers/8.1/racket-minimal-8.1-src.tgz"
+  sha256 "53043e3e7f5647d296de2759aea56b56faebfe693ca08191cfb642a04db0a4e0"
+  license any_of: ["MIT", "Apache-2.0"]
 
+  # File links on the download page are created using JavaScript, so we parse
+  # the filename from a string in an object. We match the version from the
+  # "Unix Source + built packages" option, as the `racket-minimal` archive is
+  # only found on the release page for a given version (e.g., `/releases/8.0/`).
   livecheck do
-    url "https://download.racket-lang.org/all-versions.html"
-    regex(/>Version ([\d.]+)/i)
+    url "https://download.racket-lang.org/"
+    regex(/["'][^"']*?racket(?:-minimal)?[._-]v?(\d+(?:\.\d+)+)-src\.t/i)
   end
 
   bottle do
-    cellar :any
-    sha256 "7bbc4358faae0aeb94e88a87016b4ecb899b9e188c5e318afabc151eb68f4300" => :catalina
-    sha256 "58f2fdad411b3e7852f1c442e2be4ccd01ed8ab3d563ef8c418de9101c989e88" => :mojave
-    sha256 "a9afe8d28a6c0a67b55d9bc46d5b30ee2f169db4ce25bef25355644fd4a83163" => :high_sierra
+    rebuild 1
+    sha256 cellar: :any, arm64_big_sur: "6234285fe74146dfa7077605ae98569ccfa46990120216454c8484a100ce7308"
+    sha256 cellar: :any, big_sur:       "a14efabedba4ab25fa1caceed9dca519a14209320973d01a98124450537eab01"
+    sha256 cellar: :any, catalina:      "949d23dbde6f1be019e5ddd6e0400dea79b9a4967104308b6dec9af8a5ee2947"
+    sha256 cellar: :any, mojave:        "bbfce452b9bed295d01e0efb309e8ad0016b810659a9ce9220dc699e13e6eee7"
+    sha256               x86_64_linux:  "2e86beb552928b433dd604e140123ef784ea55bdb81857a11cd1ac2bf6bf46fb"
   end
+
+  depends_on "openssl@1.1"
 
   uses_from_macos "libffi"
 
@@ -38,6 +47,11 @@ class MinimalRacket < Formula
         --enable-useprefix
       ]
 
+      ENV["LDFLAGS"] = "-rpath #{Formula["openssl@1.1"].opt_lib}"
+      on_linux do
+        ENV["LDFLAGS"] = "-Wl,-rpath=#{Formula["openssl@1.1"].opt_lib}"
+      end
+
       system "./configure", *args
       system "make"
       system "make", "install"
@@ -51,13 +65,13 @@ class MinimalRacket < Formula
         raco pkg install --auto drracket
 
       The full Racket distribution is available as a cask:
-        brew cask install racket
+        brew install --cask racket
     EOS
   end
 
   test do
     output = shell_output("#{bin}/racket -e '(displayln \"Hello Homebrew\")'")
-    assert_match /Hello Homebrew/, output
+    assert_match "Hello Homebrew", output
 
     # show that the config file isn't malformed
     output = shell_output("'#{bin}/raco' pkg config")
@@ -72,5 +86,15 @@ class MinimalRacket < Formula
       default-scope:
         installation
     EOS
+
+    # ensure Homebrew openssl is used
+    on_macos do
+      output = shell_output("DYLD_PRINT_LIBRARIES=1 #{bin}/racket -e '(require openssl)' 2>&1")
+      assert_match(%r{loaded: .*openssl@1\.1/.*/libssl.*\.dylib}, output)
+    end
+    on_linux do
+      output = shell_output("LD_DEBUG=libs #{bin}/racket -e '(require openssl)' 2>&1")
+      assert_match "init: #{Formula["openssl@1.1"].opt_lib}/#{shared_library("libssl")}", output
+    end
   end
 end

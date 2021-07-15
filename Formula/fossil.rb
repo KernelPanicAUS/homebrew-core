@@ -1,21 +1,21 @@
 class Fossil < Formula
   desc "Distributed software configuration management"
-  homepage "https://www.fossil-scm.org/"
-  url "https://www.fossil-scm.org/index.html/uv/fossil-src-2.12.1.tar.gz"
-  sha256 "822326ffcfed3748edaf4cfd5ab45b23225dea840304f765d1d55d2e6c7d6603"
+  homepage "https://www.fossil-scm.org/home/"
+  url "https://fossil-scm.org/home/tarball/version-2.16/fossil-src-2.16.tar.gz"
+  sha256 "fab37e8093932b06b586e99a792bf9b20d00d530764b5bddb1d9a63c8cdafa14"
   license "BSD-2-Clause"
   head "https://www.fossil-scm.org/", using: :fossil
 
   livecheck do
-    url "https://www.fossil-scm.org/index.html/uv/download.js"
-    regex(/"title": *?"Version (\d+(?:\.\d+)+)/i)
+    url "https://www.fossil-scm.org/home/uv/download.js"
+    regex(/"title":\s*?"Version (\d+(?:\.\d+)+)\s*?\(/i)
   end
 
   bottle do
-    cellar :any
-    sha256 "79dddedf515aa4c145161b6511f99f8864656f19cd3935be77cf92bac60e1eb0" => :catalina
-    sha256 "0366a7a4642f1805d593fd8c357df989cb811280afbef101bbc07fdcec4391d7" => :mojave
-    sha256 "87006ce88d4bc52e452b06f2a10f8151930af1e0b6c14bace7eeb486505fd5b9" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "2e974db6852c2a27177bfde0f00c61d81e93f13a2e9c0b2c46d8939b44eb54af"
+    sha256 cellar: :any, big_sur:       "8608e819d0776acf97e64e1cd7be502d3e799e0b0887a7771a9e73eca742b2ec"
+    sha256 cellar: :any, catalina:      "eef6ab952149d3ba4aef47eeb13bfda10b0f0d210636bdd975fc384d5ffbe2f7"
+    sha256 cellar: :any, mojave:        "1640523e40fa4032c6a3afc04b9f3d9993201e91daac8415f8bee81df9c98b88"
   end
 
   depends_on "openssl@1.1"

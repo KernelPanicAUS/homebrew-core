@@ -1,10 +1,9 @@
 class RakudoStar < Formula
   desc "Rakudo compiler and commonly used packages"
   homepage "https://rakudo.org/"
-  url "https://rakudo.org/dl/star/rakudo-star-2020.01.tar.gz"
-  sha256 "f1696577670d4ff5b464e572b1b0b8c390e6571e1fb8471cbf369fa39712c668"
+  url "https://rakudo.org/dl/star/rakudo-star-2021.04.tar.gz"
+  sha256 "66a5c9d7375f8b83413974113e1024f2e8317d8a6f505e6de0e54d5683c081e7"
   license "Artistic-2.0"
-  revision 1
 
   livecheck do
     url "https://rakudo.org/dl/star/"
@@ -12,12 +11,13 @@ class RakudoStar < Formula
   end
 
   bottle do
-    rebuild 1
-    sha256 "3b278aad10dae56ebb623fecdc5cd8e044d1bb23021a48e4c4428554674cb89e" => :catalina
-    sha256 "c0ad291ef64244dec178ecb1c878ca8e921123c70e408b8f8f96dc64d2364248" => :mojave
-    sha256 "0938d963dc23119a1c4a2fa976d4b870f81d744c41986f122aad15858c0b9717" => :high_sierra
+    sha256 arm64_big_sur: "13f29562a836448fb820c7efa93eb2fd635eda7b428635bce9002ccac1e28a6a"
+    sha256 big_sur:       "a7dd4d2139e570762a78b60e505f62e581825732768ae49b4f9ca2ffc52bbb23"
+    sha256 catalina:      "40bf7dfbdda3c1091dc5d4b8fd5a776ca8e6ba722b48fb7c536deb1914263096"
+    sha256 mojave:        "4bb9fd2754e328dca6a7199f900a85bea5a673bd7ee4a1f47e330144eee81cff"
   end
 
+  depends_on "bash" => :build
   depends_on "gmp"
   depends_on "icu4c"
   depends_on "libffi"
@@ -35,15 +35,13 @@ class RakudoStar < Formula
 
     ENV.deparallelize # An intermittent race condition causes random build failures.
 
-    system "perl", "Configure.pl", "--prefix=#{prefix}",
-                   "--backends=moar", "--gen-moar"
-    system "make"
     # make install runs tests that can hang on sierra
     # set this variable to skip those tests
     ENV["NO_NETWORK_TESTING"] = "1"
-    system "make", "install"
+    system "bin/rstar", "install", "-p", prefix.to_s
 
-    # Panda is now in share/perl6/site/bin, so we need to symlink it too.
+    #  Installed scripts are now in share/perl/{site|vendor}/bin, so we need to symlink it too.
+    bin.install_symlink Dir[share/"perl6/vendor/bin/*"]
     bin.install_symlink Dir[share/"perl6/site/bin/*"]
 
     # Move the man pages out of the top level into share.
@@ -53,7 +51,7 @@ class RakudoStar < Formula
   end
 
   test do
-    out = `#{bin}/perl6 -e 'loop (my $i = 0; $i < 10; $i++) { print $i }'`
+    out = `#{bin}/raku -e 'loop (my $i = 0; $i < 10; $i++) { print $i }'`
     assert_equal "0123456789", out
     assert_equal 0, $CHILD_STATUS.exitstatus
   end

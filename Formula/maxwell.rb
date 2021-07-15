@@ -1,18 +1,20 @@
 class Maxwell < Formula
   desc "Reads MySQL binlogs and writes row updates as JSON to Kafka"
   homepage "https://maxwells-daemon.io/"
-  url "https://github.com/zendesk/maxwell/releases/download/v1.27.1/maxwell-1.27.1.tar.gz"
-  sha256 "81aca4fe49bbe720c9b7706058d3793c22f9b3a718691ad384ba622a6bbb0d6b"
+  url "https://github.com/zendesk/maxwell/releases/download/v1.33.1/maxwell-1.33.1.tar.gz"
+  sha256 "15410a2b0ef048ae7d052f632e9aebdf1f1d0099f49d4ebb7680d7dc480c4abe"
   license "Apache-2.0"
 
   livecheck do
-    url "https://github.com/zendesk/maxwell/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "9c6da6b07e524eae16c853982ee49d4a79543cac6c1e033ede083ecf2faa83f2"
+  end
 
-  depends_on java: "1.8"
+  depends_on "openjdk@11"
 
   def install
     libexec.install Dir["*"]
@@ -21,14 +23,22 @@ class Maxwell < Formula
       bin.install libexec/"bin/#{f}"
     end
 
-    bin.env_script_all_files(libexec/"bin", Language::Java.java_home_env("1.8"))
+    bin.env_script_all_files(libexec/"bin", Language::Java.java_home_env("11.0"))
   end
 
   test do
+    log = testpath/"maxwell.log"
+
     fork do
-      exec "#{bin}/maxwell --log_level=OFF > #{testpath}/maxwell.log 2>/dev/null"
+      $stdout.reopen(log)
+      $stderr.reopen(log)
+      # Tell Maxwell to connect to a bogus host name so we don't actually connect to a local instance
+      # The '.invalid' TLD is reserved as never to be installed as a valid TLD.
+      exec "#{bin}/maxwell --host not.real.invalid"
     end
     sleep 15
-    assert_match "Using kafka version", IO.read("#{testpath}/maxwell.log")
+
+    # Validate that we actually got in to Maxwell far enough to attempt to connect.
+    assert_match "ERROR Maxwell - SQLException: Communications link failure", log.read
   end
 end

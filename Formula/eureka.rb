@@ -1,19 +1,28 @@
 class Eureka < Formula
   desc "CLI tool to input and store your ideas without leaving the terminal"
   homepage "https://github.com/simeg/eureka"
-  url "https://github.com/simeg/eureka/archive/v1.7.0.tar.gz"
-  sha256 "3a4475fcce16acdb5bfc705641dbfc99ab7d8d7739de1da44d1f9c2fec8ea92d"
+  url "https://github.com/simeg/eureka/archive/v1.8.1.tar.gz"
+  sha256 "d10d412c71dea51b4973c3ded5de1503a4c5de8751be5050de989ac08eb0455e"
   license "MIT"
   head "https://github.com/simeg/eureka.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "78923a432ed0b00a266aba6680ad1b1c948e7c31a74b32babad1ffe45bc7dc20" => :catalina
-    sha256 "88b2371865f81cf092a3ab85c757bba880a3e3aef9c379ef880972fb75f80d93" => :mojave
-    sha256 "ef7f1bde80157ad17a9a789028bd0b0fee6e62f93f66b545a15c8bd753a58767" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "90360b05ad3ef835c82c534e68ec79ad930eb2b0c6dafa635340f994851ce72b"
+    sha256 cellar: :any,                 big_sur:       "1aee228a339009bb98020df8f499f27353dc1bd4d301d357b86e130d0d17d906"
+    sha256 cellar: :any,                 catalina:      "b8fa76b3d16fb92968402f2057693af133270c72292307461f351b8950b9b329"
+    sha256 cellar: :any,                 mojave:        "2d31715b3b5aa38ed008b58e83d9ce6c9afdbe58f9f6d4bb3bf9195f3dc139ed"
+    sha256 cellar: :any,                 high_sierra:   "060f76e2626e9b30184f1cfe0a61f8b4ddf545c8f8a5d59c6a8d1b54f9548c4a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "2c5137f7468531db56682bf215205fae9671abf35b4a835c0bab86bd1ad624a7"
   end
 
   depends_on "rust" => :build
+  depends_on "openssl@1.1"
+
+  uses_from_macos "zlib"
+
+  on_linux do
+    depends_on "pkg-config" => :build
+  end
 
   def install
     system "cargo", "install", *std_cargo_args

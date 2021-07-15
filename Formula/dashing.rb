@@ -7,19 +7,19 @@ class Dashing < Formula
   revision 1
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "cdfb4329ae48807046deb40bb2adb9969afda47a25502cedb374cf21a6a605ee" => :catalina
-    sha256 "79874bca8f27064c16aa81b398131d7ed3558bd5987913e344d0075859d9f7c7" => :mojave
-    sha256 "8c34e42f44271bfea4aecbb5dedb18deecfc4b8d0d0564344efa861bb816e8d4" => :high_sierra
+    rebuild 2
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "72b9d5ea8aaf171f9a46e099f190a9adf9ad90b6bd90dcdc54eaa922e2c277f9"
+    sha256 cellar: :any_skip_relocation, big_sur:       "7297bb9c8b50feeda73af51b59acfcac18f9d2beb57738de293146aaca7cd089"
+    sha256 cellar: :any_skip_relocation, catalina:      "43702cf1fbdeb449e9205716635cba4c62449e575f9a6ab45eeb4aeb166fdf9a"
+    sha256 cellar: :any_skip_relocation, mojave:        "bbd3a7995a6b5a0a87f4a08a4e4bb52fe75990bdde6b63bea1a9c56c7c144165"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "982d82dc58980aa81fadf686557c5c075ddb95b9ef0f8456e7b32b6ed49aa382"
   end
 
   depends_on "go" => :build
 
-  # Use ruby docs just as dummy documentation to test with
-  # DO NOT USE https or find a better host, certificate has expired
-  resource "ruby_docs_tarball" do
-    url "https://ruby-doc.com/downloads/ruby_2_6_5_core_rdocs.tgz"
-    sha256 "f9f74cf85c84e934d7127c2e86f4c3b0b70380a92c400decdc8a77ac977097fe"
+  resource "redux_saga_docs_tarball" do
+    url "https://github.com/dmitrytut/redux-saga-docset/archive/7df9e3070934c0f4b92d66d2165312bf78ecd6a0.tar.gz"
+    sha256 "08e5cc1fc0776fd60492ae90961031b1419ea6ed02e2c2d9db2ede67d9d67852"
   end
 
   def install
@@ -31,11 +31,20 @@ class Dashing < Formula
   test do
     # Make sure that dashing creates its settings file and then builds an actual
     # docset for Dash
-    testpath.install resource("ruby_docs_tarball")
+    testpath.install resource("redux_saga_docs_tarball")
+    innerpath = testpath
     system bin/"dashing", "create"
-    assert_predicate testpath/"dashing.json", :exist?
+    assert_predicate innerpath/"dashing.json", :exist?
     system bin/"dashing", "build", "."
-    file = testpath/"dashing.docset/Contents/Resources/Documents/goruby_c.html"
-    assert_predicate file, :exist?
+    innerpath /= "dashing.docset/Contents"
+    assert_predicate innerpath/"Info.plist", :exist?
+    innerpath /= "Resources"
+    assert_predicate innerpath/"docSet.dsidx", :exist?
+    innerpath /= "Documents"
+    assert_predicate innerpath/"README.md", :exist?
+    innerpath /= "docs"
+    assert_predicate innerpath/"index.html", :exist?
+    innerpath /= "introduction"
+    assert_predicate innerpath/"SagaBackground.html", :exist?
   end
 end

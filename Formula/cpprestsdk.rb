@@ -3,24 +3,28 @@ class Cpprestsdk < Formula
   homepage "https://github.com/Microsoft/cpprestsdk"
   # pull from git tag to get submodules
   url "https://github.com/Microsoft/cpprestsdk.git",
-      tag:      "v2.10.16",
-      revision: "18212a2a7967e12d740bfb957e500892b3463c88"
+      tag:      "2.10.18",
+      revision: "122d09549201da5383321d870bed45ecb9e168c5"
   license "MIT"
   head "https://github.com/Microsoft/cpprestsdk.git", branch: "development"
 
   bottle do
-    cellar :any
-    sha256 "0b7d717716ebc8393007599ed02f9a4f8b36eef1f3dd3d54d11b0966751a4f87" => :catalina
-    sha256 "feeabdfce6c4a065961f37c38578d626a50f8e7a3939343a6ed037f535418a02" => :mojave
-    sha256 "f98e8ff4c5b371ffe541eb1fefc13a178b02c07e6fab906fd206e6c833827dfa" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "ac66587bc353b3358ff11606ca3952fa57f7dc57a5f59414ed8bfa62e90ff858"
+    sha256 cellar: :any, big_sur:       "c65b7f42fed4091750be219a60774854de46903c74ef99def1b73f905bb0728f"
+    sha256 cellar: :any, catalina:      "f89613fba00d0feaa3e55508f3fb122dc8f4126b679e55c22fd228ed44d0c1c4"
+    sha256 cellar: :any, mojave:        "6805fd31638651ef090d68e07cdea155d70b23365828cd1adbfd60fc132eedc3"
   end
 
   depends_on "cmake" => :build
+  depends_on "pkg-config" => :build
+
   depends_on "boost"
   depends_on "openssl@1.1"
 
   def install
-    system "cmake", "-DBUILD_SAMPLES=OFF", "-DBUILD_TESTS=OFF", "Release", *std_cmake_args
+    system "cmake", "-DBUILD_SAMPLES=OFF", "-DBUILD_TESTS=OFF",
+                    "-DOPENSSL_ROOT_DIR=#{Formula["openssl@1.1"]}.opt_prefix",
+                    "Release", *std_cmake_args
     system "make", "install"
   end
 

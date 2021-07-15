@@ -7,10 +7,12 @@ class Liquigraph < Formula
   head "https://github.com/liquigraph/liquigraph.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "33d7c1bae094524db782c9b3d3b0f37b4353f772529ab143b456c6271e262059" => :catalina
-    sha256 "3a6ed6c8c176e1ffa0e3faef3cd1ed0025663dc23fd2d839372a9766e26fd2b7" => :mojave
-    sha256 "d8c4ae157ed9d5ea8aad53d9b07784c21e41a4ac5a7756f0dacb9f526e809405" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "bf45c4112732a17a867a17a18cc1ad77d71dbebfdca84f00843bd9526c4d6ed2"
+    sha256 cellar: :any_skip_relocation, big_sur:       "1fa0da0d2e5c22f63faed17097c320d4a639c4d3855385f541cf948aa6a5a61b"
+    sha256 cellar: :any_skip_relocation, catalina:      "33d7c1bae094524db782c9b3d3b0f37b4353f772529ab143b456c6271e262059"
+    sha256 cellar: :any_skip_relocation, mojave:        "3a6ed6c8c176e1ffa0e3faef3cd1ed0025663dc23fd2d839372a9766e26fd2b7"
+    sha256 cellar: :any_skip_relocation, high_sierra:   "d8c4ae157ed9d5ea8aad53d9b07784c21e41a4ac5a7756f0dacb9f526e809405"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "18bdc64b095feea09c0a07c951ca6adbe03611794f39f2b03367775a210c0591"
   end
 
   depends_on "maven" => :build

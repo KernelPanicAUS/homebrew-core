@@ -1,33 +1,37 @@
 class Spigot < Formula
   desc "Command-line streaming exact real calculator"
   homepage "https://www.chiark.greenend.org.uk/~sgtatham/spigot/"
-  url "https://www.chiark.greenend.org.uk/~sgtatham/spigot/spigot-20200826.216f4ca.tar.gz"
-  version "20200826"
-  sha256 "932d6243739cdaa15270922ca01fa9ca1b48bc11f7931281d5ac00e6fab5596d"
+  url "https://www.chiark.greenend.org.uk/~sgtatham/spigot/spigot-20210527.7dd3cfd.tar.gz"
+  version "20210527"
+  sha256 "1014b79607cbb6cc8143c9b3a093f266144124d9a4552785e5779c1a072faadc"
   license "MIT"
 
   livecheck do
     url :homepage
-    regex(/href=.*?spigot[._-]v?(\d+)(?:\.[\da-z]+)?\.t/i)
+    regex(/href=.*?spigot[._-]v?(\d+(?:\.\d+)*)(?:[._-][\da-z]+)?\.t/i)
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "dbfdfe6cb12e1bcf76cbc774a48a074e2a0637ccebee39874dbbb5c783a779dd" => :catalina
-    sha256 "8171f8aa18c8e1b6b9d3cb909235d7f201edd41461f87d6c4d0c58b0402c6115" => :mojave
-    sha256 "c0071555bdfdf4b54d99b3fb392b0b109f710338b5685fc324b75fa82ff801c5" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "ea601301d75ed829ff918c22884199fef4a35afcffbdc03da464d7051b55d3e1"
+    sha256 cellar: :any_skip_relocation, big_sur:       "daf9a73394d08cdfc2b5746b367112ea1790f924169d36e2ec288b201433b148"
+    sha256 cellar: :any_skip_relocation, catalina:      "7a78a2d6416a800148fbd44f269865c3baacf150164f757459f9dbf622b41fa9"
+    sha256 cellar: :any_skip_relocation, mojave:        "f7f31fcf972afaecdb231e4b7e413a98a7ec8f05f7d3e4717cc9128c7cae0fab"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "b0e15ff42ceacf124df8655ee07bebb44dcb0ee0a5f8785ab4da5c8b27ea1467"
   end
+
+  depends_on "cmake" => :build
+
+  uses_from_macos "ncurses"
 
   on_linux do
     depends_on "gmp"
   end
 
   def install
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
-                          "--disable-silent-rules",
-                          "--prefix=#{prefix}"
-    system "make", "install"
+    mkdir "build" do
+      system "cmake", "..", *std_cmake_args
+      system "make", "install"
+    end
   end
 
   test do

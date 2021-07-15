@@ -1,30 +1,37 @@
 class PostgresqlAT96 < Formula
   desc "Object-relational database system"
   homepage "https://www.postgresql.org/"
-  url "https://ftp.postgresql.org/pub/source/v9.6.19/postgresql-9.6.19.tar.bz2"
-  sha256 "61f93a94ccddbe0b2d1afaf03f04ba605d8af5b774ff9b830e5adeb50ab55cb0"
+  url "https://ftp.postgresql.org/pub/source/v9.6.22/postgresql-9.6.22.tar.bz2"
+  sha256 "3d32cd101025a0556813397c69feff3df3d63736adb8adeaf365c522f39f2930"
   license "PostgreSQL"
 
   livecheck do
-    url "https://www.postgresql.org/docs/9.6/static/release.html"
-    regex(/Release v?(\d+(?:\.\d+)+)/i)
+    url "https://ftp.postgresql.org/pub/source/"
+    regex(%r{href=["']?v?(9\.6(?:\.\d+)*)/?["' >]}i)
   end
 
   bottle do
-    sha256 "81b3a3ac4e549641e48fe4f291b32266603858cff2ceb6242f2725deb20bdd9a" => :catalina
-    sha256 "b515085fd803628a5979a34402fa7296e95c437bc5805ec08acd69b43ac11c6a" => :mojave
-    sha256 "59593120c3bce07fa0c130eda3f1b0aef1cc2ed254b822fd9ed416d7469a8da2" => :high_sierra
+    sha256 arm64_big_sur: "408a339dc0058f6fb69a894f6faad84241403c698047d77f81d05871d569edff"
+    sha256 big_sur:       "66d141ccf728c3a4c529b227a3a3ece0b767c85b9ef04b5a6d787107a9addc20"
+    sha256 catalina:      "2b8fab60518c228f3dae4830f2ae662a2b5e4b7e968ba50f7ff0288eadb1cbcf"
+    sha256 mojave:        "73a3586e8bc638b8513df4226090fe843c5d4d93bce35120214772ef28c8f3a2"
   end
 
   keg_only :versioned_formula
 
+  # https://www.postgresql.org/support/versioning/
+  deprecate! date: "2021-11-11", because: :unsupported
+
   depends_on "openssl@1.1"
   depends_on "readline"
 
+  uses_from_macos "krb5"
   uses_from_macos "libxslt"
+  uses_from_macos "openldap"
   uses_from_macos "perl"
 
   on_linux do
+    depends_on "linux-pam"
     depends_on "util-linux"
   end
 
@@ -82,11 +89,26 @@ class PostgresqlAT96 < Formula
   end
 
   def post_install
-    return if ENV["CI"]
-
     (var/"log").mkpath
-    (var/name).mkpath
-    system "#{bin}/initdb", "#{var}/#{name}" unless File.exist? "#{var}/#{name}/PG_VERSION"
+    postgresql_datadir.mkpath
+
+    # Don't initialize database, it clashes when testing other PostgreSQL versions.
+    return if ENV["HOMEBREW_GITHUB_ACTIONS"]
+
+    postgresql_datadir.mkpath
+    system "#{bin}/initdb", postgresql_datadir unless pg_version_exists?
+  end
+
+  def postgresql_datadir
+    var/name
+  end
+
+  def postgresql_log_path
+    var/"log/#{name}.log"
+  end
+
+  def pg_version_exists?
+    (postgresql_datadir/"PG_VERSION").exist?
   end
 
   def caveats
@@ -95,17 +117,8 @@ class PostgresqlAT96 < Formula
       you may need to remove the previous version first. See:
         https://github.com/Homebrew/legacy-homebrew/issues/2510
 
-      To migrate existing data from a previous major version (pre-9.0) of PostgreSQL, see:
-        https://www.postgresql.org/docs/9.6/static/upgrading.html
-
-      To migrate existing data from a previous minor version (9.0-9.5) of PostgreSQL, see:
-        https://www.postgresql.org/docs/9.6/static/pgupgrade.html
-
-        You will need your previous PostgreSQL installation from brew to perform `pg_upgrade`.
-          Do not run `brew cleanup postgresql@9.6` until you have performed the migration.
-
       This formula has created a default database cluster with:
-        initdb #{var}/postgres
+        initdb #{postgresql_datadir}
       For more details, read:
         https://www.postgresql.org/docs/#{version.major}/app-initdb.html
     EOS
@@ -127,21 +140,21 @@ class PostgresqlAT96 < Formula
         <array>
           <string>#{opt_bin}/postgres</string>
           <string>-D</string>
-          <string>#{var}/#{name}</string>
+          <string>#{postgresql_datadir}</string>
         </array>
         <key>RunAtLoad</key>
         <true/>
         <key>WorkingDirectory</key>
         <string>#{HOMEBREW_PREFIX}</string>
         <key>StandardErrorPath</key>
-        <string>#{var}/log/#{name}.log</string>
+        <string>#{postgresql_log_path}</string>
       </dict>
       </plist>
     EOS
   end
 
   test do
-    system "#{bin}/initdb", testpath/"test" unless ENV["CI"]
+    system "#{bin}/initdb", testpath/"test" unless ENV["HOMEBREW_GITHUB_ACTIONS"]
     assert_equal pkgshare.to_s, shell_output("#{bin}/pg_config --sharedir").chomp
     assert_equal lib.to_s, shell_output("#{bin}/pg_config --libdir").chomp
     assert_equal lib.to_s, shell_output("#{bin}/pg_config --pkglibdir").chomp

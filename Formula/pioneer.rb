@@ -1,15 +1,16 @@
 class Pioneer < Formula
   desc "Game of lonely space adventure"
   homepage "https://pioneerspacesim.net/"
-  url "https://github.com/pioneerspacesim/pioneer/archive/20200203.tar.gz"
-  sha256 "3055d63c1bd3377c3794eee830a8adbd650b178bad9e927531e38cb5d5838694"
+  url "https://github.com/pioneerspacesim/pioneer/archive/20210203.tar.gz"
+  sha256 "fcbc57374123b44161e9d15d97bd950255f654a222840894f50bfc2be716ea68"
   license "GPL-3.0"
   head "https://github.com/pioneerspacesim/pioneer.git"
 
   bottle do
-    sha256 "d6ef58a82bd5d0030f28db39103882a4da8416ba3b1dae5d3e98d09e2d06c5c6" => :catalina
-    sha256 "837ce3dc518de05e3c50597252acf888b55ee341777f765bd4b1d88faf53592d" => :mojave
-    sha256 "2d2d2aaeff7ec2231f7908504d4750f9fc2e60fd4d68f059d20808cea36370d7" => :high_sierra
+    sha256 arm64_big_sur: "a3151605aa2a2b4a8a5ac8266105d2293a7f06f594791fed4629340b8f819a71"
+    sha256 big_sur:       "8b59ff2ff180ccdd5485d063d8a46038bc7ae2fb77c70a9a6aec891aba40c7b7"
+    sha256 catalina:      "abeb86c374fa69e433e548cd1189105206cfd3859a1dd06d0ea2b45a15092b9f"
+    sha256 mojave:        "bd448dc95f9f104637263a4e9aea398177b502938a969b766db8229ddc89860a"
   end
 
   depends_on "cmake" => :build

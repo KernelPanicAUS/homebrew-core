@@ -1,20 +1,27 @@
 class Vcpkg < Formula
   desc "C++ Library Manager"
   homepage "https://github.com/microsoft/vcpkg"
-  url "https://github.com/microsoft/vcpkg/archive/2020.06.tar.gz"
-  sha256 "cfaecee6f18b6e2763f41c4257b6d6a1d2ef536a2018a6c7f579df0b6ad42e56"
-  revision 1
+  url "https://github.com/microsoft/vcpkg/archive/2021.05.12.tar.gz"
+  sha256 "907f26a5357c30e255fda9427f1388a39804f607a11fa4c083cc740cb268f5dc"
+  license "MIT"
   head "https://github.com/microsoft/vcpkg.git"
 
   bottle do
-    cellar :any
-    sha256 "e4b51bd648a112d77dc6f16f7e702f1edbd3f14a3dfe9bc29dc46ca996f26670" => :catalina
-    sha256 "db0dc9240c0c62ad995b56cbb19bb7089a6463fd41fe01cf3d5cb860d408f564" => :mojave
-    sha256 "e8b701d7a51ed48a27f93f6ac6e16f1f38118f5a9bfd15360594c5db6c19b881" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "e58d2e3fbf843883563579ec544828788ca051c9b5bd46edc0e5df71c35b90dc"
+    sha256 cellar: :any_skip_relocation, big_sur:       "d963bef9ed861e8e67c4ef2080f04adf3a91bb971776f60f3f40bd5a6a875e07"
+    sha256 cellar: :any_skip_relocation, catalina:      "143a0c4e50b0d96bdaa7ed913105654188664ac105500c74f66add89fe1cf098"
+    sha256 cellar: :any,                 mojave:        "301a0c5460bebfa3f05fb2ed8d264fce2a9fe9f261853fed991a59d1c1cd58ad"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "aac3ac181306d79ac32984bdfecf34c9fa90703ed11e78044fae8630ca085222"
   end
 
   depends_on "cmake" => :build
   depends_on "ninja" => :build
+
+  on_linux do
+    depends_on "gcc" # for C++17
+  end
+
+  fails_with gcc: "5"
 
   if MacOS.version <= :mojave
     depends_on "gcc"

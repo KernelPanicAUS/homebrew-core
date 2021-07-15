@@ -1,15 +1,20 @@
 class Clair < Formula
   desc "Vulnerability Static Analysis for Containers"
   homepage "https://github.com/quay/clair"
-  url "https://github.com/quay/clair/archive/v2.1.4.tar.gz"
-  sha256 "444e109091ddc49e00277e38ddf9456a53243ab70f2560ab927f4d35b53555f4"
+  url "https://github.com/quay/clair/archive/v4.1.1.tar.gz"
+  sha256 "ce08ef2a07c96278b4bbe37ca493697e5618d9715c2ee3a310d01cd8253644b3"
   license "Apache-2.0"
 
+  livecheck do
+    url :stable
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d310d5c7a3596a17612fd5b56d6c321129ecfae40d4fa7dc5032056c863b4dc3" => :catalina
-    sha256 "8b48f7520edfa1b74124b848de69802f127d476968a7c5471bd6174a43fc9899" => :mojave
-    sha256 "6ea27e3eed1bbf53401a81d55d138e1f808a9cfb52ca857316b1c371258b9c34" => :high_sierra
+    sha256 cellar: :any_skip_relocation, big_sur:      "06adb6658fcb4d5d936edbe9dda9a0f3f3cc138a7af5a45764442bc8bd253d30"
+    sha256 cellar: :any_skip_relocation, catalina:     "64093c8898d8f042f9953e3a28616ce802b03ea66a6001dcf7ee04d08bc137fa"
+    sha256 cellar: :any_skip_relocation, mojave:       "4130ba98783424e5a0c6cec2c2de0765ebfb2a7c49a985099ef7c34012c53594"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "7fc843061a77dd0fbc90183fdd4c79a5bdebedb30817d1faff25100d2209ad5e"
   end
 
   depends_on "go" => :build
@@ -17,14 +22,19 @@ class Clair < Formula
   depends_on "xz"
 
   def install
-    system "go", "build", *std_go_args, "./cmd/clair"
-    (etc/"clair").install "config.example.yaml" => "config.yaml"
+    ldflags = %W[
+      -s -w
+      -X main.Version=#{version}
+    ].join(" ")
+
+    system "go", "build", *std_go_args, "-ldflags", ldflags, "./cmd/clair"
+    (etc/"clair").install "config.yaml.sample"
   end
 
   test do
-    cp etc/"clair/config.yaml", testpath
-    output = shell_output("#{bin}/clair -config=config.yaml", 1)
+    cp etc/"clair/config.yaml.sample", testpath
+    output = shell_output("#{bin}/clair -conf #{testpath}/config.yaml.sample -mode combo 2>&1", 1)
     # requires a Postgres database
-    assert_match "pgsql: could not open database", output
+    assert_match "service initialization failed: failed to initialize indexer: failed to create ConnPool", output
   end
 end

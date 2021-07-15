@@ -1,28 +1,22 @@
 class Frugal < Formula
   desc "Cross language code generator for creating scalable microservices"
   homepage "https://github.com/Workiva/frugal"
-  url "https://github.com/Workiva/frugal/archive/v3.9.9.tar.gz"
-  sha256 "e7ddafb70f8413fb62f4d4760437bdc881c4da4a903e8c4fa22c7298ca0cc98e"
+  url "https://github.com/Workiva/frugal/archive/v3.14.5.tar.gz"
+  sha256 "8fff38f7ff2317614dce124a788f76a809eb0beceff90a31c1f021cf1e66c6d2"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "a18fb61f92432c7449f345a7cc38de60c4265a9cd1bc0e136aa44a0cedff607a" => :catalina
-    sha256 "9d98b771e79ce21e380a498cfe0234324d1f9e4416917303dad9366e63f3c9c0" => :mojave
-    sha256 "006fb4433a47e988ddf78894674a83733179821c52f4c5674375c17c503a1409" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "df1aadb5fa29222b49837bba1c35bf1aeb352f7692d2ad7df62141726d87ff5d"
+    sha256 cellar: :any_skip_relocation, big_sur:       "131c981d87e208ef8f68215af80b35819bb203d11039aedb0bf663c604b01e85"
+    sha256 cellar: :any_skip_relocation, catalina:      "131c981d87e208ef8f68215af80b35819bb203d11039aedb0bf663c604b01e85"
+    sha256 cellar: :any_skip_relocation, mojave:        "131c981d87e208ef8f68215af80b35819bb203d11039aedb0bf663c604b01e85"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "0dc5c5873cc4c18aa3552fcb47980ecf80e2a590289f0ce79f1a699f4aab3aa3"
   end
 
-  depends_on "glide" => :build
   depends_on "go" => :build
 
   def install
-    ENV["GOPATH"] = buildpath
-    (buildpath/"src/github.com/Workiva/frugal").install buildpath.children
-    cd "src/github.com/Workiva/frugal" do
-      system "glide", "install"
-      system "go", "build", "-o", bin/"frugal"
-      prefix.install_metafiles
-    end
+    system "go", "build", *std_go_args(ldflags: "-s -w")
   end
 
   test do

@@ -1,20 +1,22 @@
 class Cmark < Formula
   desc "Strongly specified, highly compatible implementation of Markdown"
   homepage "https://commonmark.org/"
-  url "https://github.com/commonmark/cmark/archive/0.29.0.tar.gz"
-  sha256 "2558ace3cbeff85610de3bda32858f722b359acdadf0c4691851865bb84924a6"
+  url "https://github.com/commonmark/cmark/archive/0.30.0.tar.gz"
+  sha256 "d708a045bd31506e03bddc49f262201ff14921cdfa26768854dc03937c44349b"
   license "BSD-2-Clause"
-  revision 1
 
   bottle do
-    cellar :any
-    sha256 "3af95418f96f4b0cec4bd76abaab312f3caf4cea591f38d3b725f15068d06491" => :catalina
-    sha256 "7cbb32d00d44170f5fe426cf2f1d4b5d756738b18631a13f8c5f94524b39f73b" => :mojave
-    sha256 "fb673191d96707019c8eefc224de72045149830f445fb7340c454cc6e8510981" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "2a6421e2a5c12e65151d7ee68588825f4989e446c02a331178d9cf80da959cdb"
+    sha256 cellar: :any,                 big_sur:       "e62c5f9e7b4e142d7fc333f74a37e9f7369edf99e3311f104921d55063dd46d9"
+    sha256 cellar: :any,                 catalina:      "aad5f683d644f5a1197f735d7b3af3dc4764f8ad7e19c3de87974d3a80cf3645"
+    sha256 cellar: :any,                 mojave:        "2c610141e4791ff7407b12065a492a058da98f9a4841ff65be6a998c603006e6"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "1eed3fa34bf57c9a862c4251dd5bfc59d51ce97bbab49c9faf25e60d1aaab266"
   end
 
   depends_on "cmake" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
+
+  conflicts_with "cmark-gfm", because: "both install a `cmark.h` header"
 
   def install
     mkdir "build" do

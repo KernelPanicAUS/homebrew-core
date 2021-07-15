@@ -7,10 +7,9 @@ class S3fs < Formula
   head "https://github.com/s3fs-fuse/s3fs-fuse.git"
 
   bottle do
-    cellar :any
-    sha256 "5183ab606057fbe8e46a737b25c1ad4e82dd67389f48827d7bfd567c67cf8417" => :catalina
-    sha256 "d691bdeb4abd443bc1f1f3de46c286a97829f95ba3d47b026e535a6688085d07" => :mojave
-    sha256 "f475d03b68102dd400a22de99b9ddc044653f6658e2cb84349adf507ffbddcad" => :high_sierra
+    sha256 cellar: :any, catalina:    "5183ab606057fbe8e46a737b25c1ad4e82dd67389f48827d7bfd567c67cf8417"
+    sha256 cellar: :any, mojave:      "d691bdeb4abd443bc1f1f3de46c286a97829f95ba3d47b026e535a6688085d07"
+    sha256 cellar: :any, high_sierra: "f475d03b68102dd400a22de99b9ddc044653f6658e2cb84349adf507ffbddcad"
   end
 
   depends_on "autoconf" => :build
@@ -20,12 +19,30 @@ class S3fs < Formula
   depends_on "libgcrypt"
   depends_on "nettle"
 
-  depends_on :osxfuse
+  on_macos do
+    disable! date: "2021-04-08", because: "requires closed-source macFUSE"
+  end
+
+  on_linux do
+    depends_on "libfuse"
+  end
 
   def install
     system "./autogen.sh"
     system "./configure", "--disable-dependency-tracking", "--with-gnutls", "--prefix=#{prefix}"
     system "make", "install"
+  end
+
+  def caveats
+    on_macos do
+      <<~EOS
+        The reasons for disabling this formula can be found here:
+          https://github.com/Homebrew/homebrew-core/pull/64491
+
+        An external tap may provide a replacement formula. See:
+          https://docs.brew.sh/Interesting-Taps-and-Forks
+      EOS
+    end
   end
 
   test do

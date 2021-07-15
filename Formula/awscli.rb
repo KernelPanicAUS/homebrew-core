@@ -3,20 +3,21 @@ class Awscli < Formula
 
   desc "Official Amazon AWS command-line interface"
   homepage "https://aws.amazon.com/cli/"
-  url "https://github.com/aws/aws-cli/archive/2.0.44.tar.gz"
-  sha256 "0c8c5bd40717e9b9dda6c747756e469aece7e6ded53de64f1a5caca4b78b5456"
+  url "https://github.com/aws/aws-cli/archive/2.2.19.tar.gz"
+  sha256 "4bdc6a7cd18d45054d231e5e002d160589f108d7e3b67828dedfd292ce151747"
   license "Apache-2.0"
   head "https://github.com/aws/aws-cli.git", branch: "v2"
 
   bottle do
-    sha256 "391408bb08636c2190a9c9b75d4574e20475cb4e199d14b24ad2c02a03d4aee7" => :catalina
-    sha256 "b610a107875dac44a9a3a5c45569228dfb0c51769af74e69ac3aec57ac1c8c70" => :mojave
-    sha256 "2eeada5996038d52a6d9efe9458180b5f38fc69ab3e8ab98c810d0c17cac93ce" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "351d941a99b763b659e1f9c3708f5829c134d7f6102adbefaca24d2e1cd5664c"
+    sha256                               big_sur:       "ad7affd1fe2d3d2c662f67235ad5c39076652042b4be2109a4bcf8644d1f0b56"
+    sha256                               catalina:      "e1fad321adbd55de683c010e42738daf2be3f2f536ed8b5eb0e5d469f3807766"
+    sha256                               mojave:        "e1d0a0eff6291018b617f1b82d2e70553b18217f42f67b05239ebb785fff4d0e"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "aafaf9e301ddf8a144786175f0cde5a83996665f22976945e44cc9fad9ef04c6"
   end
 
-  # Some AWS APIs require TLS1.2, which system Python doesn't have before High
-  # Sierra
-  depends_on "python@3.8"
+  depends_on "cmake" => :build
+  depends_on "python@3.9"
 
   uses_from_macos "groff"
 
@@ -30,6 +31,7 @@ class Awscli < Formula
                               "--ignore-installed", buildpath
     system libexec/"bin/pip", "uninstall", "-y", "awscli"
     venv.pip_install_and_link buildpath
+    system libexec/"bin/pip", "uninstall", "-y", "pyinstaller"
     pkgshare.install "awscli/examples"
 
     rm Dir["#{bin}/{aws.cmd,aws_bash_completer,aws_zsh_completer.sh}"]
@@ -56,7 +58,7 @@ class Awscli < Formula
 
   test do
     assert_match "topics", shell_output("#{bin}/aws help")
-    assert_include Dir["#{libexec}/lib/python3.8/site-packages/awscli/data/*"],
-                   "#{libexec}/lib/python3.8/site-packages/awscli/data/ac.index"
+    assert_includes Dir["#{libexec}/lib/python3.9/site-packages/awscli/data/*"],
+                    "#{libexec}/lib/python3.9/site-packages/awscli/data/ac.index"
   end
 end

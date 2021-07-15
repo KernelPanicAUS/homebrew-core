@@ -6,12 +6,14 @@ class ProtocGenGrpcWeb < Formula
   url "https://github.com/grpc/grpc-web/archive/1.2.1.tar.gz"
   sha256 "23cf98fbcb69743b8ba036728b56dfafb9e16b887a9735c12eafa7669862ec7b"
   license "Apache-2.0"
+  revision 3
 
   bottle do
-    cellar :any
-    sha256 "21e02257e40195b66ec8c1e656774e8452be850b873334228338e010bd99bd9d" => :catalina
-    sha256 "42dc41e59794872cc06df660a812fa17222cf70c5204401a49ecd911055f38a9" => :mojave
-    sha256 "0f629b3b8c1023eb2e011bbdb6bbcf60b64ad0d7cac2f1127171bab8cc618405" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "8625843e386cf1aec90d4f750ad1480586f10e90fa5f8d2092037b92583379d3"
+    sha256 cellar: :any,                 big_sur:       "c706a6449039679963254536a30511f031fe11705ac36ed5d2f3ab2fd83a2aba"
+    sha256 cellar: :any,                 catalina:      "3917c4c2ff273a01472cd46265b5d12a6df0012e721cb271f4c512a894e3ccd5"
+    sha256 cellar: :any,                 mojave:        "b4486c699cd657005acd262ef592784f3bbf3b50408e90d2a84d42dcb5205853"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "2f57d007f37bd720b813f7254d32c6683257de8c1afe95a93f3dc23c9641c093"
   end
 
   depends_on "cmake" => :build

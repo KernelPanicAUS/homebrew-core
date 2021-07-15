@@ -1,24 +1,24 @@
 class Kind < Formula
   desc "Run local Kubernetes cluster in Docker"
   homepage "https://kind.sigs.k8s.io/"
-  url "https://github.com/kubernetes-sigs/kind/archive/v0.8.1.tar.gz"
-  sha256 "2a04a6427d45fa558fc4bfe90fde0b7ea2c7f2d6fcf3b7c581fc281ae49b5447"
+  url "https://github.com/kubernetes-sigs/kind/archive/v0.11.1.tar.gz"
+  sha256 "95ce0e7b01c00be149e5bd777936cef3f79ba7f1f3e5872e7ed60595858a2491"
   license "Apache-2.0"
-  head "https://github.com/kubernetes-sigs/kind.git"
+  head "https://github.com/kubernetes-sigs/kind.git", branch: "main"
 
   bottle do
-    cellar :any_skip_relocation
-    rebuild 1
-    sha256 "b3df2d17b1e04549456c846b4e6821b9ba944cc9d960a4cd503281b1d180c6f4" => :catalina
-    sha256 "f91154348256db372a2dc67fde509072693993338acb34b89374df138e6c53b8" => :mojave
-    sha256 "50ea3dd46ea5e1965bd3cc94e95d30b855ddf64c0a103ee83980ba356a6b2625" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "29920822e416eea3f363200b64666756a2979aa186e067b3794bb5466aeaaf35"
+    sha256 cellar: :any_skip_relocation, big_sur:       "116a1749c6aee8ad7282caf3a3d2616d11e6193c839c8797cde045cddd0e1138"
+    sha256 cellar: :any_skip_relocation, catalina:      "15aa1527c8886da5ce345ae84f255fd33ee9726acef8c6ba1f33c2f5af8d6a96"
+    sha256 cellar: :any_skip_relocation, mojave:        "f506e71e34e0e43f48425a733b77d4f7f574861d52041d6c3a8a7220ae49943f"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "03aa8a4879c9b3b3e234a37275b3c4dd9c9c50f1b3b8e0859ef92d0bee54eb59"
   end
 
   depends_on "go" => :build
+  depends_on "docker" => :test
 
   def install
-    system "go", "build", "-o", bin/"kind"
-    prefix.install_metafiles
+    system "go", "build", *std_go_args
 
     # Install bash completion
     output = Utils.safe_popen_read("#{bin}/kind", "completion", "bash")
@@ -27,11 +27,17 @@ class Kind < Formula
     # Install zsh completion
     output = Utils.safe_popen_read("#{bin}/kind", "completion", "zsh")
     (zsh_completion/"_kind").write output
+
+    # Install fish completion
+    output = Utils.safe_popen_read("#{bin}/kind", "completion", "fish")
+    (fish_completion/"kind.fish").write output
   end
 
   test do
+    ENV["DOCKER_HOST"] = "unix://#{testpath}/invalid.sock"
+
     # Should error out as creating a kind cluster requires root
     status_output = shell_output("#{bin}/kind get kubeconfig --name homebrew 2>&1", 1)
-    assert_match "failed to list clusters", status_output
+    assert_match "Cannot connect to the Docker daemon", status_output
   end
 end

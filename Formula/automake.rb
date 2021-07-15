@@ -1,37 +1,25 @@
 class Automake < Formula
   desc "Tool for generating GNU Standards-compliant Makefiles"
   homepage "https://www.gnu.org/software/automake/"
-  url "https://ftp.gnu.org/gnu/automake/automake-1.16.2.tar.xz"
-  mirror "https://ftpmirror.gnu.org/automake/automake-1.16.2.tar.xz"
-  sha256 "ccc459de3d710e066ab9e12d2f119bd164a08c9341ca24ba22c9adaa179eedd0"
+  url "https://ftp.gnu.org/gnu/automake/automake-1.16.3.tar.xz"
+  mirror "https://ftpmirror.gnu.org/automake/automake-1.16.3.tar.xz"
+  sha256 "ff2bf7656c4d1c6fdda3b8bebb21f09153a736bcba169aaf65eab25fa113bf3a"
   license "GPL-2.0-or-later"
   revision 1
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "06c47bab91fc9c8a912a162f02fbf4c6d03b75820110250d2408e694bacd8236" => :catalina
-    sha256 "4b120878f02328e006cb51c2456f5ff26e8c5ad5688ac00fada4a53e72479ce6" => :mojave
-    sha256 "4a98437a54592391f677ecea0bbac02f823e7f3168b9a782067cca9aa8f78b4e" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "91656222dff012c7434026ff250fcd92fd5746e60a383ef27547559b6bbfe4f5"
+    sha256 cellar: :any_skip_relocation, big_sur:       "11f09c63a49b30078f91bd00b8bed2408422100764cb7b039e8f96941aec3dfc"
+    sha256 cellar: :any_skip_relocation, catalina:      "5f83d4723ee9f33c4a90d62c4bce9d200c4c74cc32d207e4f4d2bdaaede9fb7f"
+    sha256 cellar: :any_skip_relocation, mojave:        "52796a1b6c737797964b119a5cf170a24fc55e32a43841e4690cce1cc24fed1a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "32cfaaad01d5f24626f9180b4d0292df2a254278825e502308c99d4ae6c4e606"
   end
 
   depends_on "autoconf"
 
-  # Download more up-to-date config scripts.
-  resource "config" do
-    url "https://git.savannah.gnu.org/cgit/config.git/snapshot/config-0b5188819ba6091770064adf26360b204113317e.tar.gz"
-    sha256 "3dfb73df7d073129350b6896d62cabb6a70f479d3951f00144b408ba087bdbe8"
-    version "2020-08-17"
-  end
-
   def install
-    ENV["PERL"] = "/usr/bin/perl"
-
-    resource("config").stage do
-      cp Dir["config.*"], buildpath/"lib"
+    on_macos do
+      ENV["PERL"] = "/usr/bin/perl"
     end
 
     system "./configure", "--prefix=#{prefix}"

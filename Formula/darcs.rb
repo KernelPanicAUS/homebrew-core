@@ -1,19 +1,15 @@
 class Darcs < Formula
   desc "Distributed version control system that tracks changes, via Haskell"
   homepage "http://darcs.net/"
-  url "https://hackage.haskell.org/package/darcs-2.16.2/darcs-2.16.2.tar.gz"
-  sha256 "161752851d910fb8d2168cb49b3b9bbe0571e0b622cd1d36d1ea174aa25255db"
+  url "https://hackage.haskell.org/package/darcs-2.16.4/darcs-2.16.4.tar.gz"
+  sha256 "e4166252bc403ffc2518edff48801796b8dab73fd9e0da1fcdda916b207fbe1d"
   license "GPL-2.0-or-later"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "23d7f411f5a25d7f497464f84bf65219a832dae25c41dd23196f23d0e2343bce" => :catalina
-    sha256 "390d52a8464c7cd66f7c0bdc34009bfdbb0542dbd67b2d2f54d2c56cb079a6b5" => :mojave
-    sha256 "a7f172574b414fa8b0c8a6b2f1bbab54841240e1065a17d8419cf84df715f945" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "d2eb40b3fb513c55412df418660ad326eafab9f6403b85667e28b07048cc569f"
+    sha256 cellar: :any_skip_relocation, big_sur:       "e43e743a8d663a7383a0c335548a8b2b80fa00844e9cb77da3eb0db67bda93d1"
+    sha256 cellar: :any_skip_relocation, catalina:      "74b07f9931b43dfcffd9b7fc2756ca13fc4d1b283a86d20fcf336a1f0cd19bb5"
+    sha256 cellar: :any_skip_relocation, mojave:        "8c0805744fa94ec0e4467bc44de1fae811090d7987823485d57192cadea7bdd8"
   end
 
   depends_on "cabal-install" => :build

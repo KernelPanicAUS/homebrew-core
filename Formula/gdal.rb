@@ -1,8 +1,8 @@
 class Gdal < Formula
   desc "Geospatial Data Abstraction Library"
   homepage "https://www.gdal.org/"
-  url "https://download.osgeo.org/gdal/3.1.2/gdal-3.1.2.tar.xz"
-  sha256 "767c8d0dfa20ba3283de05d23a1d1c03a7e805d0ce2936beaff0bb7d11450641"
+  url "https://download.osgeo.org/gdal/3.3.1/gdal-3.3.1.tar.xz"
+  sha256 "48ab00b77d49f08cf66c60ccce55abb6455c3079f545e60c90ee7ce857bccb70"
   license "MIT"
 
   livecheck do
@@ -11,9 +11,10 @@ class Gdal < Formula
   end
 
   bottle do
-    sha256 "b781dd4174e448f161d1e3f38fa898fea35ea16cb9fa6212cbcd0cffd6951e81" => :catalina
-    sha256 "5a517fafd975da2c073cbca3946b481683f88e832432efdc6c3951c8aac325d3" => :mojave
-    sha256 "d3e3b959e7c6f80ff748a345ba26c1876568de7f0edffe69ae6ed40959ddeee9" => :high_sierra
+    sha256 arm64_big_sur: "bb0f34fc51add0c927e6ad4c2215c9a9e5e2ad6453c2cf61633f147d6a8e6d57"
+    sha256 big_sur:       "c319713a6a54af9d2dc1828fa0f9db2517994b8826677a977e831931d8477e9f"
+    sha256 catalina:      "3e10294a70a67c0d83f684a46df3ac07ac8f1210560b5211481751781ea0b1f9"
+    sha256 mojave:        "21dff99818fad856f43a3d8631214f35bbc60a6f26f0aa632d49969516261b55"
   end
 
   head do
@@ -22,7 +23,6 @@ class Gdal < Formula
   end
 
   depends_on "pkg-config" => :build
-
   depends_on "cfitsio"
   depends_on "epsilon"
   depends_on "expat"
@@ -30,7 +30,6 @@ class Gdal < Formula
   depends_on "geos"
   depends_on "giflib"
   depends_on "hdf5"
-  depends_on "jasper"
   depends_on "jpeg"
   depends_on "json-c"
   depends_on "libdap"
@@ -42,10 +41,11 @@ class Gdal < Formula
   depends_on "libxml2"
   depends_on "netcdf"
   depends_on "numpy"
+  depends_on "openjpeg"
   depends_on "pcre"
   depends_on "poppler"
-  depends_on "proj"
-  depends_on "python@3.8"
+  depends_on "proj@7"
+  depends_on "python@3.9"
   depends_on "sqlite" # To ensure compatibility with SpatiaLite
   depends_on "unixodbc" # macOS version is not complete enough
   depends_on "webp"
@@ -53,10 +53,13 @@ class Gdal < Formula
   depends_on "xz" # get liblzma compression algorithm library from XZutils
   depends_on "zstd"
 
+  uses_from_macos "curl"
+
   on_linux do
     depends_on "bash-completion"
   end
 
+  conflicts_with "avce00", because: "both install a cpl_conv.h header"
   conflicts_with "cpl", because: "both install cpl_error.h"
 
   def install
@@ -71,14 +74,11 @@ class Gdal < Formula
       "--with-threads",
 
       # GDAL native backends
-      "--with-bsb",
-      "--with-grib",
       "--with-pam",
       "--with-pcidsk=internal",
       "--with-pcraster=internal",
 
       # Homebrew backends
-      "--with-curl=/usr/bin/curl-config",
       "--with-expat=#{Formula["expat"].prefix}",
       "--with-freexl=#{Formula["freexl"].opt_prefix}",
       "--with-geos=#{Formula["geos"].opt_prefix}/bin/geos-config",
@@ -91,13 +91,13 @@ class Gdal < Formula
       "--with-png=#{Formula["libpng"].opt_prefix}",
       "--with-spatialite=#{Formula["libspatialite"].opt_prefix}",
       "--with-sqlite3=#{Formula["sqlite"].opt_prefix}",
-      "--with-proj=#{Formula["proj"].opt_prefix}",
+      "--with-proj=#{Formula["proj@7"].opt_prefix}",
       "--with-zstd=#{Formula["zstd"].opt_prefix}",
       "--with-liblzma=yes",
       "--with-cfitsio=#{Formula["cfitsio"].opt_prefix}",
       "--with-hdf5=#{Formula["hdf5"].opt_prefix}",
       "--with-netcdf=#{Formula["netcdf"].opt_prefix}",
-      "--with-jasper=#{Formula["jasper"].opt_prefix}",
+      "--with-openjpeg",
       "--with-xerces=#{Formula["xerces-c"].opt_prefix}",
       "--with-odbc=#{Formula["unixodbc"].opt_prefix}",
       "--with-dods-root=#{Formula["libdap"].opt_prefix}",
@@ -108,7 +108,9 @@ class Gdal < Formula
       # Explicitly disable some features
       "--with-armadillo=no",
       "--with-qhull=no",
+      "--without-exr",
       "--without-grass",
+      "--without-jasper",
       "--without-jpeg12",
       "--without-libgrass",
       "--without-mysql",
@@ -118,32 +120,31 @@ class Gdal < Formula
       # Unsupported backends are either proprietary or have no compatible version
       # in Homebrew. Podofo is disabled because Poppler provides the same
       # functionality and then some.
-      "--without-gta",
-      "--without-ogdi",
-      "--without-fme",
-      "--without-hdf4",
-      "--without-openjpeg",
-      "--without-fgdb",
       "--without-ecw",
+      "--without-fgdb",
+      "--without-fme",
+      "--without-gta",
+      "--without-hdf4",
+      "--without-idb",
+      "--without-ingres",
+      "--without-jp2mrsid",
       "--without-kakadu",
       "--without-mrsid",
-      "--without-jp2mrsid",
       "--without-mrsid_lidar",
       "--without-msg",
       "--without-oci",
-      "--without-ingres",
-      "--without-idb",
-      "--without-sde",
+      "--without-ogdi",
       "--without-podofo",
       "--without-rasdaman",
+      "--without-sde",
       "--without-sosi",
     ]
 
-    # Work around "error: no member named 'signbit' in the global namespace"
-    # Remove once support for macOS 10.12 Sierra is dropped
-    if DevelopmentTools.clang_build_version >= 900
-      ENV.delete "SDKROOT"
-      ENV.delete "HOMEBREW_SDKROOT"
+    on_macos do
+      args << "--with-curl=/usr/bin/curl-config"
+    end
+    on_linux do
+      args << "--with-curl=#{Formula["curl"].opt_bin}/curl-config"
     end
 
     system "./configure", *args
@@ -152,7 +153,7 @@ class Gdal < Formula
 
     # Build Python bindings
     cd "swig/python" do
-      system Formula["python@3.8"].opt_bin/"python3", *Language::Python.setup_install_args(prefix)
+      system Formula["python@3.9"].opt_bin/"python3", *Language::Python.setup_install_args(prefix)
     end
     bin.install Dir["swig/python/scripts/*.py"]
 
@@ -167,7 +168,7 @@ class Gdal < Formula
     # basic tests to see if third-party dylibs are loading OK
     system "#{bin}/gdalinfo", "--formats"
     system "#{bin}/ogrinfo", "--formats"
-
-    system Formula["python@3.8"].opt_bin/"python3", "-c", "import gdal"
+    # Changed Python package name from "gdal" to "osgeo.gdal" in 3.2.0.
+    system Formula["python@3.9"].opt_bin/"python3", "-c", "import osgeo.gdal"
   end
 end

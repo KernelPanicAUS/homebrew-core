@@ -1,21 +1,21 @@
 class Htslib < Formula
   desc "C library for high-throughput sequencing data formats"
   homepage "https://www.htslib.org/"
-  url "https://github.com/samtools/htslib/releases/download/1.10.2/htslib-1.10.2.tar.bz2"
-  sha256 "e3b543de2f71723830a1e0472cf5489ec27d0fbeb46b1103e14a11b7177d1939"
+  url "https://github.com/samtools/htslib/releases/download/1.12/htslib-1.12.tar.bz2"
+  sha256 "2280141b46e953ba4ae01b98335a84f8e6ccbdb6d5cdbab7f70ee4f7e3b6f4ca"
   license "MIT"
-  revision 1
 
   livecheck do
-    url "https://github.com/samtools/htslib/releases/latest"
-    regex(%r{href=.*?/tag/v?(\d+(?:\.\d+)+)["' >]}i)
+    url :stable
+    strategy :github_latest
   end
 
   bottle do
-    cellar :any
-    sha256 "15811a81a76e9245f555614843c079350f2e11ab7a043dde180a4b21e19f76a1" => :catalina
-    sha256 "9ffe5808464115e1047a9d352d640eb127335e060314413538588bbfe287db69" => :mojave
-    sha256 "03a7a1b503004ee5cb8df02df54ed0c9030dd57e27a14ccd3a0c6e713fc7e6b2" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "7df497b0d0ffc8370403fb973ebd143e8c2776978f7f6aaeed045e1ff17c3121"
+    sha256 cellar: :any,                 big_sur:       "337d53e97fef7ccad36110c39283f261d377442573182743ac892fa6bf2e0ed5"
+    sha256 cellar: :any,                 catalina:      "884b19991c4f1ac91b4ece1979a1585947283dc8eaa2ac12275b8e44e14d4e4b"
+    sha256 cellar: :any,                 mojave:        "1c65a9f4187196a2bc689a5a0299e7b9eafd0a192ca1b0e6ae924a9d13e8974b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "a261e4dec4abf0c140fde520eb5d60b7248ce87d32ed983e2d023f8dd26c6034"
   end
 
   depends_on "xz"
@@ -24,22 +24,18 @@ class Htslib < Formula
   uses_from_macos "curl"
   uses_from_macos "zlib"
 
-  # patch to allow htslib to work with newer libcurls that are packaged by homebrew
-  # see https://github.com/samtools/htslib/pull/1105
-  # this patch should be deleted on next release of htslib
-  patch do
-    url "https://github.com/samtools/htslib/commit/c7c7fb56dba6f81a56a5ec5ea20b8ad81ce62a43.patch?full_index=1"
-    sha256 "2d0244d066c07774ab6e372d0bfdd259fd7f64a918eb9595eae6c201e66db594"
-  end
-
   def install
     system "./configure", "--prefix=#{prefix}", "--enable-libcurl"
     system "make", "install"
-    pkgshare.install "test"
   end
 
   test do
-    sam = pkgshare/"test/ce#1.sam"
+    sam = testpath/"test.sam"
+    sam.write <<~EOS
+      @SQ	SN:chr1	LN:500
+      r1	0	chr1	100	0	4M	*	0	0	ATGC	ABCD
+      r2	0	chr1	200	0	4M	*	0	0	AATT	EFGH
+    EOS
     assert_match "SAM", shell_output("#{bin}/htsfile #{sam}")
     system "#{bin}/bgzip -c #{sam} > sam.gz"
     assert_predicate testpath/"sam.gz", :exist?

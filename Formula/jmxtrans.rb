@@ -1,24 +1,22 @@
 class Jmxtrans < Formula
   desc "Tool to connect to JVMs and query their attributes"
   homepage "https://github.com/jmxtrans/jmxtrans"
-  url "https://github.com/jmxtrans/jmxtrans/archive/jmxtrans-parent-271.tar.gz"
-  sha256 "4aee400641eaeee7f33e1253043b1e644f8a9ec18f95ddc911ff8d35e2ca6530"
+  url "https://github.com/jmxtrans/jmxtrans/archive/jmxtrans-parent-272.tar.gz"
+  sha256 "73691dc634be8ff504ed33867807266545d9ff9402e365c09fcf0272720cc160"
   license "MIT"
   version_scheme 1
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "775e5443bc4570f5af09ff033609193c69c05d0ab80150cd67811dd1cc3a7e56" => :catalina
-    sha256 "8ef8263d13b6dc9d913cf2c13f4c75ecc63c20dab9c7d977d1ecfa0e86977eb1" => :mojave
-    sha256 "97546c9316f94cfa738e4bba4363adaa0b3838e3f8bc4aed6b8ae4822b57a182" => :high_sierra
+    sha256 cellar: :any_skip_relocation, big_sur:  "f83bb65c93c0149c4af9b3277d2ec1eee6fd0e94f2a27af0de47c18d3932e9fb"
+    sha256 cellar: :any_skip_relocation, catalina: "f8e5ac84ca621fbb2c0b0c9715899c8e7b2e86f198330b49c7ba7e3d993ec24c"
+    sha256 cellar: :any_skip_relocation, mojave:   "8dd69723155a4f2580b7327ca2babc8389cc9678f21dc1934ce3b73e7c67c89b"
   end
 
   depends_on "maven" => :build
-  depends_on java: "1.8"
+  depends_on "openjdk@8"
 
   def install
-    cmd = Language::Java.java_home_cmd("1.8")
-    ENV["JAVA_HOME"] = Utils.safe_popen_read(cmd).chomp
+    ENV["JAVA_HOME"] = Formula["openjdk@8"].opt_prefix
 
     system "mvn", "package", "-DskipTests=true",
                              "-Dmaven.javadoc.skip=true",
@@ -28,7 +26,7 @@ class Jmxtrans < Formula
     cd "jmxtrans" do
       # Point JAR_FILE into Cellar where we've installed the jar file
       inreplace "jmxtrans.sh", "$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )/../lib\" "\
-                ">/dev/null && pwd )/jmxtrans-all.jar",
+                               ">/dev/null && pwd )/jmxtrans-all.jar",
                 libexec/"target/jmxtrans-#{version}-all.jar"
 
       # Exec java to avoid forking the server into a new process
@@ -40,7 +38,7 @@ class Jmxtrans < Formula
       doc.install Dir["doc/*"]
     end
 
-    (bin/"jmxtrans").write_env_script libexec/"jmxtrans.sh", Language::Java.java_home_env("1.8")
+    (bin/"jmxtrans").write_env_script libexec/"jmxtrans.sh", JAVA_HOME: Formula["openjdk@8"].opt_prefix
   end
 
   test do

@@ -2,18 +2,27 @@ class SwiftFormat < Formula
   desc "Formatting technology for Swift source code"
   homepage "https://github.com/apple/swift-format"
   url "https://github.com/apple/swift-format.git",
-    tag:      "0.50200.1",
-    revision: "f22aade8a6ee061b4a7041601ededd8ad7bc2122"
+      tag:      "0.50400.0",
+      revision: "9c15831b798d767c9af0927a931de5d557004936"
   license "Apache-2.0"
   version_scheme 1
-  head "https://github.com/apple/swift-format.git"
+  head "https://github.com/apple/swift-format.git", branch: "main"
 
-  bottle do
-    cellar :any_skip_relocation
-    sha256 "d8f72c33efc125e2904e1bec2c8942cca75d75cf81dcab7fcf08ba124af16170" => :catalina
+  livecheck do
+    url :stable
+    strategy :github_latest
   end
 
-  depends_on xcode: ["11.4", :build]
+  bottle do
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "9de7f5147825f582c55d7c10b112d10751bd7e20bb01d071db7ab6c6e6ccf451"
+    sha256 cellar: :any_skip_relocation, big_sur:       "d10327986ea438f3210b4589ca7f63d7698681c7546cdf62b07f36c8748f2a66"
+  end
+
+  # The bottles are built on systems with the CLT installed, and do not work
+  # out of the box on Xcode-only systems due to an incorrect sysroot.
+  pour_bottle? only_if: :clt_installed
+
+  depends_on xcode: ["12.5", :build]
 
   def install
     system "swift", "build", "--disable-sandbox", "-c", "release"

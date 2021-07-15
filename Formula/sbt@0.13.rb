@@ -4,12 +4,16 @@ class SbtAT013 < Formula
   url "https://github.com/sbt/sbt/releases/download/v0.13.18/sbt-0.13.18.tgz"
   sha256 "afe82322ca8e63e6f1e10fc1eb515eb7dc6c3e5a7f543048814072a03d83b331"
   license "Apache-2.0"
+  revision 1
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "062ba4d79200936c79c38aa382d7fe0732c8d73c042916309022b6f34a7cb749"
+  end
 
   keg_only :versioned_formula
 
-  depends_on java: "1.8"
+  depends_on arch: :x86_64 # openjdk@8 is not supported on ARM
+  depends_on "openjdk@8"
 
   def install
     inreplace "bin/sbt" do |s|
@@ -22,7 +26,7 @@ class SbtAT013 < Formula
 
     (bin/"sbt").write <<~EOS
       #!/bin/sh
-      export JAVA_HOME=$(#{Language::Java.java_home_cmd("1.8")})
+      export JAVA_HOME="#{Language::Java.overridable_java_home_env("1.8")[:JAVA_HOME]}"
       if [ -f "$HOME/.sbtconfig" ]; then
         echo "Use of ~/.sbtconfig is deprecated, please migrate global settings to #{etc}/sbtopts" >&2
         . "$HOME/.sbtconfig"

@@ -1,41 +1,32 @@
 class Pssh < Formula
   include Language::Python::Virtualenv
+
   desc "Parallel versions of OpenSSH and related tools"
   homepage "https://code.google.com/archive/p/parallel-ssh/"
-  url "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/parallel-ssh/pssh-2.3.1.tar.gz"
+  url "https://files.pythonhosted.org/packages/60/9a/8035af3a7d3d1617ae2c7c174efa4f154e5bf9c24b36b623413b38be8e4a/pssh-2.3.1.tar.gz"
   sha256 "539f8d8363b722712310f3296f189d1ae8c690898eca93627fc89a9cb311f6b4"
   license "BSD-3-Clause"
-  revision 2
-
-  livecheck do
-    url "https://www.googleapis.com/download/storage/v1/b/google-code-archive/o/v2%2Fcode.google.com%2Fparallel-ssh%2Fdownloads-page-1.json?&alt=media"
-    regex(/pssh[._-]v?(\d+(?:\.\d+)+)\.t/i)
-  end
+  revision 4
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "62460d1e1e69472684b09842c05d80e9b6da5f9510815b6d40b527a452067c3c" => :catalina
-    sha256 "5b456c61d419a842c5c979a41494c5e2d7c4beb71190a621635a89c9c603c772" => :mojave
-    sha256 "c06b726eead0f61a02e2c0a8f6fcdf8cf78f437deb841112b08447829b828e90" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "55cce3be0cd183f6179aeb4b51618774fe98cb3e4df078d1fff9ee3e555d2a54"
+    sha256 cellar: :any_skip_relocation, big_sur:       "94ad17e8296472da13da212b912f9edd9fd849566a21eee7b3ad7686f4500e0b"
+    sha256 cellar: :any_skip_relocation, catalina:      "94ad17e8296472da13da212b912f9edd9fd849566a21eee7b3ad7686f4500e0b"
+    sha256 cellar: :any_skip_relocation, mojave:        "94ad17e8296472da13da212b912f9edd9fd849566a21eee7b3ad7686f4500e0b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "2fe66dd066755c80bec5fee0da2348519605663f4d1a2ecd1c52b164e30b4519"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   conflicts_with "putty", because: "both install `pscp` binaries"
 
   # Fix for Python 3 compatibility
-  # https://bugs.archlinux.org/task/46571
   patch do
-    url "https://github.com/nplanel/parallel-ssh/commit/ee379dc5.diff?full_index=1"
-    sha256 "467df6024d180ea41a7e453b2d4485ef2be2a911410d8845df1b9e6b6dc301ae"
+    url "https://raw.githubusercontent.com/Homebrew/formula-patches/957fd102811ab8a8c34bf09916a767e71dc6fd66/pssh/python3.patch"
+    sha256 "aba524c201cdc1be79ecd1896d2b04b758f173cdebd53acf606c32321a7e8c33"
   end
 
   def install
-    # Fixes import error with python3, see https://github.com/lilydjwg/pssh/issues/70
-    # fixed in master, should be removed for versions > 2.3.1
-    inreplace "psshlib/cli.py", "import version", "from psshlib import version"
-
-    virtualenv_create(libexec, "python3")
     virtualenv_install_with_resources
   end
 

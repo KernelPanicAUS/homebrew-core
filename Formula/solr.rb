@@ -1,16 +1,14 @@
 class Solr < Formula
   desc "Enterprise search platform from the Apache Lucene project"
-  homepage "https://lucene.apache.org/solr/"
-  url "https://www.apache.org/dyn/closer.lua?path=lucene/solr/8.6.1/solr-8.6.1.tgz"
-  mirror "https://archive.apache.org/dist/lucene/solr/8.6.1/solr-8.6.1.tgz"
-  sha256 "8fe0fb4470a75ee78db8fd3c34878355585f1bf6a69df877acec3e6eb5fc4637"
+  homepage "https://solr.apache.org/"
+  url "https://www.apache.org/dyn/closer.lua?path=lucene/solr/8.9.0/solr-8.9.0.tgz"
+  mirror "https://archive.apache.org/dist/lucene/solr/8.9.0/solr-8.9.0.tgz"
+  sha256 "c9c970e0603318eac1ca5bae24e9a85e917d012266159237e572e636c5a3da62"
   license "Apache-2.0"
 
-  livecheck do
-    url :stable
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "42d751cd394c49d151949d118f1c858d7f69de3046b7d32b4d8a07924af2a4b9"
   end
-
-  bottle :unneeded
 
   depends_on "openjdk"
 
@@ -20,12 +18,15 @@ class Solr < Formula
     prefix.install %w[contrib dist server]
     libexec.install "bin"
     bin.install [libexec/"bin/solr", libexec/"bin/post", libexec/"bin/oom_solr.sh"]
-    bin.env_script_all_files libexec,
-      JAVA_HOME:     Formula["openjdk"].opt_prefix,
-      SOLR_HOME:     var/"lib/solr",
-      SOLR_LOGS_DIR: var/"log/solr",
-      SOLR_PID_DIR:  var/"run/solr"
+
+    env = Language::Java.overridable_java_home_env
+    env["SOLR_HOME"] = "${SOLR_HOME:-#{var/"lib/solr"}}"
+    env["SOLR_LOGS_DIR"] = "${SOLR_LOGS_DIR:-#{var/"log/solr"}}"
+    env["SOLR_PID_DIR"] = "${SOLR_PID_DIR:-#{var/"run/solr"}}"
+    bin.env_script_all_files libexec, env
     (libexec/"bin").rmtree
+
+    inreplace libexec/"solr", "/usr/local/share/solr", pkgshare
   end
 
   def post_install
@@ -49,7 +50,7 @@ class Solr < Formula
             <string>start</string>
             <string>-f</string>
             <string>-s</string>
-            <string>/usr/local/var/lib/solr</string>
+            <string>#{HOMEBREW_PREFIX}/var/lib/solr</string>
           </array>
           <key>ServiceDescription</key>
           <string>#{name}</string>
@@ -63,6 +64,7 @@ class Solr < Formula
   end
 
   test do
+    ENV["SOLR_PID_DIR"] = testpath
     port = free_port
 
     # Info detects no Solr node => exit code 3

@@ -1,9 +1,10 @@
 class Visp < Formula
   desc "Visual Servoing Platform library"
   homepage "https://visp.inria.fr/"
-  url "https://gforge.inria.fr/frs/download.php/latestfile/475/visp-3.3.0.tar.gz"
-  sha256 "f2ed11f8fee52c89487e6e24ba6a31fa604b326e08fb0f561a22c877ebdb640d"
-  revision 7
+  url "https://visp-doc.inria.fr/download/releases/visp-3.4.0.tar.gz"
+  sha256 "6c12bab1c1ae467c75f9e5831e01a1f8912ab7eae64249faf49d3a0b84334a77"
+  license "GPL-2.0-or-later"
+  revision 1
 
   livecheck do
     url "https://visp.inria.fr/download/"
@@ -11,9 +12,10 @@ class Visp < Formula
   end
 
   bottle do
-    sha256 "2a55095a34c32590a766b11f47a750671cf1c058cdf8bd6e04b8b28a21bc8af5" => :catalina
-    sha256 "9a699785f7953b29c7d194f1516db2150ba038463c6bd934a1dee9834ef7353d" => :mojave
-    sha256 "75fc159fded2e0613dbaa134efae40e167289493a3b1025ac4efcd19b56ac897" => :high_sierra
+    sha256 arm64_big_sur: "b5218d7cdfe7680e3ad70c2d335999f7acecd8dafa3d633d150aac28bd80e3de"
+    sha256 big_sur:       "b36b107176705659159beaa8a288cab47564b9cc2b2af7b386c056e6094b27d2"
+    sha256 catalina:      "7e033a79088176a7d132c189dc8dc40009eb9e5fe8c7994153f6917e23c813fa"
+    sha256 mojave:        "c2a10d1fec94bea34ced59a68e5711e37de498022bb5f39d93d719d0f753acae"
   end
 
   depends_on "cmake" => :build
@@ -27,23 +29,23 @@ class Visp < Formula
   depends_on "pcl"
   depends_on "zbar"
 
-  # Fixes build on OpenCV >= 4.4.0
-  # Extracted from https://github.com/lagadic/visp/pull/795
+  uses_from_macos "libxml2"
+  uses_from_macos "zlib"
+
+  # Fix Apple Silicon build
   patch :DATA
 
   def install
     ENV.cxx11
 
-    sdk = MacOS::CLT.installed? ? "" : MacOS.sdk_path
-
     # Avoid superenv shim references
     inreplace "CMakeLists.txt" do |s|
-      s.sub! /CMake build tool:"\s+\${CMAKE_BUILD_TOOL}/,
-             "CMake build tool:            gmake\""
-      s.sub! /C\+\+ Compiler:"\s+\${VISP_COMPILER_STR}/,
-             "C++ Compiler:                clang++\""
-      s.sub! /C Compiler:"\s+\${CMAKE_C_COMPILER}/,
-             "C Compiler:                  clang\""
+      s.sub!(/CMake build tool:"\s+\${CMAKE_BUILD_TOOL}/,
+             "CMake build tool:            gmake\"")
+      s.sub!(/C\+\+ Compiler:"\s+\${VISP_COMPILER_STR}/,
+             "C++ Compiler:                clang++\"")
+      s.sub!(/C Compiler:"\s+\${CMAKE_C_COMPILER}/,
+             "C Compiler:                  clang\"")
     end
 
     system "cmake", ".", "-DBUILD_DEMOS=OFF",
@@ -71,21 +73,15 @@ class Visp < Formula
                          "-DPNG_PNG_INCLUDE_DIR=#{Formula["libpng"].opt_include}",
                          "-DPNG_LIBRARY_RELEASE=#{Formula["libpng"].opt_lib}/libpng.dylib",
                          "-DUSE_PTHREAD=ON",
-                         "-DPTHREAD_INCLUDE_DIR=#{sdk}/usr/include",
-                         "-DPTHREAD_LIBRARY=/usr/lib/libpthread.dylib",
                          "-DUSE_PYLON=OFF",
                          "-DUSE_REALSENSE=OFF",
                          "-DUSE_REALSENSE2=OFF",
                          "-DUSE_X11=OFF",
                          "-DUSE_XML2=ON",
-                         "-DXML2_INCLUDE_DIR=#{sdk}/usr/include/libxml2",
-                         "-DXML2_LIBRARY=/usr/lib/libxml2.dylib",
                          "-DUSE_ZBAR=ON",
                          "-DZBAR_INCLUDE_DIRS=#{Formula["zbar"].opt_include}",
                          "-DZBAR_LIBRARIES=#{Formula["zbar"].opt_lib}/libzbar.dylib",
                          "-DUSE_ZLIB=ON",
-                         "-DZLIB_INCLUDE_DIR=#{sdk}/usr/include",
-                         "-DZLIB_LIBRARY_RELEASE=/usr/lib/libz.dylib",
                          *std_cmake_args
     system "make", "install"
   end
@@ -105,26 +101,29 @@ class Visp < Formula
     assert_equal version.to_s, shell_output("./test").chomp
   end
 end
+
 __END__
-diff --git a/modules/vision/src/key-point/vpKeyPoint.cpp b/modules/vision/src/key-point/vpKeyPoint.cpp
-index dd5cabf..23ed382 100644
---- a/modules/vision/src/key-point/vpKeyPoint.cpp
-+++ b/modules/vision/src/key-point/vpKeyPoint.cpp
-@@ -2269,7 +2269,7 @@ void vpKeyPoint::initDetector(const std::string &detectorName)
- 
-   if (detectorNameTmp == "SIFT") {
- #ifdef VISP_HAVE_OPENCV_XFEATURES2D
--    cv::Ptr<cv::FeatureDetector> siftDetector = cv::xfeatures2d::SIFT::create();
-+    cv::Ptr<cv::FeatureDetector> siftDetector = cv::SIFT::create();
-     if (!usePyramid) {
-       m_detectors[detectorNameTmp] = siftDetector;
-     } else {
-@@ -2447,7 +2447,7 @@ void vpKeyPoint::initExtractor(const std::string &extractorName)
- #else
-   if (extractorName == "SIFT") {
- #ifdef VISP_HAVE_OPENCV_XFEATURES2D
--    m_extractors[extractorName] = cv::xfeatures2d::SIFT::create();
-+    m_extractors[extractorName] = cv::SIFT::create();
- #else
-     std::stringstream ss_msg;
-     ss_msg << "Fail to initialize the extractor: SIFT. OpenCV version  " << std::hex << VISP_HAVE_OPENCV_VERSION
+diff --git a/3rdparty/simdlib/Simd/SimdEnable.h b/3rdparty/simdlib/Simd/SimdEnable.h
+index a5ca71702..6c79eb0d9 100644
+--- a/3rdparty/simdlib/Simd/SimdEnable.h
++++ b/3rdparty/simdlib/Simd/SimdEnable.h
+@@ -44,8 +44,8 @@
+ #include <TargetConditionals.h>             // To detect OSX or IOS using TARGET_OS_IPHONE or TARGET_OS_IOS macro
+ #endif
+
+-// The following includes <sys/auxv.h> and <asm/hwcap.h> are not available for iOS.
+-#if (TARGET_OS_IOS == 0) // not iOS
++// The following includes <sys/auxv.h> and <asm/hwcap.h> are not available for macOS, iOS.
++#if !defined(__APPLE__) // not macOS, iOS
+ #if defined(SIMD_PPC_ENABLE) || defined(SIMD_PPC64_ENABLE) || defined(SIMD_ARM_ENABLE) || defined(SIMD_ARM64_ENABLE)
+ #include <unistd.h>
+ #include <fcntl.h>
+@@ -124,7 +124,7 @@ namespace Simd
+     }
+ #endif//defined(SIMD_X86_ENABLE) || defined(SIMD_X64_ENABLE)
+
+-#if (TARGET_OS_IOS == 0) // not iOS
++#if !defined(__APPLE__) // not macOS, iOS
+ #if defined(__GNUC__) && (defined(SIMD_PPC_ENABLE) || defined(SIMD_PPC64_ENABLE) || defined(SIMD_ARM_ENABLE) || defined(SIMD_ARM64_ENABLE))
+     namespace CpuInfo
+     {

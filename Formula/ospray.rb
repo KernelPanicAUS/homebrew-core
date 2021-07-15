@@ -1,15 +1,21 @@
 class Ospray < Formula
   desc "Ray-tracing-based rendering engine for high-fidelity visualization"
   homepage "https://www.ospray.org/"
-  url "https://github.com/ospray/ospray/archive/v2.2.0.tar.gz"
-  sha256 "7078cc7c7a6e709589f8cb15a150947bb1b93f00d08f8a2ef3f5e368d57a3797"
+  url "https://github.com/ospray/ospray/archive/v2.6.0.tar.gz"
+  sha256 "5efccd7eff5774b77f8894e68a6b803b535a0d12f32ab49edf13b954e2848f2e"
   license "Apache-2.0"
   head "https://github.com/ospray/ospray.git"
 
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
+
   bottle do
-    cellar :any
-    sha256 "f6b816e4ce29195586af8305a27bcb49f366bf08cc761ee85deb8eb69165f897" => :catalina
-    sha256 "044aa16b8c07c9188a242d12f1ca809844bfaf2606777427dfd761d611135642" => :mojave
+    rebuild 1
+    sha256 cellar: :any, big_sur:  "2ed4667926055d6b661160fe7730de1843efbf59555af025e4bde3ee5a238315"
+    sha256 cellar: :any, catalina: "3abbb9390af9376be58c7356790c505114522b003c492f4ec7e8beb5a70e73cf"
+    sha256 cellar: :any, mojave:   "bbe33bc005890bffbdd3ee08c2ae3c2c05c2aca253bc3a7ee2425e09b24f5c5b"
   end
 
   depends_on "cmake" => :build
@@ -19,13 +25,13 @@ class Ospray < Formula
   depends_on "tbb"
 
   resource "rkcommon" do
-    url "https://github.com/ospray/rkcommon/archive/v1.4.2.tar.gz"
-    sha256 "2d1c0046cf583d3040fc9bb3b8ddcb1a2262d3f48aebd0973e6bd6cabb487f9e"
+    url "https://github.com/ospray/rkcommon/archive/v1.6.1.tar.gz"
+    sha256 "b61c10f26fba3e6f00305d5828b3bac523d559c5c0e6f79893b19e8c0e30074e"
   end
 
   resource "openvkl" do
-    url "https://github.com/openvkl/openvkl/archive/v0.10.0.tar.gz"
-    sha256 "b75caabd5e0211e8c29dd9bd04a74c9ed30a1a72413c486206144c25fd31afff"
+    url "https://github.com/openvkl/openvkl/archive/v0.13.0.tar.gz"
+    sha256 "974608259e3a5d8e29d2dfe81c6b2b1830aadeb9bbdc87127f3a7c8631e9f1bd"
   end
 
   def install
@@ -43,7 +49,7 @@ class Ospray < Formula
 
     args = std_cmake_args + %W[
       -DCMAKE_INSTALL_NAME_DIR=#{opt_lib}
-      -DCMAKE_INSTALL_RPATH=#{opt_lib}
+      -DCMAKE_INSTALL_RPATH=#{rpath}
       -DOSPRAY_ENABLE_APPS=OFF
       -DOSPRAY_ENABLE_TESTING=OFF
       -DOSPRAY_ENABLE_TUTORIALS=OFF

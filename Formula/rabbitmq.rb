@@ -1,8 +1,8 @@
 class Rabbitmq < Formula
   desc "Messaging broker"
   homepage "https://www.rabbitmq.com"
-  url "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.7/rabbitmq-server-generic-unix-3.8.7.tar.xz"
-  sha256 "7b36e4d3e9359185d9da477b68f01d07321288288bcc45198f4ffe0242d76287"
+  url "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.19/rabbitmq-server-generic-unix-3.8.19.tar.xz"
+  sha256 "b42d64d6d6738d889054176361093a6795a8e74a273fc3cdf972e01652ec187e"
   license "MPL-2.0"
 
   livecheck do
@@ -10,9 +10,11 @@ class Rabbitmq < Formula
     regex(/^v?(\d+(?:\.\d+)+)$/i)
   end
 
-  bottle :unneeded
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "bce40affa97c6111c72b1d82753f18da788a500523fc8a6c79d38ab849c5d1d2"
+  end
 
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
   depends_on "erlang"
 
   uses_from_macos "unzip" => :build
@@ -50,7 +52,7 @@ class Rabbitmq < Formula
 
     # Extract rabbitmqadmin and install to sbin
     # use it to generate, then install the bash completion file
-    system "/usr/bin/unzip", "-qq", "-j",
+    system "unzip", "-qq", "-j",
            "#{prefix}/plugins/rabbitmq_management-#{version}.ez",
            "rabbitmq_management-#{version}/priv/www/cli/rabbitmqadmin"
 

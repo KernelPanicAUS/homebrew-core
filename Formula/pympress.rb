@@ -3,20 +3,15 @@ class Pympress < Formula
 
   desc "Simple and powerful dual-screen PDF reader designed for presentations"
   homepage "https://github.com/Cimbali/pympress/"
-  url "https://files.pythonhosted.org/packages/92/80/c63ad7748e877dfeb5d7d756c1bdd4c2657e5a857814b4d6edf96d44678c/pympress-1.5.3.tar.gz"
-  sha256 "d8c10c286d1de2210c19a3e752542b61c8bcc592c48553f7c7043e943a87d05d"
-  license "GPL-2.0"
+  url "https://files.pythonhosted.org/packages/c8/dc/5343fe21c911247410667fe93d9b9a46355572ce4154037c0d7657d211ce/pympress-1.6.1.tar.gz"
+  sha256 "17943f706124edbabb0b06a50ee927f04ee6cc232ba6edb9ccb15cc4263c0dd5"
+  license "GPL-2.0-or-later"
   head "https://github.com/Cimbali/pympress.git"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any
-    sha256 "0882199094438644ae2af8e60ea55f02272990cca88b4ae0cbcfbabc9a68465b" => :catalina
-    sha256 "7594889ecb2cf373356f01c1eb4e56573ba26bd50fd5ed0de5ece83d75f1adca" => :mojave
-    sha256 "e6634bc9a8213054574d6be0814ef0b8faf6209e20aafb721753418a718f68af" => :high_sierra
+    sha256 cellar: :any, big_sur:  "dcf74c6df97e8eeda3a9a9b98aaf6ff48d7256a9f188693c84e396529c2f103d"
+    sha256 cellar: :any, catalina: "e18b08d0632cbcc4fcb041cffed78e3c4d24c30a1f158be74e0a4eeeb7ffffb5"
+    sha256 cellar: :any, mojave:   "dca884e4a3a106e65b72c878a7444706005eeac196b9a5eba2299a3a128b9f18"
   end
 
   depends_on "gobject-introspection"
@@ -24,7 +19,7 @@ class Pympress < Formula
   depends_on "libyaml"
   depends_on "poppler"
   depends_on "pygobject3"
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   resource "argh" do
     url "https://files.pythonhosted.org/packages/e3/75/1183b5d1663a66aebb2c184e0398724b624cecd4f4b679cb6e25de97ed15/argh-0.26.2.tar.gz"
@@ -57,11 +52,11 @@ class Pympress < Formula
   end
 
   test do
-    system bin/"pympress", "--help"
+    on_linux do
+      # (pympress:48790): Gtk-WARNING **: 13:03:37.080: cannot open display
+      return if ENV["HOMEBREW_GITHUB_ACTIONS"]
+    end
 
-    # Version info contained in log file only if all dependencies loaded successfully
-    assert_predicate testpath/"Library/Logs/pympress.log", :exist?
-    output = (testpath/"Library/Logs/pympress.log").read
-    assert_match /^INFO:pympress.__main__:Pympress: #{version}\s*;/, output
+    system bin/"pympress", "--quit"
   end
 end

@@ -1,17 +1,18 @@
 class Manticoresearch < Formula
   desc "Open source text search engine"
   homepage "https://www.manticoresearch.com"
-  url "https://repo.manticoresearch.com/repository/manticoresearch_source/release/manticore-3.5.0-200722-1d34c49-release-source.tar.gz"
-  version "3.5.0"
-  sha256 "00d65103d7f07d52b953731566c1015d5f668dd35e8709eeca10cc0fbedb9a66"
-  license "GPL-2.0"
+  url "https://repo.manticoresearch.com/repository/manticoresearch_source/release/manticore-3.6.0-210504-96d61d8-release-source.tar.gz"
+  version "3.6.0"
+  sha256 "320a19c837caf827a75e19e11755a9586487435aeb8b8aa80e8bef552fd5e1f5"
+  license "GPL-2.0-only"
   version_scheme 1
   head "https://github.com/manticoresoftware/manticoresearch.git"
 
   bottle do
-    sha256 "1116f8caad4dfdcd0ede2422e5b5be19e45cf549e0b3d402b90962ce0f2455b4" => :catalina
-    sha256 "493a87ab30c5cac2f6f4531713259048c7555f03fbd8efa176f58259ca3c8834" => :mojave
-    sha256 "b27d0c40106e49e2323063fa8cae2d5a4a51a6af902252576cc6d3c7d9f30ffc" => :high_sierra
+    sha256 arm64_big_sur: "30452ef44c28fa988ed5b8a42b1ef319cad80449e1ee94761b97dd601529faf6"
+    sha256 big_sur:       "97f2d35c667bbf98e830104523659fa070163dca549a1a4437b2cf58d3d31c1d"
+    sha256 catalina:      "1f4bab27f0f29378e6b4edf3b989361d5b0169c4cc06490dafc9afec38b87a7c"
+    sha256 mojave:        "5a6d4ec64e5f6cd8a2a8041b7823a120ee1333a779a3cae11e13972edc89129f"
   end
 
   depends_on "boost" => :build
@@ -19,7 +20,6 @@ class Manticoresearch < Formula
   depends_on "icu4c" => :build
   depends_on "libpq" => :build
   depends_on "mysql" => :build
-  depends_on "unixodbc" => :build
   depends_on "openssl@1.1"
 
   conflicts_with "sphinx", because: "manticoresearch is a fork of sphinx"
@@ -29,7 +29,12 @@ class Manticoresearch < Formula
       -DCMAKE_INSTALL_LOCALSTATEDIR=#{var}
       -DDISTR_BUILD=macosbrew
       -DBoost_NO_BOOST_CMAKE=ON
+      -DWITH_ODBC=OFF
     ]
+
+    # Disable support for Manticore Columnar Library on ARM (since the library itself doesn't support it as well)
+    args << "-DWITH_COLUMNAR=OFF" if Hardware::CPU.arm?
+
     mkdir "build" do
       system "cmake", "..", *std_cmake_args, *args
       system "make", "install"

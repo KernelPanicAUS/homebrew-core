@@ -8,14 +8,15 @@ class Agedu < Formula
 
   livecheck do
     url :homepage
-    regex(/href=.*?agedu[._-]v?(\d+)(?:\.[\da-z]+)?\.t/i)
+    regex(/href=.*?agedu[._-]v?(\d+(?:\.\d+)*)(?:[._-][\da-z]+)?\.t/i)
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "d5b1ceb8b45632543c913d12641cb820335b0e99fd823c9404222f0e087edef4" => :catalina
-    sha256 "bb054128df68140a5cf8b7359a7d7c6357b13c08aa393b9481ff89124e614544" => :mojave
-    sha256 "64a0584a579b71db75866548df7fef3eb7eb460023f3959aaf5e1c4d9e23bca8" => :high_sierra
+    sha256 cellar: :any_skip_relocation, big_sur:      "6b2aff0b1838cc529329fd0e178c05673b9e9879e3a8fc2910944d37ea027e0f"
+    sha256 cellar: :any_skip_relocation, catalina:     "d5b1ceb8b45632543c913d12641cb820335b0e99fd823c9404222f0e087edef4"
+    sha256 cellar: :any_skip_relocation, mojave:       "bb054128df68140a5cf8b7359a7d7c6357b13c08aa393b9481ff89124e614544"
+    sha256 cellar: :any_skip_relocation, high_sierra:  "64a0584a579b71db75866548df7fef3eb7eb460023f3959aaf5e1c4d9e23bca8"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "5079b0c9090045244900e90d0845b3eaef544fa624ba2f5658467ef229201e31"
   end
 
   depends_on "autoconf" => :build

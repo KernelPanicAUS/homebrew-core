@@ -1,23 +1,24 @@
 class Folderify < Formula
   include Language::Python::Virtualenv
 
-  desc "Generate pretty, beveled macOS folder icons"
+  desc "Generate pixel-perfect macOS folder icons in the native style"
   homepage "https://github.com/lgarron/folderify"
-  url "https://github.com/lgarron/folderify/archive/v1.2.3.tar.gz"
-  sha256 "3a9eaadf1f2a9dde3ab58bb07ea5b1a5f5a182f62fe19e2cd79a88f6abe00f7e"
+  url "https://files.pythonhosted.org/packages/02/80/b7476fe2518f0a6382d523e4a8878c3efa00c6980e9ad69fd6237e820177/folderify-2.2.3.tar.gz"
+  sha256 "d6754df2f001657a01062d851e5980622adb43cafb35ab6bc7c26e62529f3291"
   license "MIT"
   # Default branch is "main" not "master"
   head "https://github.com/lgarron/folderify.git", branch: "main"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "062b16879ed2d131b59c248742e264c5a0408cf2920726e7a8e5748e8f26311e" => :catalina
-    sha256 "53fe9712af93934f58d7240be8352a1bba5af825c125ed299a436b652c5c9f8a" => :mojave
-    sha256 "73e6e1481a6be47c97ffb05bfde6721e48096c9ad574a29917f680599acc9bff" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "683eeb71c2dd1f10514d9a7223493d6f99773617ede84ed8b3dfe3f396342b83"
+    sha256 cellar: :any_skip_relocation, big_sur:       "9cd792687f566751d98e81b7a4c0d48ae0099273f4b99fc7743f2337f92dfe0c"
+    sha256 cellar: :any_skip_relocation, catalina:      "ddf121696c9d8a78208377ea2abbba6cd45734b6f1dde623af4f87b2dd6244f8"
+    sha256 cellar: :any_skip_relocation, mojave:        "b83fde65d2dc9eec57207c31ac7e6f89e5bac43426c0ce73776b55c57f0e2eb0"
   end
 
   depends_on "imagemagick"
-  depends_on "python@3.8"
+  depends_on :macos
+  depends_on "python@3.9"
 
   def install
     virtualenv_install_with_resources
@@ -25,7 +26,7 @@ class Folderify < Formula
 
   test do
     # Copies an example icon
-    cp("#{libexec}/lib/python3.8/site-packages/folderify/GenericFolderIcon.Yosemite.iconset/icon_16x16.png",
+    cp("#{libexec}/lib/python3.9/site-packages/folderify/GenericFolderIcon.Yosemite.iconset/icon_16x16.png",
     "icon.png")
     # folderify applies the test icon to a folder
     system "folderify", "icon.png", testpath.to_s

@@ -1,20 +1,21 @@
 class ArmLinuxGnueabihfBinutils < Formula
   desc "FSF/GNU binutils for cross-compiling to arm-linux"
   homepage "https://www.gnu.org/software/binutils/binutils.html"
-  url "https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.gz"
-  mirror "https://ftpmirror.gnu.org/binutils/binutils-2.35.tar.gz"
-  sha256 "a3ac62bae4f339855b5449cfa9b49df90c635adbd67ecb8a0e7f3ae86a058da6"
-  license "GPL-2.0"
-
-  livecheck do
-    url :stable
-  end
+  url "https://ftp.gnu.org/gnu/binutils/binutils-2.36.1.tar.xz"
+  mirror "https://ftpmirror.gnu.org/binutils/binutils-2.36.1.tar.xz"
+  sha256 "e81d9edf373f193af428a0f256674aea62a9d74dfe93f65192d4eae030b0f3b0"
+  license "GPL-3.0-or-later"
+  revision 1
 
   bottle do
-    sha256 "743bac0fdd042088a61631b9fca121fd89d0bab810a6814448a0b70897adc84c" => :catalina
-    sha256 "470b88640a1bbfafbb2bf219a9e8942ee9a0a376fa9b178a25d7edf52db63a87" => :mojave
-    sha256 "cfda8211e77355eb5548d7634e97e2d7d917de459c48245af2de34d01266c2b1" => :high_sierra
+    sha256 arm64_big_sur: "5a659a38444d82e79e8f6257fc1d5c7356f17089ce294b2ff843ea3000bb3e60"
+    sha256 big_sur:       "00bc33303a003f4b14b68a4ffedf08ad6d271a90701ac3fe1f4c826a315ec017"
+    sha256 catalina:      "90b2ed05b009b7e4f62e7eb123dbe16caa6feab3bef16b60617136b1c834cad7"
+    sha256 mojave:        "583c8e1990736b9b6e7ccf5b6a1b6042bf6a63e4de45bb840a247434dfedd923"
+    sha256 x86_64_linux:  "73438210ebc0a798c7607dd7366cfb3cd2321691a6d52d4201d0d0349587a085"
   end
+
+  uses_from_macos "texinfo"
 
   def install
     ENV.cxx11
@@ -22,15 +23,20 @@ class ArmLinuxGnueabihfBinutils < Formula
     # Avoid build failure: https://sourceware.org/bugzilla/show_bug.cgi?id=23424
     ENV.append "CXXFLAGS", "-Wno-c++11-narrowing"
 
+    target = "arm-linux-gnueabihf"
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--enable-deterministic-archives",
                           "--prefix=#{prefix}",
+                          "--libdir=#{lib}/#{target}",
+                          "--infodir=#{info}/#{target}",
                           "--disable-werror",
-                          "--target=arm-linux-gnueabihf",
+                          "--target=#{target}",
                           "--enable-gold=yes",
                           "--enable-ld=yes",
-                          "--enable-interwork"
+                          "--enable-interwork",
+                          "--with-system-zlib",
+                          "--disable-nls"
     system "make"
     system "make", "install"
   end

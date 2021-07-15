@@ -3,22 +3,18 @@ class Hy < Formula
 
   desc "Dialect of Lisp that's embedded in Python"
   homepage "https://github.com/hylang/hy"
-  url "https://files.pythonhosted.org/packages/e2/a8/d2118cf14aab7652d54283e6a9a199177f528610348e3712509a8596c0d0/hy-0.19.0.tar.gz"
-  sha256 "3a5a1d76ddeb2f1d5de71ad1b1167799850db955b5eb0258e351fb182b2e6016"
+  url "https://files.pythonhosted.org/packages/2d/80/c9de6ace090a06f42ef68e746f1430d0074a33d21e46839813c764934d64/hy-0.20.0.tar.gz"
+  sha256 "1b72863754fb57e2dd275a9775bf621cb50a565e76733a2e74e9954e7fbb060e"
   license "MIT"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any_skip_relocation
-    sha256 "dde477be6e4a681568b5cbc06e5c3ce042f2043ca2572610df998a851468d131" => :catalina
-    sha256 "f3a62d0d0ac1eff081d28617a970217871fe6b6324dfa95707392c549026c9cd" => :mojave
-    sha256 "7b73de653a54d353ccc18f7e31b34275b6e7931b9f3c21f1b18cfb48a870199c" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "98b24099b57bdb1322de0e0a20885853a3cc6ddeeb21b833293c3372a600f005"
+    sha256 cellar: :any_skip_relocation, big_sur:       "b3a8611e5647203bc52944ae8c3a7fb1c105e1dda9d65a6641fef45edfc1f48c"
+    sha256 cellar: :any_skip_relocation, catalina:      "b8f9062329e87549cc63f63712e0a5790d9722905fd15765d82f997296f49c58"
+    sha256 cellar: :any_skip_relocation, mojave:        "30734f23d8c216671a4eb3b8595288354e8f00f31da0da76f9022595c3daf496"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   resource "appdirs" do
     url "https://files.pythonhosted.org/packages/d7/d8/05696357e0311f5b5c316d7b95f46c669dd9c15aaeecbb48c7d0aeb88c40/appdirs-1.4.4.tar.gz"
@@ -31,8 +27,8 @@ class Hy < Formula
   end
 
   resource "colorama" do
-    url "https://files.pythonhosted.org/packages/82/75/f2a4c0c94c85e2693c229142eb448840fba0f9230111faa889d1f541d12d/colorama-0.4.3.tar.gz"
-    sha256 "e96da0d330793e2cb9485e9ddfd918d456036c7149416295932478192f4436a1"
+    url "https://files.pythonhosted.org/packages/1f/bb/5d3246097ab77fa083a61bd8d3d527b7ae063c7d8e8671b1cf8c4ec10cbe/colorama-0.4.4.tar.gz"
+    sha256 "5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"
   end
 
   resource "funcparserlib" do
@@ -53,6 +49,6 @@ class Hy < Formula
     (testpath/"test.hy").write "(print (+ 2 2))"
     assert_match "4", shell_output("#{bin}/hy test.hy")
     (testpath/"test.py").write shell_output("#{bin}/hy2py test.hy")
-    assert_match "4", shell_output("#{Formula["python@3.8"].bin}/python3 test.py")
+    assert_match "4", shell_output("#{Formula["python@3.9"].bin}/python3 test.py")
   end
 end

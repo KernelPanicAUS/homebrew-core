@@ -1,15 +1,16 @@
 class Oxipng < Formula
   desc "Multithreaded PNG optimizer written in Rust"
   homepage "https://github.com/shssoichiro/oxipng"
-  url "https://github.com/shssoichiro/oxipng/archive/v3.0.1.tar.gz"
-  sha256 "31b036b146d087b989c22111637129ab8cb29a26719bfff1290427ff8b595e11"
+  url "https://github.com/shssoichiro/oxipng/archive/v5.0.0.tar.gz"
+  sha256 "2a3197c9a0afdd91967f9981da7ce684b40eced4191c26c167b3c214a7cfd9ec"
   license "MIT"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "b718645e952cd09e9b9b950b738bcfa7d81d24d2ccc94d3db6c76da1232ff932" => :catalina
-    sha256 "b646164d98e8fa1cde4ccd2f2f00620f43a14dbb3c1714c24aef9a49c4cc9e96" => :mojave
-    sha256 "b99d3c1bd4936a71b6948fca53644a2791efbf59260b57d3bb2cdea57ee8c746" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "6e8b30db2b822ae1302ddb7e5491f6b41197395604aea8d3a390e6ae2f5b5491"
+    sha256 cellar: :any_skip_relocation, big_sur:       "28bed379e7c13681208027dfb2e3f5af489c7fbb8818e9285f8326c669705ac9"
+    sha256 cellar: :any_skip_relocation, catalina:      "a1ac61f28ff069dda9d2554f2e682e80ddbf927668de174c8faa1effcf09e0b4"
+    sha256 cellar: :any_skip_relocation, mojave:        "f2a4d6a15d5571ddf64a010fd0531326c8f97ea01563ae47035e15cd7dbd3ca3"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "a81dd2adb511b1174c68c324f46c4ea26ed9d4f0d874fd9c600ddb55f5dfbcae"
   end
 
   depends_on "rust" => :build
@@ -19,6 +20,6 @@ class Oxipng < Formula
   end
 
   test do
-    system "#{bin}/oxipng", "--pretend", test_fixtures("test.png")
+    system bin/"oxipng", "--pretend", test_fixtures("test.png")
   end
 end

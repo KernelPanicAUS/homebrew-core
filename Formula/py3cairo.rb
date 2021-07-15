@@ -1,27 +1,27 @@
 class Py3cairo < Formula
   desc "Python 3 bindings for the Cairo graphics library"
   homepage "https://cairographics.org/pycairo/"
-  url "https://github.com/pygobject/pycairo/releases/download/v1.19.1/pycairo-1.19.1.tar.gz"
-  sha256 "2c143183280feb67f5beb4e543fd49990c28e7df427301ede04fc550d3562e84"
-  license "LGPL-2.1"
-  revision 1
+  url "https://github.com/pygobject/pycairo/releases/download/v1.20.1/pycairo-1.20.1.tar.gz"
+  sha256 "1ee72b035b21a475e1ed648e26541b04e5d7e753d75ca79de8c583b25785531b"
+  license any_of: ["LGPL-2.1-only", "MPL-1.1"]
 
   bottle do
-    cellar :any
-    sha256 "bd80a6817e090c490c828d22359fbd97c38b46cca2b325c7c69e38de9df0e6ea" => :catalina
-    sha256 "0b586e4cb4e391fcc263c2892d533dda388c1ca139082a486939b2bbc3953d0a" => :mojave
-    sha256 "e440b8405e3fd9c0d964e74ce0cb02b421077e91f84fbb9d10b6c68f51be328b" => :high_sierra
+    sha256 cellar: :any,                 arm64_big_sur: "a4b8c6a9079f79e22396249ffbdf9f62f895fa8b7af83e038313f96f0dec2c2d"
+    sha256 cellar: :any,                 big_sur:       "ea6e1887539c142f3b24890521e9181fac8738d5fa2344c9e4c0734ea5b2b9a8"
+    sha256 cellar: :any,                 catalina:      "a14c31fed107d6d3b3bf5ef8b067de63c020106be3e71f17285a0f3d028cec78"
+    sha256 cellar: :any,                 mojave:        "1751fed8776a62fb799b5d025babe2692cb49647ff061e0527d8f010bab06a36"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "e6b4152ae7579767ca0e49526a309686712628a0526098ab24af93603bc60edd"
   end
 
   depends_on "pkg-config" => :build
   depends_on "cairo"
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   def install
-    system Formula["python@3.8"].bin/"python3", *Language::Python.setup_install_args(prefix)
+    system Formula["python@3.9"].bin/"python3", *Language::Python.setup_install_args(prefix)
   end
 
   test do
-    system Formula["python@3.8"].bin/"python3", "-c", "import cairo; print(cairo.version)"
+    system Formula["python@3.9"].bin/"python3", "-c", "import cairo; print(cairo.version)"
   end
 end

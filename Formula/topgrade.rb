@@ -1,15 +1,15 @@
 class Topgrade < Formula
   desc "Upgrade all the things"
   homepage "https://github.com/r-darwish/topgrade"
-  url "https://github.com/r-darwish/topgrade/archive/v5.6.0.tar.gz"
-  sha256 "8cf21d579ecd7be290f307b8dd4a72b7bcff6b24463b1663c6ee754f0f17d6a0"
+  url "https://github.com/r-darwish/topgrade/archive/v7.1.0.tar.gz"
+  sha256 "db8a2777f0a1c3e59012936d3edb5a54d378a2be036604590557d6e3affde8d8"
   license "GPL-3.0-or-later"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "9b8b9a08993d665ce701cc5c1925cdf0e0b6a7f6f5bc73a9a7b7e480feea4d82" => :catalina
-    sha256 "28b73442f0fabcc4ecc2837c6e75fd664d9d961f99904eb06cff1c38cbd3677a" => :mojave
-    sha256 "09cf0fd7d79cb026c183d6337a6ec69595e7e467c15875d97b3515585ec4a9b5" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "9eb652572e2c25a5a708dcc082fff76649cf1024ba61a6b5ca0dbb996d1fc2f1"
+    sha256 cellar: :any_skip_relocation, big_sur:       "5c74ee10cb5f589b2ac046e069d45da0158b811c91c95cf9b262d910eceb4641"
+    sha256 cellar: :any_skip_relocation, catalina:      "c80e6e22e08a017e07804e068e068dc95720aaf2e5e3d8865fface332321364e"
+    sha256 cellar: :any_skip_relocation, mojave:        "b1eb2fab57fa99740f05a2c2e9b31a8ad41c0b9e5e1ddd7906eb44fccf53a946"
   end
 
   depends_on "rust" => :build
@@ -20,7 +20,7 @@ class Topgrade < Formula
   end
 
   test do
-    # Configuraton path details: https://github.com/r-darwish/topgrade/blob/HEAD/README.md#configuration-path
+    # Configuration path details: https://github.com/r-darwish/topgrade/blob/HEAD/README.md#configuration-path
     # Sample config file: https://github.com/r-darwish/topgrade/blob/HEAD/config.example.toml
     (testpath/"Library/Preferences/topgrade.toml").write <<~EOS
       # Additional git repositories to pull
@@ -32,8 +32,8 @@ class Topgrade < Formula
 
     assert_match version.to_s, shell_output("#{bin}/topgrade --version")
 
-    output = shell_output("#{bin}/topgrade -n --only brew")
+    output = shell_output("#{bin}/topgrade -n --only brew_formula")
     assert_match "Dry running: #{HOMEBREW_PREFIX}/bin/brew upgrade", output
-    assert_not_match /\sSelf update\s/, output
+    refute_match(/\sSelf update\s/, output)
   end
 end

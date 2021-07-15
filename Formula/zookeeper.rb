@@ -1,21 +1,18 @@
 class Zookeeper < Formula
   desc "Centralized server for distributed coordination of services"
   homepage "https://zookeeper.apache.org/"
-  url "https://www.apache.org/dyn/closer.lua?path=zookeeper/zookeeper-3.6.1/apache-zookeeper-3.6.1.tar.gz"
-  mirror "https://archive.apache.org/dist/zookeeper/zookeeper-3.6.1/apache-zookeeper-3.6.1.tar.gz"
-  sha256 "0fc25db4ee790e04e7de42d4ce64bde63136d5ea5db01fb643bd37b52b05968d"
+  url "https://www.apache.org/dyn/closer.lua?path=zookeeper/zookeeper-3.7.0/apache-zookeeper-3.7.0.tar.gz"
+  mirror "https://archive.apache.org/dist/zookeeper/zookeeper-3.7.0/apache-zookeeper-3.7.0.tar.gz"
+  sha256 "cb3980f61b66babe550dcb717c940160ba813512c0aca26c2b8a718fac5d465d"
   license "Apache-2.0"
+  revision 1
   head "https://gitbox.apache.org/repos/asf/zookeeper.git"
 
-  livecheck do
-    url :stable
-  end
-
   bottle do
-    cellar :any
-    sha256 "4526d63e4c1d7afcba6a507c1c741e854c3d73cb7ba556941891add904d317f8" => :catalina
-    sha256 "a0762d53a75c01503e43cab621cf8da4a96f3baed1ef6148e17e577956db3b6c" => :mojave
-    sha256 "5493817b0e8dfb6c8c7fcf40491c6c10b1eb0e38292d42da981686b1ea1fb7c9" => :high_sierra
+    sha256 cellar: :any,                 big_sur:      "7a09b012f9b2e0c6dde46dfebf2f66846ab86e154087310b99198572d4a37321"
+    sha256 cellar: :any,                 catalina:     "d48b7491b18e95751276fd57f4a3ffdf837f174dc43ae537da6f32f4d67d96d4"
+    sha256 cellar: :any,                 mojave:       "edf3e23f9959c9b8dbd0e4ddea4e659a3cfc32737d5e57b0333f60a2e47d51da"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "dcc5154ebfb3479ec0762842b789dab164c7278ca8376264bdedcb6345b5b2c5"
   end
 
   depends_on "autoconf" => :build
@@ -25,14 +22,8 @@ class Zookeeper < Formula
   depends_on "maven" => :build
   depends_on "pkg-config" => :build
 
-  def shim_script(target)
-    <<~EOS
-      #!/usr/bin/env bash
-      . "#{etc}/zookeeper/defaults"
-      cd "#{libexec}/bin"
-      ./#{target} "$@"
-    EOS
-  end
+  depends_on "openjdk"
+  depends_on "openssl@1.1"
 
   def default_zk_env
     <<~EOS
@@ -74,19 +65,28 @@ class Zookeeper < Formula
 
       script_name = path.basename
       bin_name    = path.basename ".sh"
-      (bin+bin_name).write shim_script(script_name)
+      (bin+bin_name).write <<~EOS
+        #!/bin/bash
+        export JAVA_HOME="${JAVA_HOME:-#{Formula["openjdk"].opt_prefix}}"
+        . "#{etc}/zookeeper/defaults"
+        exec "#{libexec}/bin/#{script_name}" "$@"
+      EOS
     end
 
+    cp "conf/zoo_sample.cfg", "conf/zoo.cfg"
+    inreplace "conf/zoo.cfg",
+              /^dataDir=.*/, "dataDir=#{var}/run/zookeeper/data"
+    (etc/"zookeeper").install "conf/zoo.cfg"
+
+    (pkgshare/"examples").install "conf/log4j.properties", "conf/zoo_sample.cfg"
+  end
+
+  def post_install
     defaults = etc/"zookeeper/defaults"
     defaults.write(default_zk_env) unless defaults.exist?
 
     log4j_properties = etc/"zookeeper/log4j.properties"
     log4j_properties.write(default_log4j_properties) unless log4j_properties.exist?
-
-    inreplace "conf/zoo_sample.cfg",
-              /^dataDir=.*/, "dataDir=#{var}/run/zookeeper/data"
-    cp "conf/zoo_sample.cfg", "conf/zoo.cfg"
-    (etc/"zookeeper").install ["conf/zoo.cfg", "conf/zoo_sample.cfg"]
   end
 
   plist_options manual: "zkServer start"

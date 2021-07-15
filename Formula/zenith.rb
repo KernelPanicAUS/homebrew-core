@@ -1,16 +1,22 @@
 class Zenith < Formula
   desc "In terminal graphical metrics for your *nix system"
   homepage "https://github.com/bvaisvil/zenith/"
-  url "https://github.com/bvaisvil/zenith/archive/0.10.0.tar.gz"
-  sha256 "a232951928b813447fa89562c97fdbb87ac57f97c7633e1e20d7ebc8fa126505"
+  url "https://github.com/bvaisvil/zenith/archive/0.12.0.tar.gz"
+  sha256 "2b33892be95149550c84179b341e304c4222e3489bc121ea8c8346e075433aa6"
   license "MIT"
+  version_scheme 1
   head "https://github.com/bvaisvil/zenith.git"
 
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
+
   bottle do
-    cellar :any_skip_relocation
-    sha256 "6bbe3db614e24831a888b82ebd52ab7f51f00320ee1d0372d8f19c042d8b0505" => :catalina
-    sha256 "764dc52d56fa24ff051e66f29a60f11be8e2e229592448662192f604e91f9d5e" => :mojave
-    sha256 "5850d5fe7b4ffebb904ea367a3f8d8361b48361e3e0dc9635304baddfebbe0db" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "7d883fde3bda035e36d3107923e96362cb5e538753ad4366ac8fa04137143cb2"
+    sha256 cellar: :any_skip_relocation, big_sur:       "eeb7ca6be51f678aaad01f4025ad62faf0068f48a6b8ef1eb908cb37676861e8"
+    sha256 cellar: :any_skip_relocation, catalina:      "929ff75d609fec1abe20a6fe0e1833949b0d1157821be5778c91b809a20d3193"
+    sha256 cellar: :any_skip_relocation, mojave:        "8e587b9ae59e970e0b3ee7a7e8f6076cdde1c002e81d61a2e373ca7bd8942443"
   end
 
   depends_on "rust" => :build
@@ -21,16 +27,15 @@ class Zenith < Formula
 
   test do
     require "pty"
+    require "io/console"
 
-    begin
-      (testpath/"zenith").mkdir
-      cmd = "#{bin}/zenith --db zenith"
-      output, input, pid = PTY.spawn "stty rows 80 cols 43 && #{cmd}"
-      sleep 1
-      input.write "q"
-      assert_match /PID\s+USER\s+P\s+N\s+↓CPU%\s+MEM%/, output.read
-    ensure
-      Process.kill("TERM", pid)
-    end
+    (testpath/"zenith").mkdir
+    r, w, pid = PTY.spawn "#{bin}/zenith --db zenith"
+    r.winsize = [80, 43]
+    sleep 1
+    w.write "q"
+    assert_match(/PID\s+USER\s+P\s+N\s+↓CPU%\s+MEM%/, r.read)
+  ensure
+    Process.kill("TERM", pid)
   end
 end

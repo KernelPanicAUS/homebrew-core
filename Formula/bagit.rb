@@ -3,24 +3,26 @@ class Bagit < Formula
 
   desc "Library for creation, manipulation, and validation of bags"
   homepage "https://libraryofcongress.github.io/bagit-python/"
-  url "https://files.pythonhosted.org/packages/ee/11/7a7fa81c0d43fb4d449d418eba57fc6c77959754c5c2259a215152810555/bagit-1.7.0.tar.gz"
-  sha256 "f248a3dad06fd3e5d329217baace6ade79d106579696b13e2c0bbc583101ded4"
+  url "https://files.pythonhosted.org/packages/e5/99/927b704237a1286f1022ea02a2fdfd82d5567cfbca97a4c343e2de7e37c4/bagit-1.8.1.tar.gz"
+  sha256 "37df1330d2e8640c8dee8ab6d0073ac701f0614d25f5252f9e05263409cee60c"
   license "CC0-1.0"
   version_scheme 1
   head "https://github.com/LibraryOfCongress/bagit-python.git"
 
   livecheck do
     url :stable
+    regex(%r{href=.*?/project/bagit/v?(\d+(?:\.\d+)+)/?["' >]}i)
   end
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "e0be67c1d5a4b305daacc9589d5230ecebc106ccbd74ad668ce5b10d4a600039" => :catalina
-    sha256 "94a987817d26843f859a1f238b6f943576bc2a2a8f36c0f01c5309c4d2cecf02" => :mojave
-    sha256 "8b4295b73d506186e90b656331c1fc653ae52dd3be666b7f2695259b040b0a0e" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "968ab8fef1c1378693bb911e8aebd42770ffb6cc02f51751008be4adec8ccd27"
+    sha256 cellar: :any_skip_relocation, big_sur:       "62094bf88731c7b94940aa4e4653ca22cc041b25330e3423001eacaa88ab6ee9"
+    sha256 cellar: :any_skip_relocation, catalina:      "8cb401bf3f5d03dd8ec84f47fb9bbebff28a0a5be96f1aeb4ee95530ec2b29b2"
+    sha256 cellar: :any_skip_relocation, mojave:        "4fefca46d83bb674b3969080548a4b8028db0d3aa7225d83cb4d13bc4602e6ed"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "f04c2f68abc63b374410d0414544df8fb304d77e2c6c3624554f48c1c8bac5e9"
   end
 
-  depends_on "python@3.8"
+  depends_on "python@3.9"
 
   def install
     virtualenv_install_with_resources

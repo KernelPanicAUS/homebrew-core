@@ -1,16 +1,16 @@
 class Oha < Formula
   desc "HTTP load generator, inspired by rakyll/hey with tui animation"
   homepage "https://github.com/hatoo/oha/"
-  url "https://github.com/hatoo/oha/archive/v0.4.1.tar.gz"
-  sha256 "2a713a00aef8db3de98fe5a936e84fdf7fcebfa8211aee03a4c7754aa094d7d1"
+  url "https://github.com/hatoo/oha/archive/v0.4.6.tar.gz"
+  sha256 "b08f4953c6f77a80882dd9b13735ca4a63f14ada1b51d619f17e58a6fa085262"
   license "MIT"
   head "https://github.com/hatoo/oha.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "31e9544f9612b2211bd224d6112da755ed92af8051046f13c518d95e3778a1b3" => :catalina
-    sha256 "087d14cbe0e3972365b71896a7e29a60f95c0a943fb65ee4969ea5e222be34da" => :mojave
-    sha256 "aff27d4b0f0a25c45707ed170b2ff63a32a83a5a48efcb48fd498b924940ffd9" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "18b6d423dff719f2c56939eca2416d8a6235f1493e92529932f637a4286427fb"
+    sha256 cellar: :any_skip_relocation, big_sur:       "f456bf2580fe0f30448d0f4ab938b74e98de4e95c5d29790cf0f2e6c92e7546b"
+    sha256 cellar: :any_skip_relocation, catalina:      "7afb84c24489da1c79b34b6429e71911a11c36237359001a1ca27ab8fe33ddde"
+    sha256 cellar: :any_skip_relocation, mojave:        "269bcc403430b25471b8401cc7aa416caf0a35b33350e4ab747dd57e32782136"
   end
 
   depends_on "rust" => :build

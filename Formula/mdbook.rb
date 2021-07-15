@@ -1,16 +1,17 @@
 class Mdbook < Formula
   desc "Create modern online books from Markdown files"
   homepage "https://rust-lang.github.io/mdBook/"
-  url "https://github.com/rust-lang/mdBook/archive/v0.4.2.tar.gz"
-  sha256 "9baebd8359442b1ff99a8ae4d8d197721525b746399e01f7fdcb67b4c34dd497"
+  url "https://github.com/rust-lang/mdBook/archive/v0.4.10.tar.gz"
+  sha256 "ecd1d4cee5b5fa7781799f83010e2074262929a22e37d308061b54ffa7e42f69"
   license "MPL-2.0"
   head "https://github.com/rust-lang/mdBook.git"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "9e10027434f45b13179825378305913e16fdf8800026e01cd5ed9da26ea648c6" => :catalina
-    sha256 "5be313962a7376089a10cb705610cc510c45403861c12dea6f4cef360ad09aee" => :mojave
-    sha256 "e5fa3ed29d1f71112f5415c6a563a62d1dcef20af7c36e9a309d3877feed6005" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "554151ca6d1771fbbb6dc2dad3d27dfa40629680ad6511690c90596445800ba1"
+    sha256 cellar: :any_skip_relocation, big_sur:       "76903aca2380189e21bfd257a8ec8b130e069fb03cd4415d46ef1af6a711ce2d"
+    sha256 cellar: :any_skip_relocation, catalina:      "59e2e920e318782714f1841abb0375f8f17e151f576db14fa0e9041ac14e26cf"
+    sha256 cellar: :any_skip_relocation, mojave:        "2f358d7915c4c9c6131e63debcaeabe3e77bfeedf4ecc41dd01c6db5f0229e2a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "6e7d0ee69b817782f5441efab0a9738e382cbc795dd5d2abc06234ba04800f5f"
   end
 
   depends_on "rust" => :build
@@ -22,6 +23,6 @@ class Mdbook < Formula
   test do
     # simulate user input to mdbook init
     system "sh", "-c", "printf \\n\\n | #{bin}/mdbook init"
-    system "#{bin}/mdbook", "build"
+    system bin/"mdbook", "build"
   end
 end

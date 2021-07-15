@@ -1,29 +1,38 @@
 class SpatialiteTools < Formula
   desc "CLI tools supporting SpatiaLite"
   homepage "https://www.gaia-gis.it/fossil/spatialite-tools/index"
-  url "https://www.gaia-gis.it/gaia-sins/spatialite-tools-sources/spatialite-tools-4.3.0.tar.gz"
-  sha256 "f739859bc04f38735591be2f75009b98a2359033675ae310dffc3114a17ccf89"
-  license "GPL-3.0"
-  revision 5
+  url "https://www.gaia-gis.it/gaia-sins/spatialite-tools-sources/spatialite-tools-5.0.1.tar.gz"
+  sha256 "9604c205e87f037789bc52302c66ccd1371c3e98c74e8ec4e29b0752de35171c"
+  license "GPL-3.0-or-later"
+  revision 2
+
+  livecheck do
+    url "https://www.gaia-gis.it/gaia-sins/spatialite-tools-sources/"
+    regex(/href=.*?spatialite-tools[._-]v?(\d+(?:\.\d+)+)\.(?:t|zip)/i)
+  end
 
   bottle do
-    cellar :any
-    sha256 "bb05699d8ad329cd1bea91041220944d034d30fad259334e6aec463b586a5f20" => :catalina
-    sha256 "b2513d23a40d4793d048e98e7ae4ced1f6c7fb3abf2e51718d8043440434caa7" => :mojave
-    sha256 "fde1c73dc20ab4e18c28a61946c9083edee504d5c3d52f65155d22f5ce5c2dac" => :high_sierra
+    sha256 cellar: :any, arm64_big_sur: "1dc66a96910742c330fa90b8c547ce7d7693d7c3af118707b5a15b6d6e013ef9"
+    sha256 cellar: :any, big_sur:       "1e4d449a6915bfe180238dd30ed93a2909661076a86f66cea306fda8dbdeb8c4"
+    sha256 cellar: :any, catalina:      "362dd2c109f880d356d7f7e0359936717acfc1ca146277f0e2c456955c33492f"
+    sha256 cellar: :any, mojave:        "ffdc8a4b476146b0f58965f3879f1418a4b151bcbe4a213a005cd5eae5ecc50f"
   end
 
   depends_on "pkg-config" => :build
   depends_on "libspatialite"
+  depends_on "proj@7"
   depends_on "readosm"
 
   def install
     # See: https://github.com/Homebrew/homebrew/issues/3328
     ENV.append "LDFLAGS", "-liconv"
     # Ensure Homebrew SQLite is found before system SQLite.
+    #
+    # spatialite-tools picks `proj` (instead of `proj@7`) if installed
     sqlite = Formula["sqlite"]
-    ENV.append "LDFLAGS", "-L#{sqlite.opt_lib}"
-    ENV.append "CFLAGS", "-I#{sqlite.opt_include}"
+    proj = Formula["proj@7"]
+    ENV.prepend "LDFLAGS", "-L#{sqlite.opt_lib} -lsqlite3 -L#{proj.opt_lib}"
+    ENV.prepend "CFLAGS", "-I#{sqlite.opt_include} -I#{proj.opt_include}"
 
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}"

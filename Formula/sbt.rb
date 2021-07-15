@@ -1,13 +1,21 @@
 class Sbt < Formula
   desc "Build tool for Scala projects"
   homepage "https://www.scala-sbt.org/"
-  url "https://github.com/sbt/sbt/releases/download/v1.3.13/sbt-1.3.13.tgz"
-  mirror "https://sbt-downloads.cdnedge.bluemix.net/releases/v1.3.13/sbt-1.3.13.tgz"
-  sha256 "854154de27a7d8c13b5a0f9a297cd1f254cc13b44588dae507e5d4fb2741bd22"
+  url "https://github.com/sbt/sbt/releases/download/v1.5.4/sbt-1.5.4.tgz"
+  mirror "https://sbt-downloads.cdnedge.bluemix.net/releases/v1.5.4/sbt-1.5.4.tgz"
+  sha256 "8e173aba17690be9b60f941990bb54b6755eb09e8b1cf445a03da6fe19a1b20c"
   license "Apache-2.0"
 
-  bottle :unneeded
+  livecheck do
+    url :stable
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
 
+  bottle do
+    sha256 cellar: :any_skip_relocation, all: "601371df40c3a14474d68d4547475e4a878111e9f42a9214ad0741a829a19618"
+  end
+
+  depends_on arch: :x86_64
   depends_on "openjdk"
 
   def install
@@ -19,15 +27,8 @@ class Sbt < Formula
     libexec.install "bin"
     etc.install "conf/sbtopts"
 
-    (bin/"sbt").write <<~EOS
-      #!/bin/sh
-      if [ -f "$HOME/.sbtconfig" ]; then
-        echo "Use of ~/.sbtconfig is deprecated, please migrate global settings to #{etc}/sbtopts" >&2
-        . "$HOME/.sbtconfig"
-      fi
-      export JAVA_HOME="${JAVA_HOME:-#{Formula["openjdk"].opt_prefix}}"
-      exec "#{libexec}/bin/sbt" "$@"
-    EOS
+    (bin/"sbt").write_env_script libexec/"bin/sbt", Language::Java.overridable_java_home_env
+    (bin/"sbtn").write_env_script libexec/"bin/sbtn-x86_64-apple-darwin", Language::Java.overridable_java_home_env
   end
 
   def caveats
@@ -40,7 +41,9 @@ class Sbt < Formula
 
   test do
     ENV.append "_JAVA_OPTIONS", "-Dsbt.log.noformat=true"
-    system "#{bin}/sbt", "about"
-    assert_match "[info] #{version}", shell_output("#{bin}/sbt sbtVersion")
+    system("#{bin}/sbt", "--sbt-create", "about")
+    assert_match version.to_s, shell_output("#{bin}/sbt sbtVersion")
+    system "#{bin}/sbtn", "about"
+    system "#{bin}/sbtn", "shutdown"
   end
 end

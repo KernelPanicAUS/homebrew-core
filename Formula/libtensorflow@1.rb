@@ -3,27 +3,25 @@ class LibtensorflowAT1 < Formula
 
   desc "C interface for Google's OS library for Machine Intelligence"
   homepage "https://www.tensorflow.org/"
-  url "https://github.com/tensorflow/tensorflow/archive/v1.15.3.tar.gz"
-  sha256 "9ab1d92e58eb813922b040acc7622b32d73c2d8d971fe6491a06f9df4c778151"
+  url "https://github.com/tensorflow/tensorflow/archive/v1.15.5.tar.gz"
+  sha256 "4c4d23e311093ded2d2e287b18d7c45b07b5984ab88a1d2f91f8f13c886123db"
   license "Apache-2.0"
 
   bottle do
-    cellar :any
-    sha256 "88440057fc88398f8b9affc4b60f4d8ac897a72403cad5a5a67d8c659ab79bfa" => :catalina
-    sha256 "15fdb97131bdba58139f40ef7730e75aeba13a2440d2d9e3a67d36a51300c42a" => :mojave
-    sha256 "bcf7c915fd8d97ffef810d5df53e16136de7e7c784a9b97a0474831c6d923ae5" => :high_sierra
+    sha256 cellar: :any, big_sur:  "8f1c80ebe024b29fb7d6695fa41de75e84d21948535a6459f3dd11b8e5a2165f"
+    sha256 cellar: :any, catalina: "28bac51bae550468948151ffa7fa62d38cce9eee19522f045b1f40b4885f9625"
+    sha256 cellar: :any, mojave:   "aefd6a0dbaae05e710a8372fa6ca3e6d731b9ee455ca99f898141d7f627303eb"
   end
 
   keg_only :versioned_formula
 
+  deprecate! date: "2021-01-06", because: :versioned_formula
+
   depends_on "bazel" => :build
-  depends_on "python@3.8" => :build
+  depends_on "python@3.9" => :build
 
   def install
-    venv_root = "#{buildpath}/venv"
-    virtualenv_create(venv_root, "python3")
-
-    ENV["PYTHON_BIN_PATH"] = "#{venv_root}/bin/python"
+    ENV["PYTHON_BIN_PATH"] = Formula["python@3.9"].opt_bin/"python3"
     ENV["CC_OPT_FLAGS"] = "-march=native"
     ENV["TF_IGNORE_MAX_BAZEL_VERSION"] = "1"
     ENV["TF_NEED_JEMALLOC"] = "1"

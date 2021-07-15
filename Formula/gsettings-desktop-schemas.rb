@@ -1,19 +1,16 @@
 class GsettingsDesktopSchemas < Formula
   desc "GSettings schemas for desktop components"
   homepage "https://download.gnome.org/sources/gsettings-desktop-schemas/"
-  url "https://download.gnome.org/sources/gsettings-desktop-schemas/3.36/gsettings-desktop-schemas-3.36.1.tar.xz"
-  sha256 "004bdbe43cf8290f2de7d8537e14d8957610ca479a4fa368e34dbd03f03ec9d9"
-  revision 1
-
-  livecheck do
-    url :stable
-  end
+  url "https://download.gnome.org/sources/gsettings-desktop-schemas/40/gsettings-desktop-schemas-40.0.tar.xz"
+  sha256 "f1b83bf023c0261eacd0ed36066b76f4a520bbcb14bb69c402b7959257125685"
+  license "LGPL-2.1-or-later"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "ca79e0409fb9d658c9ab2f9e3ecde89e10ef305121b9fa71c909cf3cb098a82a" => :catalina
-    sha256 "ca79e0409fb9d658c9ab2f9e3ecde89e10ef305121b9fa71c909cf3cb098a82a" => :mojave
-    sha256 "ca79e0409fb9d658c9ab2f9e3ecde89e10ef305121b9fa71c909cf3cb098a82a" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "f98030c66d5023f9fd91a7700dff2372a9becd02514bd291139d56c32b2c06c1"
+    sha256 cellar: :any_skip_relocation, big_sur:       "a7f5b4fc71c5dfdd9418823c6252872b6e6ecc7bab2e5828dcdcf7d484223178"
+    sha256 cellar: :any_skip_relocation, catalina:      "24379b6ab7c18f2d682d59ef7c8f94eaf67a41d0ed3156deb5f0f9bc99919cd4"
+    sha256 cellar: :any_skip_relocation, mojave:        "1350e64db550d9db2f48be5495f4da335b324b9b6c87ce4f073cf52cdbe3f790"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "a8941cdf3c463cbca6ab9028533fd0da7f31ffb05fc0c563ea0ff7811c1fcf6f"
   end
 
   depends_on "gobject-introspection" => :build

@@ -1,14 +1,15 @@
 class Vroom < Formula
   desc "Vehicle Routing Open-Source Optimization Machine"
   homepage "http://vroom-project.org/"
-  url "https://github.com/VROOM-Project/vroom/archive/v1.7.0.tar.gz"
-  sha256 "38231586070a46c95328c4e8d48dd0b84acd02dd9904f988cbb53ce51c4e62e4"
+  url "https://github.com/VROOM-Project/vroom/archive/v1.10.0.tar.gz"
+  sha256 "6426c32133b9ef7a41f88cf4b506848c34feca74fd3fc9b5bf2bcd96a2f436f1"
   license "BSD-2-Clause"
 
   bottle do
-    cellar :any
-    sha256 "b8b6ba6f23ce63a5d1fe3060c688de42bfd7191ce741bf1f133ad988d2008b8c" => :catalina
-    sha256 "598e546078bb441380537ea0fb684d6f20e3a35b8efb8f7561a399e8e4885546" => :mojave
+    sha256 cellar: :any, arm64_big_sur: "76c2218be30b352eb31c178ab9c25930b0fd80bc1d603defbf1d2ebf92e1875e"
+    sha256 cellar: :any, big_sur:       "59ca347b0dd9ba423ca9006997a8051c0d9e5c98c7d3876302575aa77073dff7"
+    sha256 cellar: :any, catalina:      "637d2de102155f8cf96c3ff168c0503cb3cc0ae8abddcc33ed3fe869213613d0"
+    sha256 cellar: :any, mojave:        "c283fdbd2e5f26ed93fbf56e8aa8501381fdfa3918f4271cd87301a4e890d801"
   end
 
   depends_on "pkg-config" => :build
@@ -28,7 +29,6 @@ class Vroom < Formula
     output = shell_output("#{bin}/vroom -i #{pkgshare}/docs/example_2.json")
     expected_routes = JSON.parse((pkgshare/"docs/example_2_sol.json").read)["routes"]
     actual_routes = JSON.parse(output)["routes"]
-    actual_routes.first["steps"].each { |r| r.delete("id") } # temp fix, remove in next version
     assert_equal expected_routes, actual_routes
   end
 end

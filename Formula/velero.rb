@@ -1,40 +1,33 @@
 class Velero < Formula
   desc "Disaster recovery for Kubernetes resources and persistent volumes"
   homepage "https://github.com/vmware-tanzu/velero"
-  url "https://github.com/vmware-tanzu/velero/archive/v1.5.0.tar.gz"
-  sha256 "b45a7ee894706a941ab27698293bbca6922de927694cd5c135fd78fe0b133a1c"
+  url "https://github.com/vmware-tanzu/velero/archive/v1.6.1.tar.gz"
+  sha256 "92f3811d6919325d0e005d52e28e5d31715979851181946e912ecc7bb239e5b8"
   license "Apache-2.0"
 
   bottle do
-    cellar :any_skip_relocation
-    sha256 "dd5801fb7890ea9486c9ce5c6c1bdb1b84fd2a77302727e85f6564071de7e076" => :catalina
-    sha256 "ee3ebd2a57bf6c857f3cf503ada044575aa255ca4b545c2eb23433994f9d3f65" => :mojave
-    sha256 "4e626cf800b85e124a402ce35ce67042587dcf420a318c6b470811289286a795" => :high_sierra
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "ba0c40580772e699248b5f08c5c3f2cf84271f2b8dad0393251568548e6c09bb"
+    sha256 cellar: :any_skip_relocation, big_sur:       "902bf56cdfcaf13f33bad13962c3e4198402d9dcb7b35cd3f8c72c50211dceda"
+    sha256 cellar: :any_skip_relocation, catalina:      "75e2e3aacc2af7ba6a06700b523469288989cfe3c9364f09577c4a2d8b52990c"
+    sha256 cellar: :any_skip_relocation, mojave:        "359defff29b8583dcd8e962ededd22a53fbd9316b9c5e4b49bf1aff6c02b8b32"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "90dc5e72424cb9059b8feec86ee63f2a3cea9b4ea0045c76f7a87e805e5b58e1"
   end
 
   depends_on "go" => :build
 
   def install
-    ENV["GOPATH"] = buildpath
-    dir = buildpath/"src/github.com/vmware-tanzu/velero"
-    dir.install buildpath.children - [buildpath/".brew_home"]
+    system "go", "build", *std_go_args, "-installsuffix", "static",
+                  "-ldflags",
+                  "-s -w -X github.com/vmware-tanzu/velero/pkg/buildinfo.Version=v#{version}",
+                  "./cmd/velero"
 
-    cd dir do
-      system "go", "build", "-o", bin/"velero", "-installsuffix", "static",
-                   "-ldflags",
-                   "-X github.com/vmware-tanzu/velero/pkg/buildinfo.Version=v#{version}",
-                   "./cmd/velero"
+    # Install bash completion
+    output = Utils.safe_popen_read("#{bin}/velero", "completion", "bash")
+    (bash_completion/"velero").write output
 
-      # Install bash completion
-      output = Utils.safe_popen_read("#{bin}/velero", "completion", "bash")
-      (bash_completion/"velero").write output
-
-      # Install zsh completion
-      output = Utils.safe_popen_read("#{bin}/velero", "completion", "zsh")
-      (zsh_completion/"_velero").write output
-
-      prefix.install_metafiles
-    end
+    # Install zsh completion
+    output = Utils.safe_popen_read("#{bin}/velero", "completion", "zsh")
+    (zsh_completion/"_velero").write output
   end
 
   test do
